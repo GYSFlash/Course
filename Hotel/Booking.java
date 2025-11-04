@@ -1,0 +1,102 @@
+package Hotel;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+import static Hotel.Status.*;
+
+public class Booking {
+    private int id;
+    private Date checkInDate;
+    private Date checkOutDate;
+    private BigDecimal totalPrice;
+    private Room room;
+    private Client client;
+    private Service service;
+
+    public Booking(Date checkInDate, Room room, int id, Client client, Date checkOutDate) {
+        this.checkInDate = checkInDate;
+        this.room = room;
+        this.id = id;
+        this.client = client;
+        this.checkOutDate = checkOutDate;
+        this.totalPrice = calculateTotalPrice();
+        this.room.setStatus(OCCUPIED);
+        System.out.println("Новая бронь создана");
+    }
+    private BigDecimal calculateTotalPrice(){
+        int days = (int) ((checkOutDate.getTime() - checkInDate.getTime()) / (1000*60*60*24));
+        BigDecimal total = room.getPrice().multiply(new BigDecimal(days));
+        return total;
+    }
+    public Date getCheckInDate() {
+        return checkInDate;
+    }
+
+    public void setCheckInDate(Date checkInDate) {
+        this.checkInDate = checkInDate;
+    }
+
+    public Date getCheckOutDate() {
+        return checkOutDate;
+    }
+
+    public void setCheckOutDate(Date checkOutDate) {
+        this.checkOutDate = checkOutDate;
+    }
+
+    public Client getClient() {
+        return client;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public Room getRoom() {
+        return room;
+    }
+
+    public void setRoom(Room room) {
+        this.room = room;
+    }
+
+    public BigDecimal getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(BigDecimal totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public Service getService() {
+        return service;
+    }
+
+    public void setService(Service service) {
+        this.service = service;
+    }
+    public void endEarlyBooking(){
+        this.room.setStatus(FREE);
+        this.checkOutDate = new Date();
+        this.totalPrice = calculateTotalPrice();
+        System.out.println("Бронь завершена заранее");
+    }
+    public void endBooking(){
+        this.room.setStatus(FREE);
+    }
+    @Override
+    public String toString() {
+        return "Бронирование №" + id + ": " + client.getSurname() + " " + client.getName() +
+                " - Комната " + room.getRoomNumber() + " (" + checkInDate + " до " + checkOutDate +
+                ") - Итого: " + totalPrice + " руб.";
+    }
+}
