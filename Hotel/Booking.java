@@ -12,7 +12,6 @@ public class Booking {
     private BigDecimal totalPrice;
     private Room room;
     private Client client;
-    private Service service;
 
     public Booking(Date checkInDate, Room room, int id, Client client, Date checkOutDate) {
         this.checkInDate = checkInDate;
@@ -77,13 +76,6 @@ public class Booking {
         this.totalPrice = totalPrice;
     }
 
-    public Service getService() {
-        return service;
-    }
-
-    public void setService(Service service) {
-        this.service = service;
-    }
     public void endEarlyBooking(){
         this.room.setStatus(FREE);
         this.checkOutDate = new Date();
