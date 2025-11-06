@@ -1,22 +1,23 @@
-package Hotel;
+package Hotel.Model;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
-import static Hotel.Status.*;
+
+import static Hotel.Model.Room.Status.*;
 
 public class Booking {
-    private int id;
+    private Long id;
     private Date checkInDate;
     private Date checkOutDate;
     private BigDecimal totalPrice;
     private Room room;
     private Client client;
 
-    public Booking(Date checkInDate, Room room, int id, Client client, Date checkOutDate) {
+    public Booking(Long id,Date checkInDate, Room room, Client client, Date checkOutDate) {
+        this.id = id;
         this.checkInDate = checkInDate;
         this.room = room;
-        this.id = id;
         this.client = client;
         this.checkOutDate = checkOutDate;
         this.totalPrice = calculateTotalPrice();
@@ -52,11 +53,11 @@ public class Booking {
         this.client = client;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

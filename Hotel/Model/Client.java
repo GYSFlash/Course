@@ -1,19 +1,29 @@
-package Hotel;
+package Hotel.Model;
 
 import java.util.Date;
 
 public class Client {
+    private Long id;
     private String name;
     private String surname;
     private Date dateOfBirth;
-    private String gender;
+    private Gender gender;
 
-    public Client(Date dateOfBirth, String surname, String name, String gender) {
+    public Client(Long id,Date dateOfBirth, String surname, String name, Gender gender) {
+        this.id = id;
         this.dateOfBirth = dateOfBirth;
         this.surname = surname;
         this.name = name;
         this.gender = gender;
         System.out.println("Новый клиент");
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Date getDateOfBirth() {
@@ -24,11 +34,11 @@ public class Client {
         this.dateOfBirth = dateOfBirth;
     }
 
-    public String getGender() {
+    public Gender getGender() {
         return gender;
     }
 
-    public void setGender(String gender) {
+    public void setGender(Gender gender) {
         this.gender = gender;
     }
 
@@ -51,4 +61,8 @@ public class Client {
     public String toString() {
         return "Клиент: " + name + " " + surname;
     }
+    public enum Gender {
+        MALE, FEMALE;
+    }
 }
+

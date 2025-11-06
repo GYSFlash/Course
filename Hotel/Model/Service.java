@@ -1,19 +1,37 @@
-package Hotel;
+package Hotel.Model;
 
 import java.math.BigDecimal;
 import java.time.Duration;
 
 public class Service {
+    private Long id;
     private String serviceName;
     private BigDecimal servicePrice;
     private Duration duration;
     private Client client;
-    public Service(String serviceName, BigDecimal servicePrice, Duration duration, Client client) {
+    public Service(Long id,String serviceName, BigDecimal servicePrice, Duration duration, Client client) {
+        this.id = id;
         this.serviceName = serviceName;
         this.servicePrice = servicePrice;
         this.duration = duration;
         this.client = client;
         System.out.println("Добавлен новый сервис");
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Client getClient() {
+        return client;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
     }
 
     public Duration getDuration() {

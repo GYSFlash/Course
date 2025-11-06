@@ -1,13 +1,13 @@
-package Hotel;
+package Hotel.Model;
 
 import java.math.BigDecimal;
 
 public class Room {
     private int roomNumber;
     private BigDecimal price;
-    private String type;
+    private RoomType type;
     private Status status;
-    public Room(int roomNumber, BigDecimal price, String type) {
+    public Room(int roomNumber, BigDecimal price, RoomType type) {
         this.roomNumber = roomNumber;
         this.price = price;
         this.type = type;
@@ -42,19 +42,17 @@ public class Room {
         this.status = status;
     }
 
-    public String getType() {
-        return type;
-    }
 
-    public void setType(String type) {
-        this.type = type;
-    }
     @Override
     public String toString() {
         return "Номер " + roomNumber + " (" + type + ") - " + status + " - " + price + " руб./ночь";
 
     }
+    public enum Status{
+        FREE,REPAIR,OCCUPIED
+    }
+    public enum RoomType{
+        STANDART,STANDARTPLUS,LUX,DELUXE,PRESIDENT
+    }
 }
-enum Status{
-    FREE,REPAIR,OCCUPIED
-}
+
