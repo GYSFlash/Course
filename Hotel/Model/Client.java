@@ -1,8 +1,9 @@
 package Hotel.Model;
 
 import java.util.Date;
+import java.util.Objects;
 
-public class Client {
+public class Client implements Comparable<Client> {
     private Long id;
     private String name;
     private String surname;
@@ -52,6 +53,23 @@ public class Client {
 
     public String getSurname() {
         return surname;
+    }
+    @Override
+    public int compareTo(Client o) {
+        return this.surname.compareTo(o.surname);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Client client = (Client) o;
+        return Objects.equals(surname, client.surname);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(surname);
     }
 
     public void setSurname(String surname) {

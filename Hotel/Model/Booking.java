@@ -1,12 +1,14 @@
 package Hotel.Model;
 
 import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.Objects;
 
 
 import static Hotel.Model.Room.Status.*;
 
-public class Booking {
+public class Booking implements Comparable<Booking> {
     private Long id;
     private Date checkInDate;
     private Date checkOutDate;
@@ -87,9 +89,33 @@ public class Booking {
         this.room.setStatus(FREE);
     }
     @Override
+    public int compareTo(Booking o) {
+        return this.client.compareTo(o.client);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Booking booking = (Booking) o;
+        return Objects.equals(room, booking.room);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(room);
+    }
+
+    @Override
     public String toString() {
         return "Бронирование №" + id + ": " + client.getSurname() + " " + client.getName() +
                 " - Комната " + room.getRoomNumber() + " (" + checkInDate + " до " + checkOutDate +
                 ") - Итого: " + totalPrice + " руб.";
+    }
+    public class BookingOutDate implements Comparator<Booking> {
+        @Override
+        public int compare(Booking o1, Booking o2) {
+            return o1.checkOutDate.compareTo(o2.checkOutDate);
+        }
     }
 }
