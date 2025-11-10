@@ -1,30 +1,20 @@
 package Hotel.Service;
 
 import Hotel.Model.Booking;
+import Hotel.Model.Room;
 
-import java.util.HashMap;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
-public class BookingService implements BookingServiceImpl {
-    private Map<Long, Booking> bookings = new HashMap<>();
+public interface BookingService {
+    void addBooking(Booking booking);
+    void deleteBooking(Long id);
+    void updateBooking(Booking booking);
+    List<Booking> getAllBookings();
+    List<Room> getFreeRoomsByDate(Date in, Date out);
+    List<Booking> lastThreeBookingsByRooms(int RoomNumber);
 
-    public void deleteBooking(Long id) {
-        if (bookings.containsKey(id)) {
-            bookings.remove(id);
-        }
-    }
-    @Override
-    public void addBooking(Booking booking) {
-        bookings.put(booking.getId(), booking);
-    }
-    @Override
-    public Map<Long, Booking> getAllBookings() {
-        return bookings;
-    }
-    @Override
-    public void updateBooking(Booking booking) {
-        if (bookings.containsKey(booking.getId())) {
-            bookings.put(booking.getId(), booking);
-        }
-    }
+
+
 }
