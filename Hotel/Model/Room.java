@@ -89,13 +89,13 @@ public class Room implements Comparable<Room> {
     public enum Star{
         ONE,TWO,THREE,FOUR,FIVE
     }
-    public class RoomPlace implements Comparator<Room>{
+    public static class RoomPlace implements Comparator<Room>{
         @Override
         public int compare(Room o1, Room o2) {
             return o1.place-o2.place;
         }
     }
-    public class RoomStars implements Comparator<Room>{
+    public static class RoomStars implements Comparator<Room>{
         @Override
         public int compare(Room o1, Room o2) {
             return o1.stars.compareTo(o2.stars);

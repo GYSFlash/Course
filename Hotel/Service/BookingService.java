@@ -12,8 +12,9 @@ public interface BookingService {
     void deleteBooking(Long id);
     void updateBooking(Booking booking);
     List<Booking> getAllBookings();
-    List<Room> getFreeRoomsByDate(Date in, Date out);
+    List<Room> getFreeRoomsByDate(Date in, Date out,RoomService roomService);
     List<Booking> lastThreeBookingsByRooms(int RoomNumber);
+    List<Booking> sort(String sortby);
 
 
 

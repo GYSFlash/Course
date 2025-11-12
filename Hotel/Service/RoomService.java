@@ -14,7 +14,8 @@ public interface RoomService {
     List<Room> getAllRooms();
     List<Room> getRoomByStatus(Status status);
     int countFreeRooms();
-
+    List<Room> sort(boolean freeRoom, String sortby);
+    Room getRoomByRoomNumber(int roomNumber);
 
 
 }

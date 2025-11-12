@@ -1,11 +1,15 @@
 package Hotel.Service;
 
+import Hotel.Model.Client;
 import Hotel.Model.Room;
+import Hotel.Model.Room.*;
 
 import java.util.*;
 
 public class RoomServiceImpl implements RoomService {
-    Map<Integer,Room> rooms = new HashMap<>();
+    private Map<Integer,Room> rooms = new HashMap<>();
+    private final RoomPlace roomPlace = new RoomPlace();
+    private final RoomStars roomStars = new RoomStars();
     @Override
     public void addRoom(Room room) {
         rooms.put(room.getRoomNumber(),room);
@@ -42,5 +46,41 @@ public class RoomServiceImpl implements RoomService {
     public int countFreeRooms() {
         return getRoomByStatus(Room.Status.FREE).size();
     }
+    @Override
+    public List<Room> sort(boolean freeRoom,String sortBy) {
+        if(rooms.isEmpty()) {
+            return null;
+        }
 
+        List<Room> roomList = new ArrayList<>(rooms.values());
+        if (freeRoom) {
+            List<Room> result = roomList;
+            roomList.clear();
+            for(Room room : result){
+                if(room.getStatus() == Room.Status.FREE){
+                    roomList.add(room);
+                }
+            }
+        }
+        switch (sortBy) {
+            case "price":
+                Collections.sort(roomList);
+                break;
+            case "place":
+                Collections.sort(roomList ,roomPlace );
+                break;
+            case "stars":
+                Collections.sort(roomList , roomStars );
+                break;
+        }
+        return roomList;
+    }
+    @Override
+    public Room getRoomByRoomNumber(int roomNumber) {
+        if(rooms.containsKey(roomNumber)){
+            return rooms.get(roomNumber);
+        }else{
+            return null;
+        }
+    }
 }

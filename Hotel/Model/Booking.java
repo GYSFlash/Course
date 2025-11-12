@@ -98,12 +98,12 @@ public class Booking implements Comparable<Booking> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Booking booking = (Booking) o;
-        return Objects.equals(room, booking.room);
+        return Objects.equals(id, booking.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(room);
+        return Objects.hashCode(id);
     }
 
     @Override
@@ -112,7 +112,7 @@ public class Booking implements Comparable<Booking> {
                 " - Комната " + room.getRoomNumber() + " (" + checkInDate + " до " + checkOutDate +
                 ") - Итого: " + totalPrice + " руб.";
     }
-    public class BookingOutDate implements Comparator<Booking> {
+    public static class BookingOutDate implements Comparator<Booking> {
         @Override
         public int compare(Booking o1, Booking o2) {
             return o1.checkOutDate.compareTo(o2.checkOutDate);

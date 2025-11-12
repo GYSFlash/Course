@@ -1,11 +1,9 @@
 package Hotel.Service;
 
+import Hotel.Model.Booking;
 import Hotel.Model.Client;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ClientServiceImpl implements ClientService {
     private Map<Long, Client> clients = new HashMap<>();
@@ -38,4 +36,5 @@ public class ClientServiceImpl implements ClientService {
     public int clientsCount() {
         return clients.size();
     }
+
 }

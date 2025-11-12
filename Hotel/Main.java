@@ -110,36 +110,34 @@ public class Main {
         // 1. Список номеров (сортировать по цене, вместимости, количеству звезд)
         System.out.println("1. ВСЕ НОМЕРА:");
         List<Room> allRooms = roomService.getAllRooms();
-
-        System.out.println("\nСортировка по цене:");
-        Collections.sort(allRooms);
         System.out.println(allRooms);
+        System.out.println("\nСортировка по цене:");
+
+        System.out.println(roomService.sort(false, "price"));
 
         System.out.println("\nСортировка по вместимости:");
-        Room.RoomPlace roomPlaceComparator = room101.new RoomPlace();
-        Collections.sort(allRooms, roomPlaceComparator);
-        System.out.println(allRooms);
+
+        System.out.println(roomService.sort(false, "place"));
 
         System.out.println("\nСортировка по количеству звезд:");
-        Room.RoomStars roomStarsComparator = room101.new RoomStars();
-        Collections.sort(allRooms, roomStarsComparator);
-        System.out.println(allRooms);
+
+        System.out.println(roomService.sort(false, "stars"));
 
         // 2. Список свободных номеров
         System.out.println("\n2. СВОБОДНЫЕ НОМЕРА:");
         List<Room> freeRooms = roomService.getRoomByStatus(Status.FREE);
-
-        System.out.println("\nСортировка по цене:");
-        Collections.sort(freeRooms);
         System.out.println(freeRooms);
+        System.out.println("\nСортировка по цене:");
+
+        System.out.println(roomService.sort(true, "price"));
 
         System.out.println("\nСортировка по вместимости:");
-        Collections.sort(freeRooms, roomPlaceComparator);
-        System.out.println(freeRooms);
+
+        System.out.println(roomService.sort(true, "place"));
 
         System.out.println("\nСортировка по количеству звезд:");
-        Collections.sort(freeRooms, roomStarsComparator);
-        System.out.println(freeRooms);
+
+        System.out.println(roomService.sort(true, "stars"));
 
         // 3. Список постояльцев и их номеров (сортировать по алфавиту, дате освобождения номера)
         System.out.println("\n3. ПОСТОЯЛЬЦЫ И ИХ НОМЕРА:");
@@ -147,13 +145,12 @@ public class Main {
         List<Booking> allBookings = bookingService.getAllBookings();
 
         System.out.println("\nСортировка по алфавиту:");
-        Collections.sort(allClients);
-        System.out.println(allClients);
+
+        System.out.println(bookingService.sort("checkOutDate"));
 
         System.out.println("\nСортировка по дате освобождения номера:");
-        Booking.BookingOutDate bookingOutDateComparator = booking1.new BookingOutDate();
-        Collections.sort(allBookings, bookingOutDateComparator);
-        System.out.println(allBookings);
+
+        System.out.println(bookingService.sort("checkOutDate"));
 
         // 4. Общее число свободных номеров
         System.out.println("\n4. ОБЩЕЕ ЧИСЛО СВОБОДНЫХ НОМЕРОВ: " + roomService.countFreeRooms());
@@ -171,7 +168,7 @@ public class Main {
 
 
         System.out.println("Свободные номера с " + futureDate + " до " + futureDate1 + " :");
-        System.out.println(bookingService.getFreeRoomsByDate(futureDate, futureDate1));
+        System.out.println(bookingService.getFreeRoomsByDate(futureDate, futureDate1,roomService));
 
         // 7. Сумму оплаты за номер которую должен оплатить постоялец
         System.out.println("\n7. СУММА ОПЛАТЫ ЗА НОМЕР:");
@@ -185,52 +182,43 @@ public class Main {
         // 9. Посмотреть список услуг постояльца и их цену (сортировать по цене, по дате)
         System.out.println("\n9. УСЛУГИ ПОСТОЯЛЬЦЕВ:");
         List<Service> allServices = serviceService.getAllServices();
-
+        System.out.println(allServices);
         System.out.println("\nУслуги клиента Иванов (сортировка по цене):");
-        Service.ServicePrice servicePriceComparator = breakfast1.new ServicePrice();
-        List<Service> ivanovServices = new ArrayList<>();
+
+        ServiceServiceImpl IvanovService = new ServiceServiceImpl();
         for (Service service : allServices) {
             if (service.getClient().getSurname().equals("Иванов")) {
-                ivanovServices.add(service);
+                IvanovService.addService(service);
             }
         }
-        Collections.sort(ivanovServices, servicePriceComparator);
-        System.out.println(ivanovServices);
+
+        System.out.println(IvanovService.sort("price"));
 
         System.out.println("\nУслуги клиента Иванов (сортировка по дате):");
-        Collections.sort(ivanovServices);
-        System.out.println(ivanovServices);
+
+        System.out.println(IvanovService.sort("date"));
 
         // 10. Цены услуг и номеров (сортировать по разделу, цене)
         System.out.println("\n10. ЦЕНЫ УСЛУГ И НОМЕРОВ:");
 
         System.out.println("\nУслуги (сортировка по цене):");
-        Collections.sort(allServices, servicePriceComparator);
-        System.out.println(allServices);
+
+        System.out.println(serviceService.sort("price"));
 
         System.out.println("\nНомера (сортировка по цене):");
-        Collections.sort(allRooms);
-        System.out.println(allRooms);
+
+        System.out.println(roomService.sort(false,"price"));
 
         // 11. Посмотреть детали отдельного номера
         System.out.println("\n11. ДЕТАЛИ НОМЕРА 103:");
-        List<Room> rooms = roomService.getAllRooms();
-        Room room103Details = null;
-        for (Room room : rooms) {
-            if (room.getRoomNumber() == 103) {
-                room103Details = room;
-                break;
-            }
-        }
-        if (room103Details != null) {
-            System.out.println(room103Details);
-        }
+
+        System.out.println(roomService.getRoomByRoomNumber(103));
 
         System.out.println("Поселение в номер:");
         Booking newBooking = new Booking(2L, new Date(), room102, client2,
                 new Date(System.currentTimeMillis() + 3 * 24 * 60 * 60 * 1000));
         bookingService.addBooking(newBooking);
-        room102.setStatus(Status.OCCUPIED);
+
 
         System.out.println("\nВыселение из номера:");
         booking1.endBooking();

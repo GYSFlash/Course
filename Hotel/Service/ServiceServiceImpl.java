@@ -1,14 +1,13 @@
 package Hotel.Service;
 
+import Hotel.Model.Service.*;
 import Hotel.Model.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ServiceServiceImpl implements ServiceService {
-    Map<Long, Service> services = new HashMap<>();
+    private Map<Long, Service> services = new HashMap<>();
+    private final ServicePrice servicePrice = new ServicePrice();
     @Override
     public void addService(Service service) {
         services.put(service.getId(), service);
@@ -29,5 +28,24 @@ public class ServiceServiceImpl implements ServiceService {
     public List<Service> getAllServices() {
         List<Service> newServices = new ArrayList<>(services.values());
         return newServices;
+    }
+    @Override
+    public List<Service> sort(String sortBy) {
+        if(services.isEmpty()) {
+            return null;
+        }
+
+        List<Service> serviceList = new ArrayList<>(services.values());
+
+        switch (sortBy) {
+            case "price":
+                Collections.sort(serviceList,servicePrice);
+                break;
+            case "date":
+                Collections.sort(serviceList);
+                break;
+        }
+
+        return serviceList;
     }
 }

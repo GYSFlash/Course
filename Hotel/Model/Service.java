@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Objects;
 
 public class Service implements Comparable<Service> {
     private Long id;
@@ -77,11 +78,22 @@ public class Service implements Comparable<Service> {
     public String toString() {
         return "Услуга: " + serviceName + " - " + servicePrice + " руб. (" + duration.toHours() + " ч.)" + " для " + client + " " + date;
     }
-    public class ServicePrice implements Comparator<Service> {
+    public static class ServicePrice implements Comparator<Service> {
         @Override
         public int compare(Service o1, Service o2) {
             return o1.servicePrice.compareTo(o2.servicePrice);
         }
     }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Service service = (Service) o;
+        return Objects.equals(id, service.id);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
 }

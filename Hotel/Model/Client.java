@@ -64,12 +64,12 @@ public class Client implements Comparable<Client> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Client client = (Client) o;
-        return Objects.equals(surname, client.surname);
+        return Objects.equals(id, client.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(surname);
+        return Objects.hashCode(id);
     }
 
     public void setSurname(String surname) {
