@@ -101,7 +101,12 @@ public class Room implements Comparable<Room> {
             return o1.stars.compareTo(o2.stars);
         }
     }
-
+    public static class RoomTypes implements Comparator<Room>{
+        @Override
+        public int compare(Room o1, Room o2) {
+            return o1.type.compareTo(o2.type);
+        }
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

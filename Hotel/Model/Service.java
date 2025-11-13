@@ -8,13 +8,15 @@ import java.util.Objects;
 
 public class Service implements Comparable<Service> {
     private Long id;
+    private TypeService typeService;
     private String serviceName;
     private BigDecimal servicePrice;
     private Duration duration;
     private Date date;
     private Client client;
-    public Service(Long id,String serviceName, BigDecimal servicePrice, Duration duration, Client client, Date date) {
+    public Service(Long id,TypeService typeService,String serviceName, BigDecimal servicePrice, Duration duration, Client client, Date date) {
         this.id = id;
+        this.typeService = typeService;
         this.serviceName = serviceName;
         this.servicePrice = servicePrice;
         this.duration = duration;
@@ -29,6 +31,14 @@ public class Service implements Comparable<Service> {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public TypeService getTypeService() {
+        return typeService;
+    }
+
+    public void setTypeService(TypeService typeService) {
+        this.typeService = typeService;
     }
 
     public Client getClient() {
@@ -84,6 +94,12 @@ public class Service implements Comparable<Service> {
             return o1.servicePrice.compareTo(o2.servicePrice);
         }
     }
+    public static class ServiceType implements Comparator<Service> {
+        @Override
+        public int compare(Service o1, Service o2) {
+            return o1.typeService.compareTo(o2.typeService);
+        }
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -95,5 +111,8 @@ public class Service implements Comparable<Service> {
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
+    }
+    public enum TypeService {
+        ROOM,FOOD,OTHER;
     }
 }

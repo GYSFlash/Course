@@ -10,6 +10,7 @@ public class RoomServiceImpl implements RoomService {
     private Map<Integer,Room> rooms = new HashMap<>();
     private final RoomPlace roomPlace = new RoomPlace();
     private final RoomStars roomStars = new RoomStars();
+    private final RoomTypes roomTypes = new RoomTypes();
     @Override
     public void addRoom(Room room) {
         rooms.put(room.getRoomNumber(),room);
@@ -71,6 +72,9 @@ public class RoomServiceImpl implements RoomService {
                 break;
             case "stars":
                 Collections.sort(roomList , roomStars );
+                break;
+            case "type":
+                Collections.sort(roomList,roomTypes);
                 break;
         }
         return roomList;

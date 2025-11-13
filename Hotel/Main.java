@@ -4,6 +4,7 @@ import Hotel.Service.*;
 import Hotel.Model.*;
 import Hotel.Model.Room.*;
 import Hotel.Model.Client.*;
+import Hotel.Model.Service.*;
 
 import java.math.BigDecimal;
 import java.time.Duration;
@@ -16,6 +17,7 @@ public class Main {
         ClientServiceImpl clientService = new ClientServiceImpl();
         BookingServiceImpl bookingService = new BookingServiceImpl();
         ServiceServiceImpl serviceService = new ServiceServiceImpl();
+        ServiceAndRoomService serviceAndRoomService = new ServiceAndRoomService(roomService, serviceService);
 
         System.out.println("Создание гостиницы.\n");
 
@@ -60,12 +62,12 @@ public class Main {
         calendar.add(Calendar.DAY_OF_MONTH, 7);
         Date date2 = calendar.getTime();
 
-        Service breakfast1 = new Service(1L, "Завтрак", new BigDecimal("500.00"), Duration.ofHours(2), client1, date1);
-        Service breakfast2 = new Service(2L, "Завтрак", new BigDecimal("500.00"), Duration.ofHours(2), client3, date2);
-        Service spa = new Service(3L, "СПА", new BigDecimal("1500.00"), Duration.ofHours(1), client2, date1);
-        Service laundry = new Service(4L, "Прачечная", new BigDecimal("300.00"), Duration.ofHours(3), client1, date2);
-        Service dinner = new Service(5L, "Ужин", new BigDecimal("800.00"), Duration.ofHours(2), client4, date1);
-        Service gym = new Service(6L, "Фитнес-зал", new BigDecimal("600.00"), Duration.ofHours(1), client5, date2);
+        Service breakfast1 = new Service(1L, TypeService.FOOD,"Завтрак", new BigDecimal("500.00"), Duration.ofHours(2), client1, date1);
+        Service breakfast2 = new Service(2L,TypeService.FOOD, "Завтрак", new BigDecimal("500.00"), Duration.ofHours(2), client3, date2);
+        Service spa = new Service(3L,TypeService.OTHER, "СПА", new BigDecimal("1500.00"), Duration.ofHours(1), client2, date1);
+        Service laundry = new Service(4L,TypeService.ROOM, "Прачечная", new BigDecimal("300.00"), Duration.ofHours(3), client1, date2);
+        Service dinner = new Service(5L,TypeService.FOOD, "Ужин", new BigDecimal("800.00"), Duration.ofHours(2), client4, date1);
+        Service gym = new Service(6L, TypeService.OTHER,"Фитнес-зал", new BigDecimal("600.00"), Duration.ofHours(1), client5, date2);
 
         serviceService.addService(breakfast1);
         serviceService.addService(breakfast2);
@@ -201,13 +203,13 @@ public class Main {
         // 10. Цены услуг и номеров (сортировать по разделу, цене)
         System.out.println("\n10. ЦЕНЫ УСЛУГ И НОМЕРОВ:");
 
-        System.out.println("\nУслуги (сортировка по цене):");
+        System.out.println("\nУслуги и номера (сортировка по цене):");
 
-        System.out.println(serviceService.sort("price"));
+        System.out.println(serviceAndRoomService.sort("price"));
 
-        System.out.println("\nНомера (сортировка по цене):");
+        System.out.println("\nУслуги и номера (сортировка по цене):");
 
-        System.out.println(roomService.sort(false,"price"));
+        System.out.println(serviceAndRoomService.sort("type"));
 
         // 11. Посмотреть детали отдельного номера
         System.out.println("\n11. ДЕТАЛИ НОМЕРА 103:");

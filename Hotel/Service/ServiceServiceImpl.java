@@ -8,6 +8,7 @@ import java.util.*;
 public class ServiceServiceImpl implements ServiceService {
     private Map<Long, Service> services = new HashMap<>();
     private final ServicePrice servicePrice = new ServicePrice();
+    private final ServiceType serviceType = new ServiceType();
     @Override
     public void addService(Service service) {
         services.put(service.getId(), service);
@@ -43,6 +44,9 @@ public class ServiceServiceImpl implements ServiceService {
                 break;
             case "date":
                 Collections.sort(serviceList);
+                break;
+            case "type":
+                Collections.sort(serviceList,serviceType);
                 break;
         }
 
