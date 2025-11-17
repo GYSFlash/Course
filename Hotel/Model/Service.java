@@ -88,18 +88,7 @@ public class Service implements Comparable<Service> {
     public String toString() {
         return "Услуга: " + serviceName + " - " + servicePrice + " руб. (" + duration.toHours() + " ч.)" + " для " + client + " " + date;
     }
-    public static class ServicePrice implements Comparator<Service> {
-        @Override
-        public int compare(Service o1, Service o2) {
-            return o1.servicePrice.compareTo(o2.servicePrice);
-        }
-    }
-    public static class ServiceType implements Comparator<Service> {
-        @Override
-        public int compare(Service o1, Service o2) {
-            return o1.typeService.compareTo(o2.typeService);
-        }
-    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

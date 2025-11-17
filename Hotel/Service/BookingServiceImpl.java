@@ -8,7 +8,6 @@ import java.util.*;
 
 public class BookingServiceImpl implements BookingService {
     private Map<Long, Booking> bookings = new HashMap<>();
-    private final BookingOutDate bookingOutDateComparator = new BookingOutDate();
    @Override
     public void deleteBooking(Long id) {
         if (bookings.containsKey(id)) {
@@ -35,8 +34,6 @@ public class BookingServiceImpl implements BookingService {
         List<Room> busyRooms = new ArrayList<>();
         List<Room> allRooms = roomService.getAllRooms();
 
-
-
         // Находим занятые номера
         for (Booking booking : bookings.values()) {
             Room room = booking.getRoom();
@@ -49,11 +46,7 @@ public class BookingServiceImpl implements BookingService {
 
         // Свободные = все минус занятые
         List<Room> freeRooms = new ArrayList<>();
-        for (Room room : allRooms) {
-            if (!busyRooms.contains(room) && room.getStatus() != Room.Status.REPAIR){
-                freeRooms.add(room);
-            }
-        }
+        freeRooms = freeRooms.stream().filter(room -> !busyRooms.contains(room)&&room.getStatus() != Room.Status.REPAIR).toList();
 
         return freeRooms;
     }
@@ -85,12 +78,8 @@ public class BookingServiceImpl implements BookingService {
         List<Booking> bookingList = new ArrayList<>(bookings.values());
 
         switch (sortBy) {
-            case "client":
-                Collections.sort(bookingList);
-                break;
-            case "checkOutDate":
-                Collections.sort(bookingList, bookingOutDateComparator);
-                break;
+            case "client" -> bookingList.sort(Comparator.comparing(Booking::getClient));
+            case "checkOutDate"-> bookingList.sort(Comparator.comparing(Booking::getCheckOutDate));
         }
         return bookingList;
     }

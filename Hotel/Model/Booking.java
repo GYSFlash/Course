@@ -112,10 +112,5 @@ public class Booking implements Comparable<Booking> {
                 " - Комната " + room.getRoomNumber() + " (" + checkInDate + " до " + checkOutDate +
                 ") - Итого: " + totalPrice + " руб.";
     }
-    public static class BookingOutDate implements Comparator<Booking> {
-        @Override
-        public int compare(Booking o1, Booking o2) {
-            return o1.checkOutDate.compareTo(o2.checkOutDate);
-        }
-    }
+
 }

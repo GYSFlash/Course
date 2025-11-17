@@ -26,10 +26,7 @@ public class ClientServiceImpl implements ClientService {
     }
     @Override
     public List<Client> getAllClients() {
-        List<Client> newClients = new ArrayList<>();
-        for (Client client : clients.values()) {
-            newClients.add(client);
-        }
+        List<Client> newClients = new ArrayList<>(clients.values());
         return newClients;
     }
     @Override

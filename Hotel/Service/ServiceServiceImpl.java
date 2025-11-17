@@ -7,8 +7,7 @@ import java.util.*;
 
 public class ServiceServiceImpl implements ServiceService {
     private Map<Long, Service> services = new HashMap<>();
-    private final ServicePrice servicePrice = new ServicePrice();
-    private final ServiceType serviceType = new ServiceType();
+
     @Override
     public void addService(Service service) {
         services.put(service.getId(), service);
@@ -39,15 +38,9 @@ public class ServiceServiceImpl implements ServiceService {
         List<Service> serviceList = new ArrayList<>(services.values());
 
         switch (sortBy) {
-            case "price":
-                Collections.sort(serviceList,servicePrice);
-                break;
-            case "date":
-                Collections.sort(serviceList);
-                break;
-            case "type":
-                Collections.sort(serviceList,serviceType);
-                break;
+            case "price" -> serviceList.sort(Comparator.comparing(Service::getServicePrice));
+            case "date"-> serviceList.sort(Comparator.comparing(Service::getDate));
+            case "type" -> serviceList.sort(Comparator.comparing(Service::getTypeService));
         }
 
         return serviceList;
