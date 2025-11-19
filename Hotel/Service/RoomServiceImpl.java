@@ -58,6 +58,8 @@ public class RoomServiceImpl implements RoomService {
             case "place"-> roomList.sort(Comparator.comparing(Room::getPlace));
             case "stars"-> roomList.sort(Comparator.comparing(Room::getStars));
             case "type"-> roomList.sort(Comparator.comparing(Room::getType));
+            default -> {System.out.println("Некорректный параметр сортировки");
+                return null;}
         }
         return roomList;
     }

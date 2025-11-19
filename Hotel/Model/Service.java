@@ -1,12 +1,16 @@
 package Hotel.Model;
 
+import org.w3c.dom.css.Counter;
+
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class Service implements Comparable<Service> {
+    private static final AtomicLong COUNTER = new AtomicLong(1);
     private Long id;
     private TypeService typeService;
     private String serviceName;
@@ -14,8 +18,8 @@ public class Service implements Comparable<Service> {
     private Duration duration;
     private Date date;
     private Client client;
-    public Service(Long id,TypeService typeService,String serviceName, BigDecimal servicePrice, Duration duration, Client client, Date date) {
-        this.id = id;
+    public Service(TypeService typeService,String serviceName, BigDecimal servicePrice, Duration duration, Client client, Date date) {
+        this.id = COUNTER.getAndIncrement();
         this.typeService = typeService;
         this.serviceName = serviceName;
         this.servicePrice = servicePrice;

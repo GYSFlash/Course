@@ -33,5 +33,9 @@ public class ClientServiceImpl implements ClientService {
     public int clientsCount() {
         return clients.size();
     }
+    @Override
+    public Client getClientById(Long id) {
+        return clients.get(id);
+    }
 
 }

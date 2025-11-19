@@ -11,4 +11,5 @@ public interface ClientService {
     void updateClient(Client client);
     List<Client> getAllClients();
     int clientsCount ();
+    Client getClientById(Long id);
 }

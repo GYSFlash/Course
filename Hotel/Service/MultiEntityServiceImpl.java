@@ -7,11 +7,12 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class MultiEntityService {
+public class MultiEntityServiceImpl implements MultiEntityService {
     private RoomServiceImpl roomService;
     private ServiceServiceImpl serviceService;
 
-    public MultiEntityService(RoomServiceImpl roomService, ServiceServiceImpl serviceService){
+
+    public MultiEntityServiceImpl(RoomServiceImpl roomService, ServiceServiceImpl serviceService){
         this.roomService = roomService;
         this.serviceService = serviceService;
 
@@ -30,6 +31,10 @@ public class MultiEntityService {
             case "type"->{
                 services.sort(Comparator.comparing(Service::getTypeService));
                 rooms.sort(Comparator.comparing(Room::getType));
+            }
+            default -> {
+                System.out.println("Некорректный параметр сортировки");
+                return null;
             }
         }
         List<Object> result = new ArrayList<>();

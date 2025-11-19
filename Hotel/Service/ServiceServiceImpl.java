@@ -41,8 +41,16 @@ public class ServiceServiceImpl implements ServiceService {
             case "price" -> serviceList.sort(Comparator.comparing(Service::getServicePrice));
             case "date"-> serviceList.sort(Comparator.comparing(Service::getDate));
             case "type" -> serviceList.sort(Comparator.comparing(Service::getTypeService));
+            default -> {
+                System.out.println("Некорректный параметр сортировки");
+                return null;
+            }
         }
 
         return serviceList;
+    }
+    @Override
+    public Service getServiceById(Long id) {
+        return services.get(id);
     }
 }

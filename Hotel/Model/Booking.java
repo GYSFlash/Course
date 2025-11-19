@@ -4,11 +4,13 @@ import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicLong;
 
 
 import static Hotel.Model.Room.Status.*;
 
 public class Booking implements Comparable<Booking> {
+    private static final AtomicLong COUNTER = new AtomicLong(1);
     private Long id;
     private Date checkInDate;
     private Date checkOutDate;
@@ -16,8 +18,8 @@ public class Booking implements Comparable<Booking> {
     private Room room;
     private Client client;
 
-    public Booking(Long id,Date checkInDate, Room room, Client client, Date checkOutDate) {
-        this.id = id;
+    public Booking(Date checkInDate, Room room, Client client, Date checkOutDate) {
+        this.id = COUNTER.getAndIncrement();
         this.checkInDate = checkInDate;
         this.room = room;
         this.client = client;

@@ -2,16 +2,18 @@ package Hotel.Model;
 
 import java.util.Date;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class Client implements Comparable<Client> {
+    private static final AtomicLong COUNTER = new AtomicLong(1);
     private Long id;
     private String name;
     private String surname;
     private Date dateOfBirth;
     private Gender gender;
 
-    public Client(Long id,Date dateOfBirth, String surname, String name, Gender gender) {
-        this.id = id;
+    public Client(Date dateOfBirth, String surname, String name, Gender gender) {
+        this.id = COUNTER.getAndIncrement();
         this.dateOfBirth = dateOfBirth;
         this.surname = surname;
         this.name = name;

@@ -8,6 +8,10 @@ import java.util.*;
 
 public class BookingServiceImpl implements BookingService {
     private Map<Long, Booking> bookings = new HashMap<>();
+    private RoomServiceImpl roomService;
+    public BookingServiceImpl(RoomServiceImpl roomService) {
+        this.roomService = roomService;
+    }
    @Override
     public void deleteBooking(Long id) {
         if (bookings.containsKey(id)) {
@@ -30,7 +34,7 @@ public class BookingServiceImpl implements BookingService {
         }
     }
     @Override
-    public List<Room> getFreeRoomsByDate(Date in, Date out, RoomService roomService) {
+    public List<Room> getFreeRoomsByDate(Date in, Date out) {
         List<Room> busyRooms = new ArrayList<>();
         List<Room> allRooms = roomService.getAllRooms();
 
@@ -44,7 +48,7 @@ public class BookingServiceImpl implements BookingService {
             }
         }
 
-        // Свободные = все минус занятые
+
         List<Room> freeRooms = new ArrayList<>();
         freeRooms = freeRooms.stream().filter(room -> !busyRooms.contains(room)&&room.getStatus() != Room.Status.REPAIR).toList();
 
@@ -80,7 +84,15 @@ public class BookingServiceImpl implements BookingService {
         switch (sortBy) {
             case "client" -> bookingList.sort(Comparator.comparing(Booking::getClient));
             case "checkOutDate"-> bookingList.sort(Comparator.comparing(Booking::getCheckOutDate));
+            default -> {
+                System.out.println("Некорректный параметр сортировки");
+                return null;
+            }
         }
         return bookingList;
+    }
+    @Override
+    public Booking getBookingById(Long id) {
+        return bookings.get(id);
     }
 }
