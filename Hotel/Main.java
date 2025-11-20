@@ -1,5 +1,6 @@
 package Hotel;
 
+import Hotel.Controller.*;
 import Hotel.Service.*;
 import Hotel.View.*;
 import java.util.Scanner;
@@ -11,9 +12,9 @@ public class Main {
 
         ClientServiceImpl clientService = new ClientServiceImpl();
         RoomServiceImpl roomService = new RoomServiceImpl();
-        BookingServiceImpl bookingService = new BookingServiceImpl();
+        BookingServiceImpl bookingService = new BookingServiceImpl(roomService);
         ServiceServiceImpl serviceService = new ServiceServiceImpl();
-        MultiEntityService multiEntityService = new MultiEntityService(roomService, serviceService);
+        MultiEntityServiceImpl multiEntityService = new MultiEntityServiceImpl(roomService, serviceService);
 
 
         ClientView clientView = (ClientView) factory.createView(MenuType.CLIENT);
@@ -22,11 +23,17 @@ public class Main {
         ServiceView serviceView = (ServiceView) factory.createView(MenuType.SERVICE);
         OtherView otherView = (OtherView) factory.createView(MenuType.OTHER);
 
-        clientView.setService(clientService);
-        roomView.setService(roomService);
-        bookingView.setService(bookingService);
-        serviceView.setService(serviceService);
-        otherView.setService(multiEntityService);
+        ClientController clientController = new ClientController(clientView,clientService);
+        RoomController roomController = new RoomController(roomService,roomView);
+        BookingController bookingController = new BookingController(bookingService,clientService,roomService,bookingView);
+        ServiceController serviceController = new ServiceController(serviceService,clientService,serviceView);
+        MultiEntityController multiEntityController = new MultiEntityController(multiEntityService,otherView);
+
+        clientView.setController(clientController);
+        roomView.setController(roomController);
+        bookingView.setController(bookingController);
+        serviceView.setController(serviceController);
+        otherView.setController(multiEntityController);
 
         runApplication(clientView, roomView, bookingView, serviceView, otherView);
     }

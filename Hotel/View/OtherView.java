@@ -1,26 +1,18 @@
 package Hotel.View;
 
-import Hotel.Service.MultiEntityService;
+
+import Hotel.Controller.MultiEntityController;
+import Hotel.Controller.ServiceController;
+import Hotel.Service.MultiEntityServiceImpl;
 
 import java.util.List;
 
-public class OtherView extends BaseView{
-    private static OtherView instance;
-    private MultiEntityService service;
+public class OtherView extends BaseView {
 
-    private OtherView() {
-        super();
-    }
+    private MultiEntityController controller;
 
-    public static OtherView getInstance() {
-        if (instance == null) {
-            instance = new OtherView();
-        }
-        return instance;
-    }
-
-    public void setService(MultiEntityService service) {
-        this.service = service;
+    public void setController(MultiEntityController controller) {
+        this.controller = controller;
     }
     @Override
     public void showMenu() {
@@ -30,18 +22,7 @@ public class OtherView extends BaseView{
         System.out.print("Выберите: ");
     }
 
-    @Override
     public boolean processOperation(int choice) {
-        switch (choice) {
-            case 1 -> sortRoomAndService();
-            case 0 -> { return false; }
-            default -> showError("Неверный выбор");
-        }
-        return true;
-    }
-    private void sortRoomAndService() {
-        String sortBy = readString("Сортировать по (type/price)");
-        List<Object> service1 = service.sort(sortBy);
-        showList("ОТСОРТИРОВАННЫЕ НОМЕРА И УСЛУГИ", service1);
+        return controller.run(choice);
     }
 }

@@ -1,14 +1,16 @@
 package Hotel.View;
 
+import Hotel.View.*;
+
 public class ConsoleViewFactory extends ViewFactory {
     @Override
     public BaseView createView(MenuType menuType) {
         switch (menuType) {
-            case CLIENT: return ClientView.getInstance();
-            case ROOM: return RoomView.getInstance();
-            case BOOKING: return BookingView.getInstance();
-            case SERVICE: return ServiceView.getInstance();
-            case OTHER: return OtherView.getInstance();
+            case CLIENT: return new ClientView();
+            case ROOM: return new RoomView();
+            case BOOKING: return new BookingView();
+            case SERVICE: return new ServiceView();
+            case OTHER: return new OtherView();
             default: throw new IllegalArgumentException("Неизвестный menu type: " + menuType);
         }
     }

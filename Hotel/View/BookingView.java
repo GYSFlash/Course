@@ -2,16 +2,15 @@ package Hotel.View;
 
 
 
-import Hotel.Model.Booking;
-import Hotel.Model.Room;
-import Hotel.Service.BookingServiceImpl;
+import Hotel.Controller.BookingController;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
 
 public class BookingView extends BaseView {
+    private BookingController controller;
 
+    public void setController(BookingController controller) {
+        this.controller = controller;
+    }
     @Override
     public void showMenu() {
         System.out.println("\n=== УПРАВЛЕНИЕ БРОНИРОВАНИЯМИ ===");
@@ -26,7 +25,9 @@ public class BookingView extends BaseView {
         System.out.print("Выберите: ");
     }
 
-
+    public boolean processOperation(int choice) {
+        return controller.run(choice);
+    }
 
 
 }

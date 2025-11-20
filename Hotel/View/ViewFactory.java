@@ -1,5 +1,7 @@
 package Hotel.View;
 
+
+
 public abstract class ViewFactory {
     public abstract BaseView createView(MenuType menuType);
 
