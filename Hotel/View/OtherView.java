@@ -23,6 +23,14 @@ public class OtherView extends BaseView {
     }
 
     public boolean processOperation(int choice) {
-        return controller.run(choice);
+        switch (choice) {
+            case 1 -> controller.sortRoomAndService();
+            case 0 -> {
+                return false;
+            }
+            default -> showError("Неверный выбор");
+        }
+
+        return true;
     }
 }

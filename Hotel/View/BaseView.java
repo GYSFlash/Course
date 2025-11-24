@@ -7,11 +7,6 @@ import java.util.Scanner;
 
 public abstract class BaseView {
 
-    private BaseController controller;
-
-    public void setController(BaseController controller) {
-        this.controller = controller;
-    }
 
 
 

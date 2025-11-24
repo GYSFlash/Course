@@ -3,117 +3,109 @@ package Hotel.Controller;
 import Hotel.Model.Booking;
 import Hotel.Model.Client;
 import Hotel.Model.Room;
-import Hotel.Service.BookingServiceImpl;
+import Hotel.Service.BookingService;
 import Hotel.Service.ClientService;
 import Hotel.Service.RoomService;
-import Hotel.View.BookingView;
 
 import java.util.Date;
 import java.util.List;
 
 public class BookingController extends BaseController {
-    private BookingView view;
-    private BookingServiceImpl service;
+    private BookingService service;
     private ClientService clientService;
     private RoomService roomService;
 
-    public BookingController( BookingServiceImpl service, ClientService clientService, RoomService roomService,
-                               BookingView view) {
+    public BookingController( BookingService service, ClientService clientService, RoomService roomService) {
         this.service = service;
         this.clientService = clientService;
         this.roomService = roomService;
-        this.view = view;
-        setView(view);
+        }
 
-    }
 
-    @Override
-    public boolean run(int choice) {
-            switch (choice) {
-                case 1 -> addBooking();
-                case 2 -> showAllBookings();
-                case 3 -> deleteBooking();
-                case 4 -> updateBooking();
-                case 5 -> showFreeRoomsByDate();
-                case 6 -> showLastThreeBookings();
-                case 7 -> sortBookings();
-                case 0 -> {
-                    return false;
-                }
-                default -> view.showError("Неверный выбор");
-            }
 
-        return true;
-    }
-
-    private void addBooking() {
-        String dateStr = readString("Дата рождения (гггг-мм-дд)");
+    public boolean addBooking() {
+        String dateStr = readString("Дата въезда (гггг-мм-дд)");
         Date checkIn = parseDate(dateStr);
-        dateStr = readString("Дата рождения (гггг-мм-дд)");
+        dateStr = readString("Дата выезда (гггг-мм-дд)");
         Date checkOut = parseDate(dateStr);
         Long id = readLong("ID клиента");
-        while(clientService.getClientById(id) == null) {
-            view.showError("Клиент с таким ID не найден, попробуйте снова: ");
-            id = readLong("ID клиента");
-        }
         Client client = clientService.getClientById(id);
         int roomNumber = readInt("Номер комнаты");
-        while(roomService.getRoomByRoomNumber(roomNumber) == null) {
-            view.showError("Комната с таким номером не найдена, попробуйте снова: ");
-            roomNumber = readInt("Номер комнаты");
-        }
         Room room = roomService.getRoomByRoomNumber(roomNumber);
         Booking booking = new Booking(checkIn, room, client, checkOut);
         service.addBooking(booking);
-        view.showMessage("Бронирование добавлено");
+        return true;
 
     }
 
-    private void showAllBookings() {
-        List<Booking> bookings = service.getAllBookings();
-            view.showList("ВСЕ БРОНИРОВАНИЯ", bookings);
+    public List<Booking> showAllBookings() {
+        return service.getAllBookings();
     }
 
-    private void deleteBooking() {
+    public boolean deleteBooking() {
         Long id = readLong("ID бронирования для удаления");
-        while (service.getBookingById(id) == null) {
-            view.showError("Бронирование не найдено, попробуйте снова");
-            id = readLong("ID бронирования для удаления");
+        if (service.getBookingById(id) == null) {
+            return false;
         }
-
         service.deleteBooking(id);
-            view.showMessage("Бронирование удалено");
+        return true;
     }
 
-    private void updateBooking() {
+    public boolean updateBooking() {
         Long id = readLong("ID бронирования для обновления");
+        if (service.getBookingById(id) == null) {
+            return false;
+        }
+        String chance = readString("Введите поле для изменения (dateIn, dateOut, room, client)");
+        Booking booking = service.getBookingById(id);
+        switch (chance) {
+            case "dateIn" -> {
+                String dateStr = readString("Новая дата заезда (гггг-мм-дд)");
+                Date newDate = parseDate(dateStr);
+                booking.setCheckInDate(newDate);
+            }
+            case "dateOut" -> {
+                String dateStr = readString("Новая дата выезда (гггг-мм-дд)");
+                Date newDate = parseDate(dateStr);
+                booking.setCheckOutDate(newDate);
+            }
+            case "client" -> {
+                Long idClient = readLong("Новое id клиента");
+                Client client = clientService.getClientById(idClient);
+                booking.setClient(client);
+            }
+            case "room" -> {
+                int roomNumber = readInt("Новая комната");
+                Room room = roomService.getRoomByRoomNumber(roomNumber);
+                booking.setRoom(room);
+            }
+            default -> { return false;
+            }
 
-
-            view.showMessage("Обновление бронирования (требуется реализация)");
+        }
+        service.updateBooking(booking);
+        return true;
     }
 
-    private void showFreeRoomsByDate() {
+    public List<Room> showFreeRoomsByDate() {
         String checkInStr = readString("Дата заезда (гггг-мм-дд)");
         String checkOutStr = readString("Дата выезда (гггг-мм-дд)");
 
         Date checkIn = parseDate(checkInStr);
         Date checkOut = parseDate(checkOutStr);
 
-        List<Room> freeRooms = service.getFreeRoomsByDate(checkIn, checkOut);
-            view.showList("СВОБОДНЫЕ НОМЕРА НА ДАТЫ", freeRooms);
+        return service.getFreeRoomsByDate(checkIn, checkOut);
+
     }
 
-    private void showLastThreeBookings() {
+    public List<Booking> showLastThreeBookings() {
         int roomNumber = readInt("Номер комнаты");
+       return service.lastThreeBookingsByRooms(roomNumber);
 
-
-        List<Booking> bookings = service.lastThreeBookingsByRooms(roomNumber);
-            view.showList("ПОСЛЕДНИЕ 3 БРОНИ КОМНАТЫ " + roomNumber, bookings);
     }
 
-    private void sortBookings() {
+    public List<Booking> sortBookings() {
         String sortBy = readString("Сортировать по (client/checkOutDate)");
-        List<Booking> bookings = service.sort(sortBy);
-            view.showList("ОТСОРТИРОВАННЫЕ БРОНИРОВАНИЯ", bookings);
+        return service.sort(sortBy);
     }
 }

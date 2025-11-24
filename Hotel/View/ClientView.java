@@ -22,7 +22,21 @@ public class ClientView extends BaseView {
         System.out.print("Выберите: ");
     }
     public boolean processOperation(int choice) {
-        return controller.run(choice);
+        switch (choice) {
+            case 1 -> {controller.addClient();
+            showMessage("Клиент успешно добавлен ");}
+            case 2 -> showList("",controller.showAllClients());
+            case 3 -> {if(controller.deleteClient()) showMessage("Клиент успешно удален");
+                    else showMessage("Клиент не найден");}
+            case 4 -> {if(controller.updateClient()) showMessage("Клиент успешно обновлен");
+                    else showMessage("Клиент не найден");}
+            case 5 -> showMessage("Всего клиентов: " + controller.showClientsCount());
+            case 0 -> {
+                return false;
+            }
+            default -> {showError("Неизвестная операция");}
+        }
+        return true;
     }
 
 }

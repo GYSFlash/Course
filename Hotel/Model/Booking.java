@@ -10,7 +10,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import static Hotel.Model.Room.Status.*;
 
 public class Booking implements Comparable<Booking> {
-    private static final AtomicLong COUNTER = new AtomicLong(1);
+
+    private Long counter = 0L;
     private Long id;
     private Date checkInDate;
     private Date checkOutDate;
@@ -19,13 +20,12 @@ public class Booking implements Comparable<Booking> {
     private Client client;
 
     public Booking(Date checkInDate, Room room, Client client, Date checkOutDate) {
-        this.id = COUNTER.getAndIncrement();
+        this.id = ++counter;
         this.checkInDate = checkInDate;
         this.room = room;
         this.client = client;
         this.checkOutDate = checkOutDate;
-        this.totalPrice = calculateTotalPrice();
-        this.room.setStatus(OCCUPIED);
+        this.totalPrice = calculateTotalPrice();;
         System.out.println("Новая бронь создана");
     }
     private BigDecimal calculateTotalPrice(){
@@ -33,6 +33,15 @@ public class Booking implements Comparable<Booking> {
         BigDecimal total = room.getPrice().multiply(new BigDecimal(days));
         return total;
     }
+
+    public Long getCounter() {
+        return counter;
+    }
+
+    public void setCounter() {
+        this.counter = this.counter + 1;
+    }
+
     public Date getCheckInDate() {
         return checkInDate;
     }
@@ -81,12 +90,6 @@ public class Booking implements Comparable<Booking> {
         this.totalPrice = totalPrice;
     }
 
-    public void endEarlyBooking(){
-        this.room.setStatus(FREE);
-        this.checkOutDate = new Date();
-        this.totalPrice = calculateTotalPrice();
-        System.out.println("Бронь завершена заранее");
-    }
     public void endBooking(){
         this.room.setStatus(FREE);
     }

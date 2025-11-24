@@ -26,7 +26,26 @@ public class BookingView extends BaseView {
     }
 
     public boolean processOperation(int choice) {
-        return controller.run(choice);
+        switch (choice) {
+            case 1 -> {controller.addBooking();
+                showMessage("Бронирование добавлено");
+            }
+            case 2 -> showList("Все бронирования",controller.showAllBookings());
+            case 3 -> {if(controller.deleteBooking())
+                showMessage("Бронирование удалено");
+            else showError("Введенного Id не существует");}
+            case 4 -> {if(controller.updateBooking())
+                showMessage("Бронирование обновлено");
+            else showError("Ошибка при обновлении бронирования");}
+            case 5 -> showList("Свободные номера на даты ",controller.showFreeRoomsByDate());
+            case 6 -> showList("Последние 3 брони номера ",controller.showLastThreeBookings());
+            case 7 -> showList("Отсортированные бронирования ",controller.sortBookings());
+            case 0 -> {
+                return false;
+            }
+            default -> {showError("Неверный выбор");}
+        }
+        return true;
     }
 
 

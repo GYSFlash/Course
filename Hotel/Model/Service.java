@@ -10,7 +10,8 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class Service implements Comparable<Service> {
-    private static final AtomicLong COUNTER = new AtomicLong(1);
+
+    private Long counter = 0L;
     private Long id;
     private TypeService typeService;
     private String serviceName;
@@ -19,7 +20,7 @@ public class Service implements Comparable<Service> {
     private Date date;
     private Client client;
     public Service(TypeService typeService,String serviceName, BigDecimal servicePrice, Duration duration, Client client, Date date) {
-        this.id = COUNTER.getAndIncrement();
+        this.id = ++counter;
         this.typeService = typeService;
         this.serviceName = serviceName;
         this.servicePrice = servicePrice;

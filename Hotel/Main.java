@@ -23,11 +23,11 @@ public class Main {
         ServiceView serviceView = (ServiceView) factory.createView(MenuType.SERVICE);
         OtherView otherView = (OtherView) factory.createView(MenuType.OTHER);
 
-        ClientController clientController = new ClientController(clientView,clientService);
-        RoomController roomController = new RoomController(roomService,roomView);
-        BookingController bookingController = new BookingController(bookingService,clientService,roomService,bookingView);
-        ServiceController serviceController = new ServiceController(serviceService,clientService,serviceView);
-        MultiEntityController multiEntityController = new MultiEntityController(multiEntityService,otherView);
+        ClientController clientController = new ClientController(clientService);
+        RoomController roomController = new RoomController(roomService);
+        BookingController bookingController = new BookingController(bookingService,clientService,roomService);
+        ServiceController serviceController = new ServiceController(serviceService,clientService);
+        MultiEntityController multiEntityController = new MultiEntityController(multiEntityService);
 
         clientView.setController(clientController);
         roomView.setController(roomController);

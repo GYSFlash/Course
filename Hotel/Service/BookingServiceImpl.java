@@ -2,8 +2,6 @@ package Hotel.Service;
 
 import Hotel.Model.Booking;
 import Hotel.Model.Room;
-import Hotel.Service.*;
-import Hotel.Model.Booking.*;
 import java.util.*;
 
 public class BookingServiceImpl implements BookingService {
@@ -49,8 +47,8 @@ public class BookingServiceImpl implements BookingService {
         }
 
 
-        List<Room> freeRooms = new ArrayList<>();
-        freeRooms = freeRooms.stream().filter(room -> !busyRooms.contains(room)&&room.getStatus() != Room.Status.REPAIR).toList();
+        List<Room> freeRooms;
+        freeRooms = allRooms.stream().filter(room -> !busyRooms.contains(room)&&room.getStatus() != Room.Status.REPAIR).toList();
 
         return freeRooms;
     }

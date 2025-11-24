@@ -5,7 +5,8 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class Client implements Comparable<Client> {
-    private static final AtomicLong COUNTER = new AtomicLong(1);
+
+    private Long counter = 0L;
     private Long id;
     private String name;
     private String surname;
@@ -13,7 +14,7 @@ public class Client implements Comparable<Client> {
     private Gender gender;
 
     public Client(Date dateOfBirth, String surname, String name, Gender gender) {
-        this.id = COUNTER.getAndIncrement();
+        this.id = ++counter;
         this.dateOfBirth = dateOfBirth;
         this.surname = surname;
         this.name = name;

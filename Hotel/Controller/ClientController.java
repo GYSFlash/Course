@@ -1,39 +1,22 @@
 package Hotel.Controller;
 
 import Hotel.Model.Client;
-import Hotel.Model.Room;
-import Hotel.Service.ClientServiceImpl;
-import Hotel.View.ClientView;
+
+import Hotel.Service.ClientService;
+
 
 import java.util.Date;
 import java.util.List;
 
 public class ClientController extends BaseController{
-    private ClientView view;
-    private ClientServiceImpl service;
 
-    public ClientController(ClientView view, ClientServiceImpl service) {
-        this.view = view;
-        setView(view);
+    private ClientService service;
+
+    public ClientController(ClientService service) {
+
         this.service = service;
     }
-    public boolean run(int choice) {
-
-            switch (choice) {
-                case 1 -> addClient();
-                case 2 -> showAllClients();
-                case 3 -> deleteClient();
-                case 4 -> updateClient();
-                case 5 -> showClientsCount();
-                case 0 -> {
-                    return false;
-                }
-                default -> view.showError("Неверный выбор");
-            }
-        return true;
-    }
-
-    private void addClient() {
+    public boolean addClient() {
 
         String name = readString("Имя");
         String surname = readString("Фамилия");
@@ -43,42 +26,29 @@ public class ClientController extends BaseController{
 
         String genderStr = readString("Пол (MALE/FEMALE)");
         Client.Gender gender;
-        while (true){
-            if (!(genderStr.equals("MALE") || genderStr.equals("FENALE"))) {
-                System.out.println("Неправильно введен пол, попробуйте снова: ");
-                genderStr = readString("Пол (MALE/FEMALE)");
-            }
-            break;
-        }
         gender = Client.Gender.valueOf(genderStr.toUpperCase());
-
 
         Client client = new Client(dateOfBirth, surname, name, gender);
         service.addClient(client);
-        view.showMessage("Клиент добавлен");
+        return true;
     }
 
-    private void showAllClients() {
-        List<Client> clients = service.getAllClients();
-        view.showList("ВСЕ КЛИЕНТЫ", clients);
+    public List<Client> showAllClients() {
+        return service.getAllClients();
     }
 
-    private void deleteClient() {
+    public boolean deleteClient() {
         Long id = readLong("ID клиента для удаления");
-        while(service.getClientById(id) == null) {
-            view.showError("Клиент с таким ID не найден, попробуйте снова: ");
-            id = readLong("ID клиента для удаления");
+        if (service.getClientById(id) == null) {
+            return false;
         }
         service.deleteClient(id);
-        view.showMessage("Клиент удален");
+        return true;
     }
 
-    private void updateClient() {
+    public boolean updateClient() {
         Long id = readLong("ID клиента для обновления");
-        while(service.getClientById(id) == null) {
-            view.showError("Клиент с таким ID не найден, попробуйте снова: ");
-            id = readLong("ID клиента для удаления");
-        }
+
         String chance = readString("Введите поле для изменения (name, surname, dateOfBirth, gender)");
         Client client = service.getClientById(id);
         switch (chance) {
@@ -101,17 +71,16 @@ public class ClientController extends BaseController{
                 client.setGender(Client.Gender.valueOf(genderStr.toUpperCase()));
             }
             default -> {
-                view.showError("Неверное поле для изменения");
+                return false;
             }
         }
         service.updateClient(client);
-        view.showMessage("Клиент обновлен");
+        return true;
     }
 
-    private void showClientsCount() {
+    public int showClientsCount() {
         int count = service.clientsCount();
-        view.showMessage("\n=== КОЛИЧЕСТВО КЛИЕНТОВ ===");
-        view.showMessage("Всего клиентов: " + count);
+        return count;
     }
 
 }

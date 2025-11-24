@@ -27,7 +27,28 @@ public class RoomView extends BaseView {
         System.out.print("Выберите: ");
     }
     public boolean processOperation(int choice) {
-        return controller.run(choice);
+        switch (choice) {
+            case 1 -> {if(controller.addRoom())
+            showMessage("Номер добавлен");
+            else showError("Номер уже существует");}
+            case 2 -> showList(" ",controller.showAllRooms());
+            case 3 -> {if(controller.deleteRoom())
+            showMessage("Номер удален");
+            else showError("Номер не найден");}
+            case 4 -> {if(controller.updateRoom())
+            showMessage("Номер обновлен");
+            else showError("Номер не найден");}
+            case 5 -> showList("",controller.showRoomsByStatus());
+            case 6 -> showMessage("Количество свободных номеров: " + controller.showFreeRoomsCount());
+            case 7 -> showList("Сортировка номеров",controller.sortRooms());
+            case 8 -> showMessage("Номер с заданным id " + controller.findRoomByNumber());
+            case 0 -> {
+                return false;
+            }
+            default -> showError("Неверный выбор");
+        }
+
+        return true;
     }
 
 }
