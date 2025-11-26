@@ -12,15 +12,21 @@ import java.util.Date;
 import java.util.List;
 
 public class ServiceController extends BaseController {
+    public static ServiceController instance;
     private ServiceService services;
     private ClientService clientService;
 
-    public ServiceController(ServiceService services, ClientService clientService) {
+    private ServiceController(ServiceService services, ClientService clientService) {
         this.services = services;
         this.clientService = clientService;
     }
 
-
+    public static ServiceController getInstance(ServiceService services, ClientService clientService) {
+        if(instance == null){
+            instance = new ServiceController(services,clientService);
+        }
+        return instance;
+    }
     public boolean addService() {
         String typeStr = readString("Тип услуги (ROOM/FOOD/OTHER)");
         Service.TypeService type = Service.TypeService.valueOf(typeStr.toUpperCase());

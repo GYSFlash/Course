@@ -11,7 +11,7 @@ import static Hotel.Model.Room.Status.*;
 
 public class Booking implements Comparable<Booking> {
 
-    private Long counter = 0L;
+    private static Long counter = 0L;
     private Long id;
     private Date checkInDate;
     private Date checkOutDate;
@@ -97,7 +97,6 @@ public class Booking implements Comparable<Booking> {
     public int compareTo(Booking o) {
         return this.client.compareTo(o.client);
     }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

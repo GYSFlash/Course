@@ -10,11 +10,11 @@ public class Main {
 
         ViewFactory factory = ViewFactory.getFactory("console");
 
-        ClientServiceImpl clientService = new ClientServiceImpl();
-        RoomServiceImpl roomService = new RoomServiceImpl();
-        BookingServiceImpl bookingService = new BookingServiceImpl(roomService);
-        ServiceServiceImpl serviceService = new ServiceServiceImpl();
-        MultiEntityServiceImpl multiEntityService = new MultiEntityServiceImpl(roomService, serviceService);
+        ClientServiceImpl clientService = ClientServiceImpl.getInstance();
+        RoomServiceImpl roomService = RoomServiceImpl.getInstance();
+        BookingServiceImpl bookingService = BookingServiceImpl.getInstance(roomService);
+        ServiceServiceImpl serviceService = ServiceServiceImpl.getInstance();
+        MultiEntityServiceImpl multiEntityService = MultiEntityServiceImpl.getInstance(roomService, serviceService);
 
 
         ClientView clientView = (ClientView) factory.createView(MenuType.CLIENT);
@@ -23,11 +23,11 @@ public class Main {
         ServiceView serviceView = (ServiceView) factory.createView(MenuType.SERVICE);
         OtherView otherView = (OtherView) factory.createView(MenuType.OTHER);
 
-        ClientController clientController = new ClientController(clientService);
-        RoomController roomController = new RoomController(roomService);
-        BookingController bookingController = new BookingController(bookingService,clientService,roomService);
-        ServiceController serviceController = new ServiceController(serviceService,clientService);
-        MultiEntityController multiEntityController = new MultiEntityController(multiEntityService);
+        ClientController clientController = ClientController.getInstance(clientService);
+        RoomController roomController = RoomController.getInstance(roomService);
+        BookingController bookingController = BookingController.getInstance(bookingService,clientService,roomService);
+        ServiceController serviceController = ServiceController.getInstance(serviceService,clientService);
+        MultiEntityController multiEntityController =  MultiEntityController.getInstance(multiEntityService);
 
         clientView.setController(clientController);
         roomView.setController(roomController);

@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class Client implements Comparable<Client> {
 
-    private Long counter = 0L;
+    private static Long counter = 0L;
     private Long id;
     private String name;
     private String surname;

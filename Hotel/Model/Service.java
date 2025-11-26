@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class Service implements Comparable<Service> {
 
-    private Long counter = 0L;
+    private static Long counter = 0L;
     private Long id;
     private TypeService typeService;
     private String serviceName;

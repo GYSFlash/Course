@@ -8,15 +8,20 @@ import java.util.Comparator;
 import java.util.List;
 
 public class MultiEntityServiceImpl implements MultiEntityService {
-    private RoomServiceImpl roomService;
-    private ServiceServiceImpl serviceService;
+    private static MultiEntityServiceImpl incstance;
+    private RoomService roomService;
+    private ServiceService serviceService;
 
 
-    public MultiEntityServiceImpl(RoomServiceImpl roomService, ServiceServiceImpl serviceService){
+    private MultiEntityServiceImpl(RoomService roomService, ServiceService serviceService){
         this.roomService = roomService;
         this.serviceService = serviceService;
-
-
+    }
+    public static MultiEntityServiceImpl getInstance(RoomService roomService, ServiceService serviceService){
+        if(incstance == null) {
+            incstance = new MultiEntityServiceImpl(roomService, serviceService);
+        }
+        return incstance;
     }
 
     public List<Object> sort(String sortBy){

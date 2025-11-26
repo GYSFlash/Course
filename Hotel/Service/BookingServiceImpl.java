@@ -5,11 +5,19 @@ import Hotel.Model.Room;
 import java.util.*;
 
 public class BookingServiceImpl implements BookingService {
+    private static BookingServiceImpl instance;
     private Map<Long, Booking> bookings = new HashMap<>();
-    private RoomServiceImpl roomService;
-    public BookingServiceImpl(RoomServiceImpl roomService) {
+    private RoomService roomService;
+    private BookingServiceImpl(RoomService roomService) {
         this.roomService = roomService;
     }
+    public static BookingServiceImpl getInstance(RoomService roomService) {
+        if (instance == null) {
+            instance = new BookingServiceImpl(roomService);
+        }
+        return instance;
+    }
+
    @Override
     public void deleteBooking(Long id) {
         if (bookings.containsKey(id)) {

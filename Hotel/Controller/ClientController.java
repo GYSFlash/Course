@@ -9,12 +9,18 @@ import java.util.Date;
 import java.util.List;
 
 public class ClientController extends BaseController{
-
+    private static ClientController instance;
     private ClientService service;
 
-    public ClientController(ClientService service) {
+    private ClientController(ClientService service) {
 
         this.service = service;
+    }
+    public static ClientController getInstance(ClientService service) {
+        if(instance == null){
+            instance = new ClientController(service);
+        }
+        return instance;
     }
     public boolean addClient() {
 

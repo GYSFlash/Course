@@ -7,8 +7,15 @@ import Hotel.Model.Room.*;
 import java.util.*;
 
 public class RoomServiceImpl implements RoomService {
+    private static RoomServiceImpl instance;
     private Map<Integer,Room> rooms = new HashMap<>();
-
+    private RoomServiceImpl(){}
+    public static RoomServiceImpl getInstance(){
+        if(instance == null) {
+            instance = new RoomServiceImpl();
+        }
+        return instance;
+    }
     @Override
     public void addRoom(Room room) {
         rooms.put(room.getRoomNumber(),room);

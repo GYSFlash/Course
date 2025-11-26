@@ -11,17 +11,23 @@ import java.util.Date;
 import java.util.List;
 
 public class BookingController extends BaseController {
+    private static BookingController instance;
     private BookingService service;
     private ClientService clientService;
     private RoomService roomService;
 
-    public BookingController( BookingService service, ClientService clientService, RoomService roomService) {
+    private BookingController( BookingService service, ClientService clientService, RoomService roomService) {
         this.service = service;
         this.clientService = clientService;
         this.roomService = roomService;
+    }
+
+    public static BookingController getInstance(BookingService service, ClientService clientService, RoomService roomService) {
+        if (instance == null) {
+            instance = new BookingController(service, clientService, roomService);
         }
-
-
+        return instance;
+    }
 
     public boolean addBooking() {
         String dateStr = readString("Дата въезда (гггг-мм-дд)");

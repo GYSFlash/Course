@@ -10,13 +10,19 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public class RoomController extends BaseController {
-
+    private static RoomController instance;
     private RoomService service;
 
-    public RoomController(RoomService service) {
+    private RoomController(RoomService service) {
         this.service = service;
     }
 
+    public static RoomController getInstance(RoomService service) {
+        if(instance == null){
+            instance = new RoomController(service);
+        }
+        return instance;
+    }
     public boolean addRoom() {
         int roomNumber = readInt("Номер комнаты");
         if (service.getRoomByRoomNumber(roomNumber) != null) {

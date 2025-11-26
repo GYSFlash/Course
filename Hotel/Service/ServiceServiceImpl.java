@@ -6,8 +6,15 @@ import Hotel.Model.Service;
 import java.util.*;
 
 public class ServiceServiceImpl implements ServiceService {
+    private static ServiceServiceImpl instance;
     private Map<Long, Service> services = new HashMap<>();
-
+    private ServiceServiceImpl() {}
+    public static ServiceServiceImpl getInstance() {
+        if(instance == null) {
+            instance = new ServiceServiceImpl();
+        }
+        return instance;
+    }
     @Override
     public void addService(Service service) {
         services.put(service.getId(), service);
