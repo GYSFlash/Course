@@ -12,6 +12,5 @@ public interface ServiceService {
     void updateService(Service service);
     List<Service> getAllServices();
     List<Service> sort(String sortby);
-
-
+    Service getServiceById(Long id);
 }

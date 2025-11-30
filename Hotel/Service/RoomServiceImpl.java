@@ -7,10 +7,15 @@ import Hotel.Model.Room.*;
 import java.util.*;
 
 public class RoomServiceImpl implements RoomService {
+    private static RoomServiceImpl instance;
     private Map<Integer,Room> rooms = new HashMap<>();
-    private final RoomPlace roomPlace = new RoomPlace();
-    private final RoomStars roomStars = new RoomStars();
-    private final RoomTypes roomTypes = new RoomTypes();
+    private RoomServiceImpl(){}
+    public static RoomServiceImpl getInstance(){
+        if(instance == null) {
+            instance = new RoomServiceImpl();
+        }
+        return instance;
+    }
     @Override
     public void addRoom(Room room) {
         rooms.put(room.getRoomNumber(),room);
@@ -35,12 +40,8 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public List<Room> getRoomByStatus(Room.Status status) {
         List<Room> newRooms =  new ArrayList<>(rooms.values());
-        List<Room> result = new ArrayList<>();
-        for(Room room : newRooms){
-            if(room.getStatus() == status){
-                result.add(room);
-            }
-        }
+
+        List<Room> result = newRooms.stream().filter(room -> room.getStatus() == status).toList();
         return result;
     }
     @Override
@@ -57,25 +58,15 @@ public class RoomServiceImpl implements RoomService {
         if (freeRoom) {
             List<Room> result = roomList;
             roomList.clear();
-            for(Room room : result){
-                if(room.getStatus() == Room.Status.FREE){
-                    roomList.add(room);
-                }
-            }
+            result.stream().filter(room -> room.getStatus() == Room.Status.FREE).toList();
         }
         switch (sortBy) {
-            case "price":
-                Collections.sort(roomList);
-                break;
-            case "place":
-                Collections.sort(roomList ,roomPlace );
-                break;
-            case "stars":
-                Collections.sort(roomList , roomStars );
-                break;
-            case "type":
-                Collections.sort(roomList,roomTypes);
-                break;
+            case "price"-> roomList.sort(Comparator.comparing(Room::getPrice));
+            case "place"-> roomList.sort(Comparator.comparing(Room::getPlace));
+            case "stars"-> roomList.sort(Comparator.comparing(Room::getStars));
+            case "type"-> roomList.sort(Comparator.comparing(Room::getType));
+            default -> {System.out.println("Некорректный параметр сортировки");
+                return null;}
         }
         return roomList;
     }

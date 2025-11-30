@@ -4,11 +4,14 @@ import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicLong;
 
 
 import static Hotel.Model.Room.Status.*;
 
 public class Booking implements Comparable<Booking> {
+
+    private static Long counter = 0L;
     private Long id;
     private Date checkInDate;
     private Date checkOutDate;
@@ -16,14 +19,13 @@ public class Booking implements Comparable<Booking> {
     private Room room;
     private Client client;
 
-    public Booking(Long id,Date checkInDate, Room room, Client client, Date checkOutDate) {
-        this.id = id;
+    public Booking(Date checkInDate, Room room, Client client, Date checkOutDate) {
+        this.id = ++counter;
         this.checkInDate = checkInDate;
         this.room = room;
         this.client = client;
         this.checkOutDate = checkOutDate;
-        this.totalPrice = calculateTotalPrice();
-        this.room.setStatus(OCCUPIED);
+        this.totalPrice = calculateTotalPrice();;
         System.out.println("Новая бронь создана");
     }
     private BigDecimal calculateTotalPrice(){
@@ -31,6 +33,15 @@ public class Booking implements Comparable<Booking> {
         BigDecimal total = room.getPrice().multiply(new BigDecimal(days));
         return total;
     }
+
+    public Long getCounter() {
+        return counter;
+    }
+
+    public void setCounter() {
+        this.counter = this.counter + 1;
+    }
+
     public Date getCheckInDate() {
         return checkInDate;
     }
@@ -79,12 +90,6 @@ public class Booking implements Comparable<Booking> {
         this.totalPrice = totalPrice;
     }
 
-    public void endEarlyBooking(){
-        this.room.setStatus(FREE);
-        this.checkOutDate = new Date();
-        this.totalPrice = calculateTotalPrice();
-        System.out.println("Бронь завершена заранее");
-    }
     public void endBooking(){
         this.room.setStatus(FREE);
     }
@@ -92,7 +97,6 @@ public class Booking implements Comparable<Booking> {
     public int compareTo(Booking o) {
         return this.client.compareTo(o.client);
     }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -112,10 +116,5 @@ public class Booking implements Comparable<Booking> {
                 " - Комната " + room.getRoomNumber() + " (" + checkInDate + " до " + checkOutDate +
                 ") - Итого: " + totalPrice + " руб.";
     }
-    public static class BookingOutDate implements Comparator<Booking> {
-        @Override
-        public int compare(Booking o1, Booking o2) {
-            return o1.checkOutDate.compareTo(o2.checkOutDate);
-        }
-    }
+
 }

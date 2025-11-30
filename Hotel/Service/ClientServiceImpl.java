@@ -6,8 +6,15 @@ import Hotel.Model.Client;
 import java.util.*;
 
 public class ClientServiceImpl implements ClientService {
+    private static ClientServiceImpl instance;
     private Map<Long, Client> clients = new HashMap<>();
-
+    private ClientServiceImpl() {}
+    public static ClientServiceImpl getInstance() {
+        if(instance == null) {
+            instance = new ClientServiceImpl();
+        }
+        return instance;
+    }
     @Override
     public void addClient(Client client) {
         clients.put(client.getId(), client);
@@ -26,15 +33,16 @@ public class ClientServiceImpl implements ClientService {
     }
     @Override
     public List<Client> getAllClients() {
-        List<Client> newClients = new ArrayList<>();
-        for (Client client : clients.values()) {
-            newClients.add(client);
-        }
+        List<Client> newClients = new ArrayList<>(clients.values());
         return newClients;
     }
     @Override
     public int clientsCount() {
         return clients.size();
+    }
+    @Override
+    public Client getClientById(Long id) {
+        return clients.get(id);
     }
 
 }

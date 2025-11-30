@@ -2,13 +2,22 @@ package Hotel.Service;
 
 import Hotel.Model.Booking;
 import Hotel.Model.Room;
-import Hotel.Service.*;
-import Hotel.Model.Booking.*;
 import java.util.*;
 
 public class BookingServiceImpl implements BookingService {
+    private static BookingServiceImpl instance;
     private Map<Long, Booking> bookings = new HashMap<>();
-    private final BookingOutDate bookingOutDateComparator = new BookingOutDate();
+    private RoomService roomService;
+    private BookingServiceImpl(RoomService roomService) {
+        this.roomService = roomService;
+    }
+    public static BookingServiceImpl getInstance(RoomService roomService) {
+        if (instance == null) {
+            instance = new BookingServiceImpl(roomService);
+        }
+        return instance;
+    }
+
    @Override
     public void deleteBooking(Long id) {
         if (bookings.containsKey(id)) {
@@ -31,11 +40,9 @@ public class BookingServiceImpl implements BookingService {
         }
     }
     @Override
-    public List<Room> getFreeRoomsByDate(Date in, Date out, RoomService roomService) {
+    public List<Room> getFreeRoomsByDate(Date in, Date out) {
         List<Room> busyRooms = new ArrayList<>();
         List<Room> allRooms = roomService.getAllRooms();
-
-
 
         // Находим занятые номера
         for (Booking booking : bookings.values()) {
@@ -47,13 +54,9 @@ public class BookingServiceImpl implements BookingService {
             }
         }
 
-        // Свободные = все минус занятые
-        List<Room> freeRooms = new ArrayList<>();
-        for (Room room : allRooms) {
-            if (!busyRooms.contains(room) && room.getStatus() != Room.Status.REPAIR){
-                freeRooms.add(room);
-            }
-        }
+
+        List<Room> freeRooms;
+        freeRooms = allRooms.stream().filter(room -> !busyRooms.contains(room)&&room.getStatus() != Room.Status.REPAIR).toList();
 
         return freeRooms;
     }
@@ -85,13 +88,17 @@ public class BookingServiceImpl implements BookingService {
         List<Booking> bookingList = new ArrayList<>(bookings.values());
 
         switch (sortBy) {
-            case "client":
-                Collections.sort(bookingList);
-                break;
-            case "checkOutDate":
-                Collections.sort(bookingList, bookingOutDateComparator);
-                break;
+            case "client" -> bookingList.sort(Comparator.comparing(Booking::getClient));
+            case "checkOutDate"-> bookingList.sort(Comparator.comparing(Booking::getCheckOutDate));
+            default -> {
+                System.out.println("Некорректный параметр сортировки");
+                return null;
+            }
         }
         return bookingList;
+    }
+    @Override
+    public Booking getBookingById(Long id) {
+        return bookings.get(id);
     }
 }

@@ -1,251 +1,128 @@
 package Hotel;
 
+import Hotel.Controller.*;
 import Hotel.Service.*;
-import Hotel.Model.*;
-import Hotel.Model.Room.*;
-import Hotel.Model.Client.*;
-import Hotel.Model.Service.*;
-
-import java.math.BigDecimal;
-import java.time.Duration;
-import java.util.*;
+import Hotel.View.*;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
 
-        RoomServiceImpl roomService = new RoomServiceImpl();
-        ClientServiceImpl clientService = new ClientServiceImpl();
-        BookingServiceImpl bookingService = new BookingServiceImpl();
-        ServiceServiceImpl serviceService = new ServiceServiceImpl();
-        ServiceAndRoomService serviceAndRoomService = new ServiceAndRoomService(roomService, serviceService);
+        ViewFactory factory = ViewFactory.getFactory("console");
 
-        System.out.println("Создание гостиницы.\n");
-
-// --- Комнаты ---
-        Room room101 = new Room(101, new BigDecimal("2500.00"), 2, RoomType.STANDART, Star.THREE);
-        Room room102 = new Room(102, new BigDecimal("3500.00"), 3, RoomType.LUX, Star.FOUR);
-        Room room103 = new Room(103, new BigDecimal("4000.00"), 2, RoomType.PRESIDENT, Star.FIVE);
-        Room room104 = new Room(104, new BigDecimal("2000.00"), 1, RoomType.STANDART, Star.TWO);
-        Room room105 = new Room(105, new BigDecimal("3000.00"), 2, RoomType.LUX, Star.FOUR);
-        Room room106 = new Room(106, new BigDecimal("1500.00"), 1, RoomType.STANDART, Star.TWO);
-        Room room107 = new Room(107, new BigDecimal("4500.00"), 4, RoomType.PRESIDENT, Star.FIVE);
-        Room room108 = new Room(108, new BigDecimal("2200.00"), 1, RoomType.STANDART, Star.THREE);
-
-        roomService.addRoom(room101);
-        roomService.addRoom(room102);
-        roomService.addRoom(room103);
-        roomService.addRoom(room104);
-        roomService.addRoom(room105);
-        roomService.addRoom(room106);
-        roomService.addRoom(room107);
-        roomService.addRoom(room108);
-
-// --- Клиенты ---
-        Client client1 = new Client(1L, new Date(), "Иванов", "Иван", Gender.MALE);
-        Client client2 = new Client(2L, new Date(), "Петрова", "Мария", Gender.FEMALE);
-        Client client3 = new Client(3L, new Date(), "Сидоров", "Алексей", Gender.MALE);
-        Client client4 = new Client(4L, new Date(), "Кузнецова", "Ольга", Gender.FEMALE);
-        Client client5 = new Client(5L, new Date(), "Николаев", "Дмитрий", Gender.MALE);
-        Client client6 = new Client(6L, new Date(), "Смирнова", "Екатерина", Gender.FEMALE);
-
-        clientService.addClient(client1);
-        clientService.addClient(client2);
-        clientService.addClient(client3);
-        clientService.addClient(client4);
-        clientService.addClient(client5);
-        clientService.addClient(client6);
-
-// --- Услуги ---
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_MONTH, 2);
-        Date date1 = calendar.getTime();
-        calendar.add(Calendar.DAY_OF_MONTH, 7);
-        Date date2 = calendar.getTime();
-
-        Service breakfast1 = new Service(1L, TypeService.FOOD,"Завтрак", new BigDecimal("500.00"), Duration.ofHours(2), client1, date1);
-        Service breakfast2 = new Service(2L,TypeService.FOOD, "Завтрак", new BigDecimal("500.00"), Duration.ofHours(2), client3, date2);
-        Service spa = new Service(3L,TypeService.OTHER, "СПА", new BigDecimal("1500.00"), Duration.ofHours(1), client2, date1);
-        Service laundry = new Service(4L,TypeService.ROOM, "Прачечная", new BigDecimal("300.00"), Duration.ofHours(3), client1, date2);
-        Service dinner = new Service(5L,TypeService.FOOD, "Ужин", new BigDecimal("800.00"), Duration.ofHours(2), client4, date1);
-        Service gym = new Service(6L, TypeService.OTHER,"Фитнес-зал", new BigDecimal("600.00"), Duration.ofHours(1), client5, date2);
-
-        serviceService.addService(breakfast1);
-        serviceService.addService(breakfast2);
-        serviceService.addService(spa);
-        serviceService.addService(laundry);
-        serviceService.addService(dinner);
-        serviceService.addService(gym);
-
-// --- Бронирования ---
-        Date today = new Date();
-
-        calendar.setTime(today);
-        calendar.add(Calendar.DAY_OF_MONTH, 2);
-        Date checkIn1 = calendar.getTime();
-        calendar.add(Calendar.DAY_OF_MONTH, 5);
-        Date checkOut1 = calendar.getTime();
-
-        Booking booking1 = new Booking(1L, checkIn1, room101, client1, checkOut1);
-        Booking booking2 = new Booking(2L, checkIn1, room102, client2, checkOut1);
-        Booking booking3 = new Booking(3L, checkIn1, room103, client3, checkOut1);
-        Booking booking4 = new Booking(4L, checkIn1, room104, client4, checkOut1);
-        Booking booking5 = new Booking(5L, checkIn1, room105, client5, checkOut1);
-        Booking booking6 = new Booking(6L, checkIn1, room106, client6, checkOut1);
-
-        bookingService.addBooking(booking1);
-        bookingService.addBooking(booking2);
-        bookingService.addBooking(booking3);
-        bookingService.addBooking(booking4);
-        bookingService.addBooking(booking5);
-        bookingService.addBooking(booking6);
-
-// Обновление статусов комнат
-
-        room102.setStatus(Status.OCCUPIED);
+        ClientServiceImpl clientService = ClientServiceImpl.getInstance();
+        RoomServiceImpl roomService = RoomServiceImpl.getInstance();
+        BookingServiceImpl bookingService = BookingServiceImpl.getInstance(roomService);
+        ServiceServiceImpl serviceService = ServiceServiceImpl.getInstance();
+        MultiEntityServiceImpl multiEntityService = MultiEntityServiceImpl.getInstance(roomService, serviceService);
 
 
-        System.out.println("Данные гостиницы успешно созданы!");
+        ClientView clientView = (ClientView) factory.createView(MenuType.CLIENT);
+        RoomView roomView = (RoomView) factory.createView(MenuType.ROOM);
+        BookingView bookingView = (BookingView) factory.createView(MenuType.BOOKING);
+        ServiceView serviceView = (ServiceView) factory.createView(MenuType.SERVICE);
+        OtherView otherView = (OtherView) factory.createView(MenuType.OTHER);
 
+        ClientController clientController = ClientController.getInstance(clientService);
+        RoomController roomController = RoomController.getInstance(roomService);
+        BookingController bookingController = BookingController.getInstance(bookingService,clientService,roomService);
+        ServiceController serviceController = ServiceController.getInstance(serviceService,clientService);
+        MultiEntityController multiEntityController =  MultiEntityController.getInstance(multiEntityService);
 
-        System.out.println("\n=== ПРОВЕРКА ФУНКЦИОНАЛА ===\n");
+        clientView.setController(clientController);
+        roomView.setController(roomController);
+        bookingView.setController(bookingController);
+        serviceView.setController(serviceController);
+        otherView.setController(multiEntityController);
 
-        // 1. Список номеров (сортировать по цене, вместимости, количеству звезд)
-        System.out.println("1. ВСЕ НОМЕРА:");
-        List<Room> allRooms = roomService.getAllRooms();
-        System.out.println(allRooms);
-        System.out.println("\nСортировка по цене:");
+        runApplication(clientView, roomView, bookingView, serviceView, otherView);
+    }
 
-        System.out.println(roomService.sort(false, "price"));
+    private static void runApplication(ClientView clientView, RoomView roomView,
+                                       BookingView bookingView, ServiceView serviceView,
+                                       OtherView otherView) {
+        Scanner scanner = new Scanner(System.in);
+        boolean running = true;
 
-        System.out.println("\nСортировка по вместимости:");
+        while (running) {
+            showMainMenu();
+            int choice = readInt(scanner);
 
-        System.out.println(roomService.sort(false, "place"));
-
-        System.out.println("\nСортировка по количеству звезд:");
-
-        System.out.println(roomService.sort(false, "stars"));
-
-        // 2. Список свободных номеров
-        System.out.println("\n2. СВОБОДНЫЕ НОМЕРА:");
-        List<Room> freeRooms = roomService.getRoomByStatus(Status.FREE);
-        System.out.println(freeRooms);
-        System.out.println("\nСортировка по цене:");
-
-        System.out.println(roomService.sort(true, "price"));
-
-        System.out.println("\nСортировка по вместимости:");
-
-        System.out.println(roomService.sort(true, "place"));
-
-        System.out.println("\nСортировка по количеству звезд:");
-
-        System.out.println(roomService.sort(true, "stars"));
-
-        // 3. Список постояльцев и их номеров (сортировать по алфавиту, дате освобождения номера)
-        System.out.println("\n3. ПОСТОЯЛЬЦЫ И ИХ НОМЕРА:");
-        List<Client> allClients = clientService.getAllClients();
-        List<Booking> allBookings = bookingService.getAllBookings();
-
-        System.out.println("\nСортировка по алфавиту:");
-
-        System.out.println(bookingService.sort("checkOutDate"));
-
-        System.out.println("\nСортировка по дате освобождения номера:");
-
-        System.out.println(bookingService.sort("checkOutDate"));
-
-        // 4. Общее число свободных номеров
-        System.out.println("\n4. ОБЩЕЕ ЧИСЛО СВОБОДНЫХ НОМЕРОВ: " + roomService.countFreeRooms());
-
-        // 5. Общее число постояльцев
-        System.out.println("\n5. ОБЩЕЕ ЧИСЛО ПОСТОЯЛЬЦЕВ: " + clientService.clientsCount());
-
-        // 6. Список номеров которые будут свободны по определенной дате в будущем
-        System.out.println("\n6. НОМЕРА СВОБОДНЫЕ К ОПРЕДЕЛЕННОЙ ДАТЕ:");
-        calendar.setTime(today);
-        calendar.add(Calendar.DAY_OF_MONTH, 4);
-        Date futureDate = calendar.getTime();
-        calendar.add(Calendar.DAY_OF_MONTH, 3);
-        Date futureDate1 = calendar.getTime();
-
-
-        System.out.println("Свободные номера с " + futureDate + " до " + futureDate1 + " :");
-        System.out.println(bookingService.getFreeRoomsByDate(futureDate, futureDate1,roomService));
-
-        // 7. Сумму оплаты за номер которую должен оплатить постоялец
-        System.out.println("\n7. СУММА ОПЛАТЫ ЗА НОМЕР:");
-        System.out.println(allBookings);
-
-        // 8. Посмотреть 3-х последних постояльцев номера и даты их пребывания
-        System.out.println("\n8. 3 ПОСЛЕДНИХ ПОСТОЯЛЬЦА НОМЕРА 101:");
-        List<Booking> lastThreeBookings = bookingService.lastThreeBookingsByRooms(101);
-        System.out.println(lastThreeBookings);
-
-        // 9. Посмотреть список услуг постояльца и их цену (сортировать по цене, по дате)
-        System.out.println("\n9. УСЛУГИ ПОСТОЯЛЬЦЕВ:");
-        List<Service> allServices = serviceService.getAllServices();
-        System.out.println(allServices);
-        System.out.println("\nУслуги клиента Иванов (сортировка по цене):");
-
-        ServiceServiceImpl IvanovService = new ServiceServiceImpl();
-        for (Service service : allServices) {
-            if (service.getClient().getSurname().equals("Иванов")) {
-                IvanovService.addService(service);
+            switch (choice) {
+                case 1 -> runClientMenu(clientView, scanner);
+                case 2 -> runRoomMenu(roomView, scanner);
+                case 3 -> runBookingMenu(bookingView, scanner);
+                case 4 -> runServiceMenu(serviceView, scanner);
+                case 5 -> runOtherMenu(otherView, scanner);
+                case 0 -> {
+                    running = false;
+                    System.out.println("Выход из программы...");
+                }
+                default -> System.out.println("Неверный выбор!");
             }
         }
+    }
 
-        System.out.println(IvanovService.sort("price"));
+    private static void showMainMenu() {
+        System.out.println("\n=== СИСТЕМА УПРАВЛЕНИЯ ОТЕЛЕМ ===");
+        System.out.println("1. Клиенты");
+        System.out.println("2. Номера");
+        System.out.println("3. Бронирования");
+        System.out.println("4. Услуги");
+        System.out.println("5. Прочее");
+        System.out.println("0. Выход");
+        System.out.print("Выберите: ");
+    }
 
-        System.out.println("\nУслуги клиента Иванов (сортировка по дате):");
+    private static void runClientMenu(ClientView view, Scanner scanner) {
+        boolean inMenu = true;
+        while (inMenu) {
+            view.showMenu();
+            int choice = readInt(scanner);
+            inMenu = view.processOperation(choice);
+        }
+    }
 
-        System.out.println(IvanovService.sort("date"));
+    private static void runRoomMenu(RoomView view, Scanner scanner) {
+        boolean inMenu = true;
+        while (inMenu) {
+            view.showMenu();
+            int choice = readInt(scanner);
+            inMenu = view.processOperation(choice);
+        }
+    }
 
-        // 10. Цены услуг и номеров (сортировать по разделу, цене)
-        System.out.println("\n10. ЦЕНЫ УСЛУГ И НОМЕРОВ:");
+    private static void runBookingMenu(BookingView view, Scanner scanner) {
+        boolean inMenu = true;
+        while (inMenu) {
+            view.showMenu();
+            int choice = readInt(scanner);
+            inMenu = view.processOperation(choice);
+        }
+    }
 
-        System.out.println("\nУслуги и номера (сортировка по цене):");
+    private static void runServiceMenu(ServiceView view, Scanner scanner) {
+        boolean inMenu = true;
+        while (inMenu) {
+            view.showMenu();
+            int choice = readInt(scanner);
+            inMenu = view.processOperation(choice);
+        }
+    }
+    private static void runOtherMenu(OtherView view, Scanner scanner) {
+        boolean inMenu = true;
+        while (inMenu) {
+            view.showMenu();
+            int choice = readInt(scanner);
+            inMenu = view.processOperation(choice);
+        }
+    }
 
-        System.out.println(serviceAndRoomService.sort("price"));
-
-        System.out.println("\nУслуги и номера (сортировка по цене):");
-
-        System.out.println(serviceAndRoomService.sort("type"));
-
-        // 11. Посмотреть детали отдельного номера
-        System.out.println("\n11. ДЕТАЛИ НОМЕРА 103:");
-
-        System.out.println(roomService.getRoomByRoomNumber(103));
-
-        System.out.println("Поселение в номер:");
-        Booking newBooking = new Booking(2L, new Date(), room102, client2,
-                new Date(System.currentTimeMillis() + 3 * 24 * 60 * 60 * 1000));
-        bookingService.addBooking(newBooking);
-
-
-        System.out.println("\nВыселение из номера:");
-        booking1.endBooking();
-        roomService.updateRoom(room101);
-        System.out.println("Клиент выселен из номера 101");
-
-        System.out.println("\nПеревод номера в ремонт:");
-        room104.repairRoom();
-        roomService.updateRoom(room104);
-
-        System.out.println("\nИзменение цен:");
-        System.out.println("Старая цена номера 102: " + room102.getPrice());
-        room102.setPrice(new BigDecimal("3800.00"));
-        roomService.updateRoom(room102);
-        System.out.println("Новая цена номера 102: " + room102.getPrice());
-
-        System.out.println("Старая цена услуги 'Завтрак': " + breakfast2.getServicePrice());
-        breakfast2.setServicePrice(new BigDecimal("600.00"));
-        serviceService.updateService(breakfast2);
-        System.out.println("Новая цена услуги 'Завтрак': " + breakfast2.getServicePrice());
-
-        System.out.println("Всего номеров: " + roomService.getAllRooms().size());
-        System.out.println("Свободных номеров: " + roomService.countFreeRooms());
-        System.out.println("Всего клиентов: " + clientService.clientsCount());
-        System.out.println("Всего услуг: " + serviceService.getAllServices().size());
-
+    private static int readInt(Scanner scanner) {
+        try {
+            return Integer.parseInt(scanner.nextLine());
+        } catch (Exception e) {
+            return -1;
+        }
     }
 }

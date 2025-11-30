@@ -1,12 +1,17 @@
 package Hotel.Model;
 
+import org.w3c.dom.css.Counter;
+
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class Service implements Comparable<Service> {
+
+    private static Long counter = 0L;
     private Long id;
     private TypeService typeService;
     private String serviceName;
@@ -14,8 +19,8 @@ public class Service implements Comparable<Service> {
     private Duration duration;
     private Date date;
     private Client client;
-    public Service(Long id,TypeService typeService,String serviceName, BigDecimal servicePrice, Duration duration, Client client, Date date) {
-        this.id = id;
+    public Service(TypeService typeService,String serviceName, BigDecimal servicePrice, Duration duration, Client client, Date date) {
+        this.id = ++counter;
         this.typeService = typeService;
         this.serviceName = serviceName;
         this.servicePrice = servicePrice;
@@ -88,18 +93,7 @@ public class Service implements Comparable<Service> {
     public String toString() {
         return "Услуга: " + serviceName + " - " + servicePrice + " руб. (" + duration.toHours() + " ч.)" + " для " + client + " " + date;
     }
-    public static class ServicePrice implements Comparator<Service> {
-        @Override
-        public int compare(Service o1, Service o2) {
-            return o1.servicePrice.compareTo(o2.servicePrice);
-        }
-    }
-    public static class ServiceType implements Comparator<Service> {
-        @Override
-        public int compare(Service o1, Service o2) {
-            return o1.typeService.compareTo(o2.typeService);
-        }
-    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

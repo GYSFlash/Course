@@ -6,9 +6,15 @@ import Hotel.Model.Service;
 import java.util.*;
 
 public class ServiceServiceImpl implements ServiceService {
+    private static ServiceServiceImpl instance;
     private Map<Long, Service> services = new HashMap<>();
-    private final ServicePrice servicePrice = new ServicePrice();
-    private final ServiceType serviceType = new ServiceType();
+    private ServiceServiceImpl() {}
+    public static ServiceServiceImpl getInstance() {
+        if(instance == null) {
+            instance = new ServiceServiceImpl();
+        }
+        return instance;
+    }
     @Override
     public void addService(Service service) {
         services.put(service.getId(), service);
@@ -39,17 +45,19 @@ public class ServiceServiceImpl implements ServiceService {
         List<Service> serviceList = new ArrayList<>(services.values());
 
         switch (sortBy) {
-            case "price":
-                Collections.sort(serviceList,servicePrice);
-                break;
-            case "date":
-                Collections.sort(serviceList);
-                break;
-            case "type":
-                Collections.sort(serviceList,serviceType);
-                break;
+            case "price" -> serviceList.sort(Comparator.comparing(Service::getServicePrice));
+            case "date"-> serviceList.sort(Comparator.comparing(Service::getDate));
+            case "type" -> serviceList.sort(Comparator.comparing(Service::getTypeService));
+            default -> {
+                System.out.println("Некорректный параметр сортировки");
+                return null;
+            }
         }
 
         return serviceList;
+    }
+    @Override
+    public Service getServiceById(Long id) {
+        return services.get(id);
     }
 }
