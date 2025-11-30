@@ -16,7 +16,8 @@ public interface BookingService {
     List<Booking> lastThreeBookingsByRooms(int RoomNumber);
     List<Booking> sort(String sortby);
     Booking getBookingById(Long id);
-
+    void addBookingFromFile();
+    void exportBookingToFile();
 
 
 }

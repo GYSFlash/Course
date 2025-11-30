@@ -16,10 +16,10 @@ public class OtherView extends BaseView {
     }
     @Override
     public void showMenu() {
-        System.out.println("\n=== ПРОЧИЕ ОПЕРАЦИИ ===");
-        System.out.println("1. Одновременная сортировка номеров и услуг");
-        System.out.println("0. Назад");
-        System.out.print("Выберите: ");
+        showMessage("\n=== ПРОЧИЕ ОПЕРАЦИИ ===");
+        showMessage("1. Одновременная сортировка номеров и услуг");
+        showMessage("0. Назад");
+        showMessage("Выберите: ");
     }
 
     public boolean processOperation(int choice) {

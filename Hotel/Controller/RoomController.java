@@ -112,4 +112,12 @@ public class RoomController extends BaseController {
         int roomNumber = readInt("Номер комнаты для поиска");
         return service.getRoomByRoomNumber(roomNumber);
     }
+    public void importRooms() {
+        service.addRoomsFromFile();
+
+    }
+    public void exportRooms() {
+        service.exportRoomsToFile();
+
+    }
 }

@@ -13,16 +13,17 @@ public class BookingView extends BaseView {
     }
     @Override
     public void showMenu() {
-        System.out.println("\n=== УПРАВЛЕНИЕ БРОНИРОВАНИЯМИ ===");
-        System.out.println("1. Добавить бронирование");
-        System.out.println("2. Все бронирования");
-        System.out.println("3. Удалить бронирование");
-        System.out.println("4. Обновить бронирование");
-        System.out.println("5. Свободные номера на даты");
-        System.out.println("6. Последние 3 брони номера");
-        System.out.println("7. Сортировка бронирований");
-        System.out.println("0. Назад");
-        System.out.print("Выберите: ");
+        showMessage("\n=== УПРАВЛЕНИЕ БРОНИРОВАНИЯМИ ===");
+        showMessage("1. Добавить бронирование");
+        showMessage("2. Все бронирования");
+        showMessage("3. Удалить бронирование");
+        showMessage("4. Обновить бронирование");
+        showMessage("5. Свободные номера на даты");
+        showMessage("6. Последние 3 брони номера");
+        showMessage("7. Сортировка бронирований");
+        showMessage("8. Экспорт бронирований в файл CSV");
+        showMessage("0. Назад");
+        showMessage("Выберите: ");
     }
 
     public boolean processOperation(int choice) {
@@ -40,6 +41,7 @@ public class BookingView extends BaseView {
             case 5 -> showList("Свободные номера на даты ",controller.showFreeRoomsByDate());
             case 6 -> showList("Последние 3 брони номера ",controller.showLastThreeBookings());
             case 7 -> showList("Отсортированные бронирования ",controller.sortBookings());
+            case 8 -> {showMessage("Экспорт бронирований завершен "); controller.exportBookings();}
             case 0 -> {
                 return false;
             }

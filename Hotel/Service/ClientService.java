@@ -12,4 +12,6 @@ public interface ClientService {
     List<Client> getAllClients();
     int clientsCount ();
     Client getClientById(Long id);
+    void addClientFromFile();
+    void exportClientsToFile();
 }

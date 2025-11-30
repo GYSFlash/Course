@@ -12,14 +12,15 @@ public class ClientView extends BaseView {
     }
     @Override
     public void showMenu() {
-        System.out.println("\n=== УПРАВЛЕНИЕ КЛИЕНТАМИ ===");
-        System.out.println("1. Добавить клиента");
-        System.out.println("2. Все клиенты");
-        System.out.println("3. Удалить клиента");
-        System.out.println("4. Обновить клиента");
-        System.out.println("5. Количество клиентов");
-        System.out.println("0. Назад");
-        System.out.print("Выберите: ");
+        showMessage("\n=== УПРАВЛЕНИЕ КЛИЕНТАМИ ===");
+        showMessage("1. Добавить клиента");
+        showMessage("2. Все клиенты");
+        showMessage("3. Удалить клиента");
+        showMessage("4. Обновить клиента");
+        showMessage("5. Количество клиентов");
+        showMessage("6. Экспорт клиентов в файл");
+        showMessage("0. Назад");
+        showMessage("Выберите: ");
     }
     public boolean processOperation(int choice) {
         switch (choice) {
@@ -31,6 +32,8 @@ public class ClientView extends BaseView {
             case 4 -> {if(controller.updateClient()) showMessage("Клиент успешно обновлен");
                     else showMessage("Клиент не найден");}
             case 5 -> showMessage("Всего клиентов: " + controller.showClientsCount());
+            case 6 -> {
+            showMessage("Экспорт клиентов в файл выполнен"); controller.exportClients();}
             case 0 -> {
                 return false;
             }

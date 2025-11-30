@@ -13,4 +13,6 @@ public interface ServiceService {
     List<Service> getAllServices();
     List<Service> sort(String sortby);
     Service getServiceById(Long id);
+    void addServiceFromFile();
+    void exportServiceToFile();
 }

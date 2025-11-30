@@ -106,4 +106,12 @@ public class ServiceController extends BaseController {
     public Service getServiceById() {
         return services.getServiceById(readLong("ID услуги"));
     }
+    public void exportServices() {
+        services.exportServiceToFile();
+
+    }
+    public void importServices() {
+        services.addServiceFromFile();
+
+    }
 }

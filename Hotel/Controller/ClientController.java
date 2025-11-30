@@ -88,5 +88,13 @@ public class ClientController extends BaseController{
         int count = service.clientsCount();
         return count;
     }
+    public void importClients() {
+        service.addClientFromFile();
+
+    }
+    public void exportClients() {
+        service.exportClientsToFile();
+
+    }
 
 }

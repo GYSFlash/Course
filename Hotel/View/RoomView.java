@@ -14,17 +14,18 @@ public class RoomView extends BaseView {
 
     @Override
     public void showMenu() {
-        System.out.println("\n=== УПРАВЛЕНИЕ НОМЕРАМИ ===");
-        System.out.println("1. Добавить номер");
-        System.out.println("2. Все номера");
-        System.out.println("3. Удалить номер");
-        System.out.println("4. Обновить номер");
-        System.out.println("5. Номера по статусу");
-        System.out.println("6. Количество свободных номеров");
-        System.out.println("7. Сортировка номеров");
-        System.out.println("8. Найти номер по номеру комнаты");
-        System.out.println("0. Назад");
-        System.out.print("Выберите: ");
+        showMessage("\n=== УПРАВЛЕНИЕ НОМЕРАМИ ===");
+        showMessage("1. Добавить номер");
+        showMessage("2. Все номера");
+        showMessage("3. Удалить номер");
+        showMessage("4. Обновить номер");
+        showMessage("5. Номера по статусу");
+        showMessage("6. Количество свободных номеров");
+        showMessage("7. Сортировка номеров");
+        showMessage("8. Найти номер по номеру комнаты");
+        showMessage("9. Экспорт комнат в файл CSV");
+        showMessage("0. Назад");
+        showMessage("Выберите: ");
     }
     public boolean processOperation(int choice) {
         switch (choice) {
@@ -42,6 +43,7 @@ public class RoomView extends BaseView {
             case 6 -> showMessage("Количество свободных номеров: " + controller.showFreeRoomsCount());
             case 7 -> showList("Сортировка номеров",controller.sortRooms());
             case 8 -> showMessage("Номер с заданным id " + controller.findRoomByNumber());
+            case 9 -> {showMessage("Экспорт комнат завершен"); controller.exportRooms();}
             case 0 -> {
                 return false;
             }

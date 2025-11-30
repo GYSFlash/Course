@@ -12,8 +12,8 @@ public class Main {
 
         ClientServiceImpl clientService = ClientServiceImpl.getInstance();
         RoomServiceImpl roomService = RoomServiceImpl.getInstance();
-        BookingServiceImpl bookingService = BookingServiceImpl.getInstance(roomService);
-        ServiceServiceImpl serviceService = ServiceServiceImpl.getInstance();
+        BookingServiceImpl bookingService = BookingServiceImpl.getInstance(roomService, clientService);
+        ServiceServiceImpl serviceService = ServiceServiceImpl.getInstance(clientService);
         MultiEntityServiceImpl multiEntityService = MultiEntityServiceImpl.getInstance(roomService, serviceService);
 
 
@@ -34,6 +34,11 @@ public class Main {
         bookingView.setController(bookingController);
         serviceView.setController(serviceController);
         otherView.setController(multiEntityController);
+
+        clientController.importClients();
+        roomController.importRooms();
+        bookingController.importBookings();
+        serviceController.importServices();
 
         runApplication(clientView, roomView, bookingView, serviceView, otherView);
     }

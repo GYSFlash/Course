@@ -1,19 +1,28 @@
 package Hotel.Service;
 
 import Hotel.Model.Booking;
+import Hotel.Model.Client;
 import Hotel.Model.Room;
+
+import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
+
+import static java.lang.Integer.parseInt;
+import static java.lang.Long.parseLong;
 
 public class BookingServiceImpl implements BookingService {
     private static BookingServiceImpl instance;
     private Map<Long, Booking> bookings = new HashMap<>();
     private RoomService roomService;
-    private BookingServiceImpl(RoomService roomService) {
+    private ClientService clientService;
+    private BookingServiceImpl(RoomService roomService, ClientService clientService) {
         this.roomService = roomService;
+        this.clientService = clientService;
     }
-    public static BookingServiceImpl getInstance(RoomService roomService) {
+    public static BookingServiceImpl getInstance(RoomService roomService, ClientService clientService) {
         if (instance == null) {
-            instance = new BookingServiceImpl(roomService);
+            instance = new BookingServiceImpl(roomService, clientService);
         }
         return instance;
     }
@@ -100,5 +109,68 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public Booking getBookingById(Long id) {
         return bookings.get(id);
+    }
+    @Override
+    public void addBookingFromFile(){
+        String fileName = "D:/Java/Course/Hotel/Import/bookings.csv";
+        File file = new File(fileName);
+        try{
+            if(!file.exists()){
+                file.createNewFile();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        try (BufferedReader br = new BufferedReader(new FileReader(fileName))){
+            String line;
+            Date dateIn, dateOut;
+            while ((line = br.readLine()) != null) {
+                String values[] = line.split(",");
+                try {
+                    if(values.length == 4) {
+
+                        dateIn = dateFormat.parse(values[0]);
+                        dateOut = dateFormat.parse(values[1]);
+
+                        Room room = roomService.getRoomByRoomNumber(parseInt(values[2]));
+                        Client client = clientService.getClientById(parseLong(values[3]));
+                        addBooking(new Booking(dateIn, room,client, dateOut));
+                    }
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    @Override
+    public void exportBookingToFile() {
+        String fileName = "D:/Java/Course/Hotel/Export/bookings.csv";
+        File file = new File(fileName);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        try{
+            if(!file.exists()){
+                file.createNewFile();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try(BufferedWriter bw = new BufferedWriter(new FileWriter(fileName))) {
+            for(Booking booking : bookings.values()) {
+                String line = dateFormat.format(booking.getCheckInDate()) + "," + dateFormat.format(booking.getCheckOutDate()) + ","
+                         +  booking.getRoom().getRoomNumber() + "," + booking.getClient().getId();
+                bw.write(line);
+                bw.newLine();
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 }

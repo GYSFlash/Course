@@ -114,4 +114,10 @@ public class BookingController extends BaseController {
         String sortBy = readString("Сортировать по (client/checkOutDate)");
         return service.sort(sortBy);
     }
+    public void importBookings() {
+        service.addBookingFromFile();
+    }
+    public void exportBookings() {
+        service.exportBookingToFile();
+    }
 }

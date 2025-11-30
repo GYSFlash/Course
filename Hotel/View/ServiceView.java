@@ -21,6 +21,7 @@ public class ServiceView extends BaseView {
         showMessage("4. Обновить услугу");
         showMessage("5. Сортировка услуг");
         showMessage("6. Поиск услуги");
+        showMessage("7. Экспорт услуг в файл CSV");
         showMessage("0. Назад");
         showMessage("Выберите: ");
     }
@@ -39,6 +40,8 @@ public class ServiceView extends BaseView {
                 else showMessage("Услуга не найдена!");}
             case 5 -> showList("Отсортированные услуги: ",controller.sortServices());
             case 6 -> showMessage("Найденная услуга: " + controller.getServiceById());
+            case 7 -> {showMessage("Экспорт услуг завершен!");
+            controller.exportServices();}
             case 0 -> {return false;}
             default -> showError("Неверный выбор!");
         }

@@ -16,6 +16,7 @@ public interface RoomService {
     int countFreeRooms();
     List<Room> sort(boolean freeRoom, String sortby);
     Room getRoomByRoomNumber(int roomNumber);
-
+    void addRoomsFromFile();
+    void exportRoomsToFile();
 
 }

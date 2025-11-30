@@ -4,6 +4,9 @@ import Hotel.Model.Client;
 import Hotel.Model.Room;
 import Hotel.Model.Room.*;
 
+import java.io.*;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class RoomServiceImpl implements RoomService {
@@ -77,5 +80,70 @@ public class RoomServiceImpl implements RoomService {
         }else{
             return null;
         }
+    }
+    @Override
+    public void addRoomsFromFile(){
+        String fileName = "D:/Java/Course/Hotel/Import/rooms.csv";
+        File file = new File(fileName);
+        try{
+            if(!file.exists()){
+                file.createNewFile();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try (BufferedReader br = new BufferedReader(new FileReader(fileName))){
+            String line;
+            int roomNumber, place;
+            BigDecimal price;
+            Star stars;
+            RoomType type;
+
+            while ((line = br.readLine()) != null) {
+                String values[] = line.split(",");
+                try {
+                    if(values.length == 5) {
+                       roomNumber = Integer.parseInt(values[0]);
+                       price = new BigDecimal(values[1]);
+                       place = Integer.parseInt(values[2]);
+                       type = RoomType.valueOf(values[3].toUpperCase());
+                       stars = Star.valueOf(values[4].toUpperCase());
+                       Room room = new Room(roomNumber,price,place,type,stars);
+                       addRoom(room);
+                    }
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    @Override
+    public void exportRoomsToFile() {
+        String fileName = "D:/Java/Course/Hotel/Export/rooms.csv";
+        File file = new File(fileName);
+        try{
+            if(!file.exists()){
+                file.createNewFile();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try(BufferedWriter bw = new BufferedWriter(new FileWriter(fileName))) {
+            for(Room room : rooms.values()) {
+                String line = room.getRoomNumber() + "," + room.getPrice() + "," + room.getPlace() + ","
+                        + room.getType() + "," + room.getStars();
+                bw.write(line);
+                bw.newLine();
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 }
