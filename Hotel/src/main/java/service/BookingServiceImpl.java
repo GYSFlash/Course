@@ -3,15 +3,18 @@ package service;
 import model.Booking;
 import model.Client;
 import model.Room;
+import model.Service;
 
 import java.io.*;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.*;
 
 import static java.lang.Integer.parseInt;
 import static java.lang.Long.parseLong;
 
-public class BookingServiceImpl implements BookingService,FileService {
+public class BookingServiceImpl extends FileServiceImpl<Booking> implements BookingService{
     private static BookingServiceImpl instance;
     private Map<Long, Booking> bookings = new HashMap<>();
     private RoomService roomService;
@@ -112,45 +115,35 @@ public class BookingServiceImpl implements BookingService,FileService {
     }
     @Override
     public void addBookingFromFile(){
-        try (BufferedReader br = new BufferedReader(new FileReader(FileService.checkFile(bookingFile)))){
-            String line;
-            Date dateIn, dateOut;
-            while ((line = br.readLine()) != null) {
-                String values[] = line.split(",");
-                try {
-                    if(values.length == 4) {
-
-                        dateIn = dateFormat.parse(values[0]);
-                        dateOut = dateFormat.parse(values[1]);
-
-                        Room room = roomService.getRoomByRoomNumber(parseInt(values[2]));
-                        Client client = clientService.getClientById(parseLong(values[3]));
-                        addBooking(new Booking(dateIn, room,client, dateOut));
-                    }
-                }
-                catch (Exception e) {
-                    System.out.println("Ошибка в данных бронирований");;
-                }
-
-            }
-        }
-        catch (Exception e) {
-            System.out.println("Ошибка чтения данных из файла");
-        }
+        String fileName = "bookings.csv";
+        importFromFile(fileName);
     }
     @Override
     public void exportBookingToFile() {
-        try(BufferedWriter bw = new BufferedWriter(new FileWriter(FileService.checkFile(bookingFile)))) {
-            for(Booking booking : bookings.values()) {
-                String line = dateFormat.format(booking.getCheckInDate()) + "," + dateFormat.format(booking.getCheckOutDate()) + ","
-                         +  booking.getRoom().getRoomNumber() + "," + booking.getClient().getId();
-                bw.write(line);
-                bw.newLine();
-            }
-        }
-        catch (Exception e) {
-            System.out.println("Ошибка записи данных в файл");
-        }
+        String fileName = "bookings.csv";
+        exportToFile(fileName,getAllBookings());
 
+    }
+    @Override
+    public String writeModel(Booking booking){
+
+        String s = dateFormat.format(booking.getCheckInDate()) + "," + dateFormat.format(booking.getCheckOutDate()) + ","
+                +  booking.getRoom().getRoomNumber() + "," + booking.getClient().getId();
+        return s;
+    }
+    @Override
+    public void parseModel(String line){
+        try{
+            String[] values = line.split(",");
+            Date dateIn = dateFormat.parse(values[0]);
+            Date dateOut = dateFormat.parse(values[1]);
+
+            Room room = roomService.getRoomByRoomNumber(parseInt(values[2]));
+            Client client = clientService.getClientById(parseLong(values[3]));
+            addBooking(new Booking(dateIn, room,client, dateOut));
+        }
+        catch (Exception e){
+            System.out.println("Ошибка при парсинге строки: " + line);
+        }
     }
 }

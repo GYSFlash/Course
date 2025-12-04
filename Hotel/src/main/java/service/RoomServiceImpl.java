@@ -1,13 +1,16 @@
 package service;
 
+import model.Client;
 import model.Room;
 import model.Room.*;
+import model.Service;
 
 import java.io.*;
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.util.*;
 
-public class RoomServiceImpl implements RoomService,FileService {
+public class RoomServiceImpl extends FileServiceImpl<Room> implements RoomService {
     private static RoomServiceImpl instance;
     private Map<Integer,Room> rooms = new HashMap<>();
     private RoomServiceImpl(){}
@@ -81,50 +84,36 @@ public class RoomServiceImpl implements RoomService,FileService {
     }
     @Override
     public void addRoomsFromFile(){
-        try (BufferedReader br = new BufferedReader(new FileReader(FileService.checkFile(roomFile)))){
-            String line;
-            int roomNumber, place;
-            BigDecimal price;
-            Star stars;
-            RoomType type;
-
-            while ((line = br.readLine()) != null) {
-                String values[] = line.split(",");
-                try {
-                    if(values.length == 5) {
-                       roomNumber = Integer.parseInt(values[0]);
-                       price = new BigDecimal(values[1]);
-                       place = Integer.parseInt(values[2]);
-                       type = RoomType.valueOf(values[3].toUpperCase());
-                       stars = Star.valueOf(values[4].toUpperCase());
-                       Room room = new Room(roomNumber,price,place,type,stars);
-                       addRoom(room);
-                    }
-                }
-                catch (Exception e) {
-                    System.out.println("Ошибка в данных комнат");;
-                }
-
-            }
-        }
-        catch (Exception e) {
-            System.out.println("Ошибка чтения данных из файла");
-        }
+        String fileName = "rooms.csv";
+        importFromFile(fileName);
     }
     @Override
     public void exportRoomsToFile() {
+        String fileName = "rooms.csv";
+        exportToFile(fileName,getAllRooms());
 
-        try(BufferedWriter bw = new BufferedWriter(new FileWriter(FileService.checkFile(roomFile)))) {
-            for(Room room : rooms.values()) {
-                String line = room.getRoomNumber() + "," + room.getPrice() + "," + room.getPlace() + ","
-                        + room.getType() + "," + room.getStars();
-                bw.write(line);
-                bw.newLine();
-            }
-        }
-        catch (Exception e) {
-            System.out.println("Ошибка записи данных в файл");
-        }
+    }
+    @Override
+    public String writeModel(Room room){
 
+        String s = room.getRoomNumber() + "," + room.getPrice() + "," + room.getPlace() + ","
+                + room.getType() + "," + room.getStars();
+        return s;
+    }
+    @Override
+    public void parseModel(String line){
+        try{
+            String[] values = line.split(",");
+            Integer roomNumber = Integer.parseInt(values[0]);
+            BigDecimal price = new BigDecimal(values[1]);
+            int place = Integer.parseInt(values[2]);
+            RoomType type = RoomType.valueOf(values[3].toUpperCase());
+            Star stars = Star.valueOf(values[4].toUpperCase());
+            Room room = new Room(roomNumber,price,place,type,stars);
+            addRoom(room);
+        }
+        catch (Exception e){
+            System.out.println("Ошибка при парсинге строки: " + line);
+        }
     }
 }

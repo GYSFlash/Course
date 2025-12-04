@@ -1,5 +1,6 @@
 package service;
 
+import model.Booking;
 import model.Client;
 import model.Service.*;
 import model.Service;
@@ -10,7 +11,7 @@ import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.*;
 
-public class ServiceServiceImpl implements ServiceService,FileService {
+public class ServiceServiceImpl extends FileServiceImpl<Service> implements ServiceService {
     private static ServiceServiceImpl instance;
     private Map<Long, Service> services = new HashMap<>();
     private ClientService clientService;
@@ -70,59 +71,43 @@ public class ServiceServiceImpl implements ServiceService,FileService {
     }
     @Override
     public void addServiceFromFile(){
+        String fileName = "services.csv";
+        importFromFile(fileName);
 
-        try (BufferedReader br = new BufferedReader(new FileReader(FileService.checkFile(serviceFile)))){
-            String line;
-            Date date;
-            Duration duration;
-            BigDecimal price;
-            String serviceName;
-            Client client;
-            TypeService typeService;
-            while ((line = br.readLine()) != null) {
-                String values[] = line.split(",");
-                try {
-                    if(values.length == 6) {
-                        typeService = TypeService.valueOf(values[0]);
-                        serviceName = values[1];
-                        price = new BigDecimal(values[2]);
-                        String timeStr = values[3];
-                        String[] parts = timeStr.split(":");
-
-                        int hours = Integer.parseInt(parts[0].trim());
-                        int minutes = Integer.parseInt(parts[1].trim());
-                        duration = Duration.ofHours(hours).plusMinutes(minutes);
-                        client = clientService.getClientById(Long.parseLong(values[4]));
-                        date = dateFormat.parse(values[5]);
-                        Service service = new Service(typeService, serviceName, price, duration, client, date);
-                        addService(service);
-                    }
-                }
-                catch (Exception e) {
-                    System.out.println("Ошибка в данных услуг");;
-                }
-
-            }
-        }
-        catch (Exception e) {
-            System.out.println("Ошибка чтения данных из файла");
-        }
     }
     @Override
     public void exportServiceToFile() {
+        String fileName = "services.csv";
+        exportToFile(fileName,getAllServices());
+    }
+    @Override
+    public String writeModel(Service service){
 
-        try(BufferedWriter bw = new BufferedWriter(new FileWriter(FileService.checkFile(serviceFile)))) {
-            for(Service service : services.values()) {
-                String line = service.getTypeService() + "," + service.getServiceName() + "," + service.getServicePrice() + ","
-                        + service.getDuration().toMinutes() + "," + service.getClient().getId() + ","
-                        + dateFormat.format(service.getDate());
-                bw.write(line);
-                bw.newLine();
-            }
-        }
-        catch (Exception e) {
-            System.out.println("Ошибка записи данных в файл");
-        }
+        String s = service.getTypeService() + "," + service.getServiceName() + "," + service.getServicePrice() + ","
+                + service.getDuration().toMinutes() + "," + service.getClient().getId() + ","
+                + dateFormat.format(service.getDate());
+        return s;
+    }
+    @Override
+    public void parseModel(String line){
+        try{
+        String[] values = line.split(",");
+        TypeService typeService = TypeService.valueOf(values[0]);
+        String serviceName = values[1];
+        BigDecimal price = new BigDecimal(values[2]);
+        String timeStr = values[3];
+        String[] parts = timeStr.split(":");
 
+        int hours = Integer.parseInt(parts[0].trim());
+        int minutes = Integer.parseInt(parts[1].trim());
+        Duration duration = Duration.ofHours(hours).plusMinutes(minutes);
+        Client client = clientService.getClientById(Long.parseLong(values[4]));
+        Date date = dateFormat.parse(values[5]);
+        Service service = new Service(typeService, serviceName, price, duration, client, date);
+        addService(service);
+        }
+        catch (Exception e){
+            System.out.println("Ошибка при парсинге строки: " + line);
+        }
     }
 }

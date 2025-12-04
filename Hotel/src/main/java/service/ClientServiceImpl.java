@@ -1,12 +1,15 @@
 package service;
 
 import model.Client;
+import model.Service;
 
 import java.io.*;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.*;
 
-public class ClientServiceImpl implements ClientService,FileService {
+public class ClientServiceImpl extends FileServiceImpl<Client> implements ClientService  {
     private static ClientServiceImpl instance;
     private Map<Long, Client> clients = new HashMap<>();
     private ClientServiceImpl() {}
@@ -47,49 +50,36 @@ public class ClientServiceImpl implements ClientService,FileService {
     }
     @Override
     public void addClientFromFile(){
-
-        try (BufferedReader br = new BufferedReader(new FileReader(FileService.checkFile(clientFile)))){
-            String line;
-            Date date;
-            String name, surname;
-            Client.Gender gender;
-            while ((line = br.readLine()) != null) {
-                String values[] = line.split(",");
-                try {
-                if(values.length == 4) {
-                    name = values[0];
-                    surname = values[1];
-                    date = dateFormat.parse(values[2]);
-                    gender = Client.Gender.valueOf(values[3]);
-                    Client client = new Client(date, name, surname, gender);
-                    addClient(client);
-                }
-                }
-                catch (Exception e) {
-                    System.out.println("Ошибка в данных клиентов");;
-                }
-
-            }
-        }
-        catch (Exception e) {
-            System.out.println("Ошибка чтения данных из файла");
-        }
+        String fileName = "clients.csv";
+        importFromFile(fileName);
     }
     @Override
     public void exportClientsToFile() {
 
-        try(BufferedWriter bw = new BufferedWriter(new FileWriter(FileService.checkFile(clientFile)))) {
-            for(Client client : clients.values()) {
-                String line = client.getName() + "," + client.getSurname() + "," +
-                        dateFormat.format(client.getDateOfBirth()) + "," + client.getGender();
-                bw.write(line);
-                bw.newLine();
-            }
-        }
-        catch (Exception e) {
-            System.out.println("Ошибка записи данных в файл");
-        }
+        String fileName = "clients.csv";
+        exportToFile(fileName,getAllClients());
 
+    }
+    @Override
+    public String writeModel(Client client){
+        String s = client.getName() + "," + client.getSurname() + "," +
+                dateFormat.format(client.getDateOfBirth()) + "," + client.getGender();
+        return s;
+    }
+    @Override
+    public void parseModel(String line){
+        try{
+            String[] values = line.split(",");
+            String name = values[0];
+            String surname = values[1];
+            Date date = dateFormat.parse(values[2]);
+            Client.Gender gender = Client.Gender.valueOf(values[3]);
+            Client client = new Client(date, name, surname, gender);
+            addClient(client);
+        }
+        catch (Exception e){
+            System.out.println("Ошибка при парсинге строки: " + line);
+        }
     }
 
 }
