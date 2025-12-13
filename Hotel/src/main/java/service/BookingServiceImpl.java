@@ -1,5 +1,6 @@
 package service;
 
+import config.HotelConfig;
 import model.Booking;
 import model.Client;
 import model.Room;
@@ -144,6 +145,27 @@ public class BookingServiceImpl extends FileServiceImpl<Booking> implements Book
         }
         catch (Exception e){
             System.out.println("Ошибка при парсинге строки: " + line);
+        }
+    }
+    @Override
+    public List<Booking> getBookingByRoom(int roomNumber) {
+        int limit = HotelConfig.getClientsByRoomLimit();
+        int count = 0;
+        if (bookings.isEmpty()) {
+            return null;
+        } else {
+            List<Booking> newBookings =  new ArrayList<>(bookings.values());
+            List<Booking> result = (bookings.values()).stream().filter(booking -> booking.getRoom().getRoomNumber() == roomNumber).toList();
+            for (Booking booking : result) {
+                if(count <= limit){
+                    count++;
+                    newBookings.add(booking);
+                }else{
+                    break;
+                }
+                return newBookings;
+            }
+            return result;
         }
     }
 }

@@ -10,6 +10,7 @@ public class Room implements Comparable<Room> {
     private RoomType type;
     private Status status;
     private Star stars;
+    public Room() {}
     public Room(int roomNumber, BigDecimal price, int place, RoomType type,Star stars) {
         this.roomNumber = roomNumber;
         this.price = price;

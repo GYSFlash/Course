@@ -22,5 +22,4 @@ public class MultiEntityController extends BaseController{
         String sortBy = readString("Сортировать по (type/price)");
         return service.sort(sortBy);
     }
-
 }

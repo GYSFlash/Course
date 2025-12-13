@@ -16,7 +16,7 @@ public class Booking implements Comparable<Booking> {
     private BigDecimal totalPrice;
     private Room room;
     private Client client;
-
+    public Booking(){}
     public Booking(Date checkInDate, Room room, Client client, Date checkOutDate) {
         this.id = ++counter;
         this.checkInDate = checkInDate;
@@ -32,13 +32,6 @@ public class Booking implements Comparable<Booking> {
         return total;
     }
 
-    public Long getCounter() {
-        return counter;
-    }
-
-    public void setCounter() {
-        this.counter = this.counter + 1;
-    }
 
     public Date getCheckInDate() {
         return checkInDate;

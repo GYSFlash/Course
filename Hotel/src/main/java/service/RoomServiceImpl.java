@@ -1,5 +1,6 @@
 package service;
 
+import config.HotelConfig;
 import model.Client;
 import model.Room;
 import model.Room.*;
@@ -114,6 +115,14 @@ public class RoomServiceImpl extends FileServiceImpl<Room> implements RoomServic
         }
         catch (Exception e){
             System.out.println("Ошибка при парсинге строки: " + line);
+        }
+    }
+    @Override
+    public void changeStatus(int roomNumber, Room.Status status) {
+        if (HotelConfig.getRoomStatusChange()) {
+            rooms.get(roomNumber).setStatus(status);
+        } else {
+            System.out.println("Изменение статуса запрещено");
         }
     }
 }
