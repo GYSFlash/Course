@@ -22,6 +22,7 @@ public class BookingView extends BaseView {
         showMessage("6. Последние 3 брони номера");
         showMessage("7. Сортировка бронирований");
         showMessage("8. Экспорт бронирований в файл CSV");
+        showMessage("9. Вывод всех бронирований по номеру");
         showMessage("0. Назад");
         showMessage("Выберите: ");
     }
@@ -42,6 +43,7 @@ public class BookingView extends BaseView {
             case 6 -> showList("Последние 3 брони номера ",controller.showLastThreeBookings());
             case 7 -> showList("Отсортированные бронирования ",controller.sortBookings());
             case 8 -> {showMessage("Экспорт бронирований завершен "); controller.exportBookings();}
+            case 9 -> showList("Все бронирования по номеру ",controller.getBookingByRoom());
             case 0 -> {
                 return false;
             }

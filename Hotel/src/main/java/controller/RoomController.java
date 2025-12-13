@@ -118,6 +118,13 @@ public class RoomController extends BaseController {
     }
     public void exportRooms() {
         service.exportRoomsToFile();
+    }
+    public boolean changeRoomStatus() {
+        int roomNumber = readInt("Номер комнаты для смены статуса");
+        String statusStr = readString("Новый cтатус (FREE/REPAIR/OCCUPIED)");
+        Room.Status status = Room.Status.valueOf(statusStr.toUpperCase());
+        service.changeStatus(roomNumber, status);
+            return true;
 
     }
 }

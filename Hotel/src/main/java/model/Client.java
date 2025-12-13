@@ -11,7 +11,7 @@ public class Client implements Comparable<Client> {
     private String surname;
     private Date dateOfBirth;
     private Gender gender;
-
+    public Client(){}
     public Client(Date dateOfBirth, String surname, String name, Gender gender) {
         this.id = ++counter;
         this.dateOfBirth = dateOfBirth;

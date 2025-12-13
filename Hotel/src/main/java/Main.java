@@ -6,6 +6,7 @@ import view.*;
 import java.util.Scanner;
 
 public class Main {
+    private static JsonFileService jsonService;
     public static void main(String[] args) {
 
         ViewFactory factory = ViewFactory.getFactory("console");
@@ -15,6 +16,7 @@ public class Main {
         BookingServiceImpl bookingService = BookingServiceImpl.getInstance(roomService, clientService);
         ServiceServiceImpl serviceService = ServiceServiceImpl.getInstance(clientService);
         MultiEntityServiceImpl multiEntityService = MultiEntityServiceImpl.getInstance(roomService, serviceService);
+        jsonService = JsonFileService.getInstance(bookingService,roomService,clientService,serviceService);
 
 
         ClientView clientView = (ClientView) factory.createView(MenuType.CLIENT);
@@ -35,10 +37,11 @@ public class Main {
         serviceView.setController(serviceController);
         otherView.setController(multiEntityController);
 
-        clientController.importClients();
+        /*clientController.importClients();
         roomController.importRooms();
         bookingController.importBookings();
-        serviceController.importServices();
+        serviceController.importServices();*/
+        jsonService.load("all");
 
         runApplication(clientView, roomView, bookingView, serviceView, otherView);
     }
@@ -62,6 +65,7 @@ public class Main {
                 case 0 -> {
                     running = false;
                     System.out.println("Выход из программы...");
+                    saveProgram();
                 }
                 default -> System.out.println("Неверный выбор!");
             }
@@ -121,6 +125,9 @@ public class Main {
             int choice = readInt(scanner);
             inMenu = view.processOperation(choice);
         }
+    }
+    private static void saveProgram() {
+        jsonService.save("all");
     }
 
     private static int readInt(Scanner scanner) {

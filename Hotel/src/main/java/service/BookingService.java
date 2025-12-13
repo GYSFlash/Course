@@ -17,6 +17,6 @@ public interface BookingService {
     Booking getBookingById(Long id);
     void addBookingFromFile();
     void exportBookingToFile();
-
+    List<Booking> getBookingByRoom(int roomNumber);
 
 }

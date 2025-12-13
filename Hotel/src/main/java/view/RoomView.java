@@ -24,6 +24,7 @@ public class RoomView extends BaseView {
         showMessage("7. Сортировка номеров");
         showMessage("8. Найти номер по номеру комнаты");
         showMessage("9. Экспорт комнат в файл CSV");
+        showMessage("10. Смена статуса номера");
         showMessage("0. Назад");
         showMessage("Выберите: ");
     }
@@ -32,7 +33,7 @@ public class RoomView extends BaseView {
             case 1 -> {if(controller.addRoom())
             showMessage("Номер добавлен");
             else showError("Номер уже существует");}
-            case 2 -> showList(" ",controller.showAllRooms());
+            case 2 -> showList("Все номера",controller.showAllRooms());
             case 3 -> {if(controller.deleteRoom())
             showMessage("Номер удален");
             else showError("Номер не найден");}
@@ -44,6 +45,7 @@ public class RoomView extends BaseView {
             case 7 -> showList("Сортировка номеров",controller.sortRooms());
             case 8 -> showMessage("Номер с заданным id " + controller.findRoomByNumber());
             case 9 -> {showMessage("Экспорт комнат завершен"); controller.exportRooms();}
+            case 10 -> {showMessage("Статус изменен"); controller.changeRoomStatus(); }
             case 0 -> {
                 return false;
             }

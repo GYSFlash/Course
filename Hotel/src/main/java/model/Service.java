@@ -15,6 +15,7 @@ public class Service implements Comparable<Service> {
     private Duration duration;
     private Date date;
     private Client client;
+    public Service() {}
     public Service(TypeService typeService,String serviceName, BigDecimal servicePrice, Duration duration, Client client, Date date) {
         this.id = ++counter;
         this.typeService = typeService;
