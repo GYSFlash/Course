@@ -120,8 +120,8 @@ public class BookingController extends BaseController {
     public void exportBookings() {
         service.exportBookingToFile();
     }
-    public List<Booking> getBookingByRoom(){
+    public List<Client> getClientsStaysByRoom(){
         int roomNumber = readInt("Номер комнаты");
-        return service.getBookingByRoom(roomNumber);
+        return service.getClientsStaysByRoom(roomNumber);
     }
 }

@@ -6,7 +6,7 @@ import view.*;
 import java.util.Scanner;
 
 public class Main {
-    private static JsonFileService jsonService;
+    private static FileController fileController;
     public static void main(String[] args) {
 
         ViewFactory factory = ViewFactory.getFactory("console");
@@ -16,7 +16,7 @@ public class Main {
         BookingServiceImpl bookingService = BookingServiceImpl.getInstance(roomService, clientService);
         ServiceServiceImpl serviceService = ServiceServiceImpl.getInstance(clientService);
         MultiEntityServiceImpl multiEntityService = MultiEntityServiceImpl.getInstance(roomService, serviceService);
-        jsonService = JsonFileService.getInstance(bookingService,roomService,clientService,serviceService);
+        JsonFileService jsonService = JsonFileService.getInstance(bookingService,roomService,clientService,serviceService);
 
 
         ClientView clientView = (ClientView) factory.createView(MenuType.CLIENT);
@@ -30,19 +30,15 @@ public class Main {
         BookingController bookingController = BookingController.getInstance(bookingService,clientService,roomService);
         ServiceController serviceController = ServiceController.getInstance(serviceService,clientService);
         MultiEntityController multiEntityController =  MultiEntityController.getInstance(multiEntityService);
+        fileController = FileController.getInstance(jsonService);
 
-        clientView.setController(clientController);
-        roomView.setController(roomController);
-        bookingView.setController(bookingController);
-        serviceView.setController(serviceController);
+        clientView.setController(clientController,fileController);
+        roomView.setController(roomController,fileController);
+        bookingView.setController(bookingController,fileController);
+        serviceView.setController(serviceController,fileController);
         otherView.setController(multiEntityController);
 
-        /*clientController.importClients();
-        roomController.importRooms();
-        bookingController.importBookings();
-        serviceController.importServices();*/
-        jsonService.load("all");
-
+        fileController.loadAll();
         runApplication(clientView, roomView, bookingView, serviceView, otherView);
     }
 
@@ -127,7 +123,7 @@ public class Main {
         }
     }
     private static void saveProgram() {
-        jsonService.save("all");
+        fileController.saveAll();
     }
 
     private static int readInt(Scanner scanner) {

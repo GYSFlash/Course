@@ -148,24 +148,22 @@ public class BookingServiceImpl extends FileServiceImpl<Booking> implements Book
         }
     }
     @Override
-    public List<Booking> getBookingByRoom(int roomNumber) {
+    public List<Client> getClientsStaysByRoom(int roomNumber) {
         int limit = HotelConfig.getClientsByRoomLimit();
-        int count = 0;
         if (bookings.isEmpty()) {
             return null;
         } else {
             List<Booking> newBookings =  new ArrayList<>(bookings.values());
-            List<Booking> result = (bookings.values()).stream().filter(booking -> booking.getRoom().getRoomNumber() == roomNumber).toList();
-            for (Booking booking : result) {
-                if(count <= limit){
-                    count++;
-                    newBookings.add(booking);
-                }else{
-                    break;
+            List<Client> clients = new ArrayList<>();
+            for (Booking booking : newBookings) {
+                if (booking.getRoom().getRoomNumber() == roomNumber) {
+                    clients.add(booking.getClient());
                 }
-                return newBookings;
             }
+            List<Client> result = clients.stream().distinct().limit(limit).toList();
             return result;
+
+
         }
     }
 }

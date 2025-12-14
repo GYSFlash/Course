@@ -6,7 +6,7 @@ import java.util.Properties;
 
 public class HotelConfig {
     public static final Properties properties = new Properties();
-    private static final String CONFIG_PATH = "src/main/resources/config.properties";
+    private static final String CONFIG_PATH = "Hotel/src/main/resources/config.properties";
 
     static {
         try (FileReader reader = new FileReader(CONFIG_PATH)) {

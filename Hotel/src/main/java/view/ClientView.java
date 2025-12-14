@@ -2,13 +2,16 @@ package view;
 
 
 import controller.ClientController;
+import controller.FileController;
 
 
 public class ClientView extends BaseView {
     private ClientController controller;
+    private FileController fileController;
 
-    public void setController(ClientController controller) {
+    public void setController(ClientController controller, FileController fileController) {
         this.controller = controller;
+        this.fileController = fileController;
     }
     @Override
     public void showMenu() {
@@ -33,7 +36,7 @@ public class ClientView extends BaseView {
                     else showMessage("Клиент не найден");}
             case 5 -> showMessage("Всего клиентов: " + controller.showClientsCount());
             case 6 -> {
-            showMessage("Экспорт клиентов в файл выполнен"); controller.exportClients();}
+            showMessage("Экспорт клиентов в файл выполнен"); fileController.saveClients();}
             case 0 -> {
                 return false;
             }

@@ -3,13 +3,16 @@ package view;
 
 
 import controller.BookingController;
+import controller.FileController;
 
 
 public class BookingView extends BaseView {
     private BookingController controller;
+    private FileController fileController;
 
-    public void setController(BookingController controller) {
+    public void setController(BookingController controller, FileController fileController) {
         this.controller = controller;
+        this.fileController = fileController;
     }
     @Override
     public void showMenu() {
@@ -21,7 +24,7 @@ public class BookingView extends BaseView {
         showMessage("5. Свободные номера на даты");
         showMessage("6. Последние 3 брони номера");
         showMessage("7. Сортировка бронирований");
-        showMessage("8. Экспорт бронирований в файл CSV");
+        showMessage("8. Экспорт бронирований в файл");
         showMessage("9. Вывод всех бронирований по номеру");
         showMessage("0. Назад");
         showMessage("Выберите: ");
@@ -42,8 +45,8 @@ public class BookingView extends BaseView {
             case 5 -> showList("Свободные номера на даты ",controller.showFreeRoomsByDate());
             case 6 -> showList("Последние 3 брони номера ",controller.showLastThreeBookings());
             case 7 -> showList("Отсортированные бронирования ",controller.sortBookings());
-            case 8 -> {showMessage("Экспорт бронирований завершен "); controller.exportBookings();}
-            case 9 -> showList("Все бронирования по номеру ",controller.getBookingByRoom());
+            case 8 -> {showMessage("Экспорт бронирований завершен "); fileController.saveBookings();}
+            case 9 -> showList("Все клиенты бронировавшие номер ",controller.getClientsStaysByRoom());
             case 0 -> {
                 return false;
             }

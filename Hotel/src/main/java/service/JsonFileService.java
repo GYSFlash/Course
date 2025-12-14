@@ -42,6 +42,10 @@ public class JsonFileService {
     public File checkFile(String fileName){
         File file = new File(fileName);
         try{
+            File parentDir = file.getParentFile();
+            if(!parentDir.exists()){
+                parentDir.mkdirs();
+            }
             if(!file.exists()){
                 file.createNewFile();
             }
@@ -50,97 +54,85 @@ public class JsonFileService {
         }
         return file;
     }
-    public void save(String serviceName){
-        switch (serviceName){
-            case "clients"->{try{
+    public void saveClients(){
+        try{
             mapper.writeValue(checkFile(CLIENTS_FILE), clientService.getAllClients());}
-            catch (IOException e){
-                System.out.println("Ошибка в записи данных");
-            }
-            }
-            case "bookings"->{try{
-                mapper.writeValue(checkFile(BOOKINGS_FILE), bookingService.getAllBookings());}
-            catch (IOException e){
-                System.out.println("Ошибка в записи данных");
-            }
-            }
-            case "rooms"->{try{
-                mapper.writeValue(checkFile(ROOMS_FILE), roomService.getAllRooms());}
-            catch (IOException e){
-                System.out.println("Ошибка в записи данных");
-            }
-            }
-            case "services"->{try{
-                mapper.writeValue(checkFile(SERVICES_FILE), serviceService.getAllServices());}
-            catch (IOException e){
-                System.out.println("Ошибка в записи данных");
-            }
-            }
-            case "all"->{
-                for (String s: new String[]{"clients", "bookings", "rooms", "services"}){
-                    save(s);
-                }
-            }
-            default -> {System.out.println("Неверный выбор");}
+        catch (IOException e){
+            System.out.println("Ошибка в записи данных");
         }
-
     }
-
-    public void load(String serviceName) {
-        switch (serviceName) {
-            case "clients" -> {
-                try {
-                    File file = new File(CLIENTS_FILE);
-                    if (!file.exists() || file.length() == 0) return;
-                    var list = mapper.readValue(file, new TypeReference<List<Client>>() {});
-                    list.forEach(clientService::addClient);
-                } catch (IOException e) {
-                    System.out.println("Ошибка чтения clients.json");
-                }
-            }
-
-            case "bookings" -> {
-
-                try {
-                    File file = new File(BOOKINGS_FILE);
-                    if (!file.exists() || file.length() == 0) return;
-                    var list = mapper.readValue(file, new TypeReference<List<Booking>>() {});
-                    list.forEach(bookingService::addBooking);
-                } catch (IOException e) {
-                    System.out.println("Ошибка чтения bookings.json");
-                }
-            }
-
-            case "rooms" -> {
-                try {
-                    File file = new File(ROOMS_FILE);
-                    if (!file.exists() || file.length() == 0) return;
-                    var list = mapper.readValue(file, new TypeReference<List<Room>>() {});
-                    list.forEach(roomService::addRoom);
-                } catch (IOException e) {
-                    System.out.println("Ошибка чтения rooms.json");
-                }
-            }
-
-            case "services" -> {
-                try {
-                    File file = new File(SERVICES_FILE);
-                    if (!file.exists() || file.length() == 0) return;
-                    var list = mapper.readValue(file, new TypeReference<List<Service>>() {});
-                    list.forEach(serviceService::addService);
-                } catch (IOException e) {
-                    System.out.println("Ошибка чтения services.json");
-                }
-            }
-
-            case "all" -> {
-                for (String s : new String[]{"clients", "bookings", "rooms", "services"}) {
-                    load(s);
-                }
-            }
-
-            default -> System.out.println("Неверный выбор");
+    public void saveBookings(){
+        try{
+            mapper.writeValue(checkFile(BOOKINGS_FILE), bookingService.getAllBookings());}
+        catch (IOException e){
+            System.out.println("Ошибка в записи данных");
         }
+    }
+    public void saveRooms(){
+        try{
+            mapper.writeValue(checkFile(ROOMS_FILE), roomService.getAllRooms());}
+        catch (IOException e){
+            System.out.println("Ошибка в записи данных");
+        }
+    }
+    public void saveServices(){
+        try{
+            mapper.writeValue(checkFile(SERVICES_FILE), serviceService.getAllServices());}
+        catch (IOException e){
+            System.out.println("Ошибка в записи данных");
+        }
+    }
+    public void saveAll(){
+        saveClients();
+        saveBookings();
+        saveRooms();
+        saveServices();
+    }
+    public void loadClients(){
+        try {
+            File file = new File(CLIENTS_FILE);
+            if (!file.exists() || file.length() == 0) return;
+            var list = mapper.readValue(file, new TypeReference<List<Client>>() {});
+            list.forEach(clientService::addClient);
+        } catch (IOException e) {
+            System.out.println("Ошибка чтения clients.json");
+        }
+    }
+    public void loadBookings() {
+        try {
+            File file = new File(BOOKINGS_FILE);
+            if (!file.exists() || file.length() == 0) return;
+            var list = mapper.readValue(file, new TypeReference<List<Booking>>() {});
+            list.forEach(bookingService::addBooking);
+        } catch (IOException e) {
+            System.out.println("Ошибка чтения bookings.json");
+        }
+    }
+    public void loadRooms() {
+        try {
+            File file = new File(ROOMS_FILE);
+            if (!file.exists() || file.length() == 0) return;
+            var list = mapper.readValue(file, new TypeReference<List<Room>>() {});
+            list.forEach(roomService::addRoom);
+        } catch (IOException e) {
+            System.out.println("Ошибка чтения rooms.json");
+        }
+    }
+    public void loadServices() {
+        try {
+            File file = new File(SERVICES_FILE);
+            if (!file.exists() || file.length() == 0) return;
+            var list = mapper.readValue(file, new TypeReference<List<Service>>() {});
+            list.forEach(serviceService::addService);
+        } catch (IOException e) {
+            System.out.println("Ошибка чтения services.json");
+        }
+    }
+    public void loadAll() {
+        loadClients();
+        loadBookings();
+        loadRooms();
+        loadServices();
     }
 
 }
