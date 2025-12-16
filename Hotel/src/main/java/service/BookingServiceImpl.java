@@ -103,6 +103,7 @@ public class BookingServiceImpl extends FileServiceImpl<Booking> implements Book
         switch (sortBy) {
             case "client" -> bookingList.sort(Comparator.comparing(Booking::getClient));
             case "checkOutDate"-> bookingList.sort(Comparator.comparing(Booking::getCheckOutDate));
+            case "checkInDate" -> bookingList.sort(Comparator.comparing(Booking::getCheckInDate));
             default -> {
                 System.out.println("Некорректный параметр сортировки");
                 return null;
@@ -153,17 +154,17 @@ public class BookingServiceImpl extends FileServiceImpl<Booking> implements Book
         if (bookings.isEmpty()) {
             return null;
         } else {
-            List<Booking> newBookings =  new ArrayList<>(bookings.values());
-            List<Client> clients = new ArrayList<>();
+            List<Booking> newBookings = sort("checkInDate");
+            Set<Client> clients = new LinkedHashSet<>();
             for (Booking booking : newBookings) {
                 if (booking.getRoom().getRoomNumber() == roomNumber) {
                     clients.add(booking.getClient());
+                    if (clients.size() >= limit) {
+                        break;
+                    }
                 }
             }
-            List<Client> result = clients.stream().distinct().limit(limit).toList();
-            return result;
-
-
+            return new ArrayList<>(clients);
         }
     }
 }
