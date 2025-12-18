@@ -21,4 +21,7 @@ public class HotelConfig {
     public static int getClientsByRoomLimit() {
         return Integer.parseInt(properties.getProperty("booking.history.record.limit"));
     }
+    public static String getNameFileType(){
+        return properties.getProperty("filetype.data.used");
+    }
 }

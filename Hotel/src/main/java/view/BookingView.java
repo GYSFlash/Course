@@ -8,11 +8,9 @@ import controller.FileController;
 
 public class BookingView extends BaseView {
     private BookingController controller;
-    private FileController fileController;
 
-    public void setController(BookingController controller, FileController fileController) {
+    public void setController(BookingController controller) {
         this.controller = controller;
-        this.fileController = fileController;
     }
     @Override
     public void showMenu() {
@@ -45,7 +43,7 @@ public class BookingView extends BaseView {
             case 5 -> showList("Свободные номера на даты ",controller.showFreeRoomsByDate());
             case 6 -> showList("Последние 3 брони номера ",controller.showLastThreeBookings());
             case 7 -> showList("Отсортированные бронирования ",controller.sortBookings());
-            case 8 -> {showMessage("Экспорт бронирований завершен "); fileController.saveBookings();}
+            case 8 -> {showMessage("Экспорт бронирований завершен "); controller.exportBookings();}
             case 9 -> showList("Все клиенты бронировавшие номер ",controller.getClientsStaysByRoom());
             case 0 -> {
                 return false;

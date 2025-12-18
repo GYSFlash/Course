@@ -6,7 +6,6 @@ import view.*;
 import java.util.Scanner;
 
 public class Main {
-    private static FileController fileController;
     public static void main(String[] args) {
 
         ViewFactory factory = ViewFactory.getFactory("console");
@@ -16,8 +15,6 @@ public class Main {
         BookingServiceImpl bookingService = BookingServiceImpl.getInstance(roomService, clientService);
         ServiceServiceImpl serviceService = ServiceServiceImpl.getInstance(clientService);
         MultiEntityServiceImpl multiEntityService = MultiEntityServiceImpl.getInstance(roomService, serviceService);
-        JsonFileService jsonService = JsonFileService.getInstance(bookingService,roomService,clientService,serviceService);
-
 
         ClientView clientView = (ClientView) factory.createView(MenuType.CLIENT);
         RoomView roomView = (RoomView) factory.createView(MenuType.ROOM);
@@ -30,15 +27,18 @@ public class Main {
         BookingController bookingController = BookingController.getInstance(bookingService,clientService,roomService);
         ServiceController serviceController = ServiceController.getInstance(serviceService,clientService);
         MultiEntityController multiEntityController =  MultiEntityController.getInstance(multiEntityService);
-        fileController = FileController.getInstance(jsonService);
 
-        clientView.setController(clientController,fileController);
-        roomView.setController(roomController,fileController);
-        bookingView.setController(bookingController,fileController);
-        serviceView.setController(serviceController,fileController);
+        clientView.setController(clientController);
+        roomView.setController(roomController);
+        bookingView.setController(bookingController);
+        serviceView.setController(serviceController);
         otherView.setController(multiEntityController);
 
-        fileController.loadAll();
+        clientController.importClients();
+        roomController.importRooms();
+        bookingController.importBookings();
+        serviceController.importServices();
+
         runApplication(clientView, roomView, bookingView, serviceView, otherView);
     }
 
@@ -61,7 +61,6 @@ public class Main {
                 case 0 -> {
                     running = false;
                     System.out.println("Выход из программы...");
-                    saveProgram();
                 }
                 default -> System.out.println("Неверный выбор!");
             }
@@ -122,10 +121,6 @@ public class Main {
             inMenu = view.processOperation(choice);
         }
     }
-    private static void saveProgram() {
-        fileController.saveAll();
-    }
-
     private static int readInt(Scanner scanner) {
         try {
             return Integer.parseInt(scanner.nextLine());

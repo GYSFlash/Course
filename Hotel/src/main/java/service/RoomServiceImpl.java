@@ -1,5 +1,6 @@
 package service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import config.HotelConfig;
 import model.Client;
 import model.Room;
@@ -85,12 +86,12 @@ public class RoomServiceImpl extends FileServiceImpl<Room> implements RoomServic
     }
     @Override
     public void addRoomsFromFile(){
-        String fileName = "rooms.csv";
+        String fileName = "rooms";
         importFromFile(fileName);
     }
     @Override
     public void exportRoomsToFile() {
-        String fileName = "rooms.csv";
+        String fileName = "rooms";
         exportToFile(fileName,getAllRooms());
 
     }
@@ -124,5 +125,15 @@ public class RoomServiceImpl extends FileServiceImpl<Room> implements RoomServic
         } else {
             System.out.println("Изменение статуса запрещено");
         }
+    }
+    @Override
+    public void parseModelJSON(List<Room> list){
+        for (Room room: list) {
+            addRoom(room);
+        }
+    }
+    @Override
+    public TypeReference<List<Room>> getTypeReference(){
+        return new TypeReference<List<Room>>(){};
     }
 }

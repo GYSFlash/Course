@@ -1,5 +1,6 @@
 package service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import model.Client;
 import model.Service;
 
@@ -50,13 +51,13 @@ public class ClientServiceImpl extends FileServiceImpl<Client> implements Client
     }
     @Override
     public void addClientFromFile(){
-        String fileName = "clients.csv";
+        String fileName = "clients";
         importFromFile(fileName);
     }
     @Override
     public void exportClientsToFile() {
 
-        String fileName = "clients.csv";
+        String fileName = "clients";
         exportToFile(fileName,getAllClients());
 
     }
@@ -80,6 +81,16 @@ public class ClientServiceImpl extends FileServiceImpl<Client> implements Client
         catch (Exception e){
             System.out.println("Ошибка при парсинге строки: " + line);
         }
+    }
+    @Override
+    public void parseModelJSON(List<Client> clients){
+        for(Client client: clients){
+            addClient(client);
+        }
+    }
+    @Override
+    public TypeReference<List<Client>> getTypeReference(){
+        return new TypeReference<List<Client>>(){};
     }
 
 }

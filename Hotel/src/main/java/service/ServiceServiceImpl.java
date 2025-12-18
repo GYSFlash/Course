@@ -1,5 +1,6 @@
 package service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import model.Booking;
 import model.Client;
 import model.Service.*;
@@ -71,13 +72,13 @@ public class ServiceServiceImpl extends FileServiceImpl<Service> implements Serv
     }
     @Override
     public void addServiceFromFile(){
-        String fileName = "services.csv";
+        String fileName = "services";
         importFromFile(fileName);
 
     }
     @Override
     public void exportServiceToFile() {
-        String fileName = "services.csv";
+        String fileName = "services";
         exportToFile(fileName,getAllServices());
     }
     @Override
@@ -109,5 +110,15 @@ public class ServiceServiceImpl extends FileServiceImpl<Service> implements Serv
         catch (Exception e){
             System.out.println("Ошибка при парсинге строки: " + line);
         }
+    }
+    @Override
+    public void parseModelJSON(List<Service> list){
+        for(Service service : list){
+            addService(service);
+        }
+    }
+    @Override
+    public TypeReference<List<Service>> getTypeReference(){
+        return new TypeReference<List<Service>>(){};
     }
 }

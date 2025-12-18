@@ -1,5 +1,6 @@
 package service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import config.HotelConfig;
 import model.Booking;
 import model.Client;
@@ -117,12 +118,12 @@ public class BookingServiceImpl extends FileServiceImpl<Booking> implements Book
     }
     @Override
     public void addBookingFromFile(){
-        String fileName = "bookings.csv";
+        String fileName = "bookings";
         importFromFile(fileName);
     }
     @Override
     public void exportBookingToFile() {
-        String fileName = "bookings.csv";
+        String fileName = "bookings";
         exportToFile(fileName,getAllBookings());
 
     }
@@ -166,5 +167,15 @@ public class BookingServiceImpl extends FileServiceImpl<Booking> implements Book
             }
             return new ArrayList<>(clients);
         }
+    }
+    @Override
+    public void parseModelJSON(List<Booking> list){
+        for (Booking booking : list) {
+            addBooking(booking);
+        }
+    }
+    @Override
+    public TypeReference<List<Booking>> getTypeReference(){
+        return new TypeReference<List<Booking>>(){};
     }
 }

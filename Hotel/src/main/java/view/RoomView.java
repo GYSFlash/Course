@@ -7,10 +7,8 @@ import controller.RoomController;
 public class RoomView extends BaseView {
 
     private RoomController controller;
-    private FileController fileController;
-    public void setController(RoomController controller, FileController fileController) {
+    public void setController(RoomController controller) {
         this.controller = controller;
-        this.fileController = fileController;
     }
 
 
@@ -46,7 +44,7 @@ public class RoomView extends BaseView {
             case 6 -> showMessage("Количество свободных номеров: " + controller.showFreeRoomsCount());
             case 7 -> showList("Сортировка номеров",controller.sortRooms());
             case 8 -> showMessage("Номер с заданным id " + controller.findRoomByNumber());
-            case 9 -> {showMessage("Экспорт комнат завершен"); fileController.saveRooms();}
+            case 9 -> {showMessage("Экспорт комнат завершен"); controller.exportRooms();}
             case 10 -> {showMessage("Статус изменен"); controller.changeRoomStatus(); }
             case 0 -> {
                 return false;

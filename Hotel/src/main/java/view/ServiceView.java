@@ -8,10 +8,8 @@ import controller.ServiceController;
 
 public class ServiceView extends BaseView {
     private ServiceController controller;
-    private FileController fileController;
-    public void setController(ServiceController controller, FileController fileController) {
+    public void setController(ServiceController controller) {
         this.controller = controller;
-        this.fileController = fileController;
     }
 
     @Override
@@ -43,7 +41,7 @@ public class ServiceView extends BaseView {
             case 5 -> showList("Отсортированные услуги: ",controller.sortServices());
             case 6 -> showMessage("Найденная услуга: " + controller.getServiceById());
             case 7 -> {showMessage("Экспорт услуг завершен!");
-            fileController.saveServices();}
+            controller.exportServices();}
             case 0 -> {return false;}
             default -> showError("Неверный выбор!");
         }
