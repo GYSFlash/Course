@@ -26,18 +26,28 @@ public class RoomController extends BaseController {
     public boolean addRoom() {
         int roomNumber = readInt("Номер комнаты");
         if (service.getRoomByRoomNumber(roomNumber) != null) {
+            System.out.println("Комната с таким номером уже существует");
             return false;
         }
         double price = readDouble("Цена за ночь");
 
         int places = readInt("Количество мест");
-
-        String typeStr = readString("Тип (STANDART/STANDARTPLUS/LUX/DELUXE/PRESIDENT)");
-        Room.RoomType type = Room.RoomType.valueOf(typeStr.toUpperCase());
-
-        String starsStr = readString("Звезды (ONE/TWO/THREE/FOUR/FIVE)");
-        Room.Star stars = Room.Star.valueOf(starsStr.toUpperCase());
-
+        Room.RoomType type;
+        try {
+            String typeStr = readString("Тип (STANDART/STANDARTPLUS/LUX/DELUXE/PRESIDENT)");
+            type = Room.RoomType.valueOf(typeStr.toUpperCase());
+        }catch (Exception e){
+            System.out.println("Недопустимый тип комнаты");
+            return false;
+        }
+        Room.Star stars;
+        try {
+            String starsStr = readString("Звезды (ONE/TWO/THREE/FOUR/FIVE)");
+            stars = Room.Star.valueOf(starsStr.toUpperCase());
+        }catch (Exception e){
+            System.out.println("Недопустимое количество звезд");
+            return false;
+        }
         Room room = new Room(roomNumber, BigDecimal.valueOf(price), places, type, stars);
         service.addRoom(room);
         return true;
@@ -73,13 +83,25 @@ public class RoomController extends BaseController {
             case "place" -> {int places = readInt("Новое количество мест");
                 room.setPlace(places);
             }
-            case "type" -> {String typeStr = readString("Тип (STANDART/STANDARTPLUS/LUX/DELUXE/PRESIDENT)");
+            case "type" -> {
+                try{String typeStr = readString("Тип (STANDART/STANDARTPLUS/LUX/DELUXE/PRESIDENT)");
                 room.setType(Room.RoomType.valueOf(typeStr.toUpperCase()));
+                }catch (Exception e){
+                    System.out.println("Недопустимый тип комнаты");
+                    return false;
+                }
             }
-            case "star" -> {String starsStr = readString("Звезды (ONE/TWO/THREE/FOUR/FIVE)");
-                room.setStars(Room.Star.valueOf(starsStr.toUpperCase()));
+            case "star" -> {
+                try {
+                    String starsStr = readString("Звезды (ONE/TWO/THREE/FOUR/FIVE)");
+                    room.setStars(Room.Star.valueOf(starsStr.toUpperCase()));
+                } catch (Exception e) {
+                    System.out.println("Недопустимое количество звезд");
+                    return false;
+                }
             }
-            default -> {return false;
+            default -> {
+                return false;
             }
 
         }

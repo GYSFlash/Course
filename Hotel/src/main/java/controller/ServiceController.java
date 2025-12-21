@@ -29,9 +29,15 @@ public class ServiceController extends BaseController {
         return instance;
     }
     public boolean addService() {
-        String typeStr = readString("Тип услуги (ROOM/FOOD/OTHER)");
-        Service.TypeService type = Service.TypeService.valueOf(typeStr.toUpperCase());
-
+        Service.TypeService type;
+        try {
+            String typeStr = readString("Тип услуги (ROOM/FOOD/OTHER)");
+            type = Service.TypeService.valueOf(typeStr.toUpperCase());
+        }
+        catch (Exception e){
+            System.out.println("Недопустимый тип услуги");
+            return false;
+        }
         String name = readString("Название услуги");
 
         double price = readDouble("Цена услуги");
@@ -42,6 +48,7 @@ public class ServiceController extends BaseController {
         duration = Duration.ofHours(hours).plusMinutes(minutes);
         Long id = readLong("ID клиента");
         if (clientService.getClientById(id) == null) {
+            System.out.println("Клиент не найден");
             return false;
         }
         Client client = clientService.getClientById(id);
@@ -71,9 +78,14 @@ public class ServiceController extends BaseController {
         String change = readString("Изменить (type/name/price/duration/client)");
         switch (change) {
             case "type" -> {
-                String typeStr = readString("Новый тип услуги (ROOM/FOOD/OTHER)");
-                Service.TypeService type =  Service.TypeService.valueOf(typeStr.toUpperCase());
-                service.setTypeService(type);
+                try {
+                    String typeStr = readString("Новый тип услуги (ROOM/FOOD/OTHER)");
+                    Service.TypeService type = Service.TypeService.valueOf(typeStr.toUpperCase());
+                    service.setTypeService(type);
+                }catch (Exception e){
+                    System.out.println("Недопустимый тип услуги");
+                    return false;
+                }
             }
             case "name" -> {String name = readString("Новое название услуги");
                 service.setServiceName(name);
@@ -88,6 +100,10 @@ public class ServiceController extends BaseController {
             }
             case "client" -> { Long idClient = readLong("ID клиента");
                 Client client = clientService.getClientById(idClient);
+                if (client == null) {
+                    System.out.println("Клиент не найден");
+                    return false;
+                }
                 service.setClient(client);
             }
             default -> {

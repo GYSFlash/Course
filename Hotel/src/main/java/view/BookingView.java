@@ -30,8 +30,9 @@ public class BookingView extends BaseView {
 
     public boolean processOperation(int choice) {
         switch (choice) {
-            case 1 -> {controller.addBooking();
+            case 1 -> {if(controller.addBooking())
                 showMessage("Бронирование добавлено");
+                else showError("Ошибка при добавлении бронирования");
             }
             case 2 -> showList("Все бронирования",controller.showAllBookings());
             case 3 -> {if(controller.deleteBooking())

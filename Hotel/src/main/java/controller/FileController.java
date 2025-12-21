@@ -1,47 +1,40 @@
 package controller;
 
-import service.JsonFileService;
+
+import controller.*;
 
 public class FileController extends BaseController {
     private static FileController instance;
-    private JsonFileService fileService;
-    public FileController(JsonFileService fileService) {
-        this.fileService = fileService;
+    private final BookingController bookingController;
+    private final ClientController clientController;
+    private final RoomController roomController;
+    private final ServiceController serviceController;
+    public FileController(BookingController bookingController, ClientController clientController, RoomController roomController, ServiceController serviceController) {
+        this.bookingController = bookingController;
+        this.clientController = clientController;
+        this.roomController = roomController;
+        this.serviceController = serviceController;
     }
-    public static FileController getInstance(JsonFileService fileService) {
+    public static FileController getInstance(BookingController bookingController, ClientController clientController, RoomController roomController, ServiceController serviceController) {
         if (instance == null) {
-            instance = new FileController(fileService);
+            instance = new FileController(bookingController, clientController, roomController, serviceController);
         }
         return instance;
     }
     public void saveAll(){
-        fileService.saveAll();
+
+        clientController.exportClients();
+        roomController.exportRooms();
+        serviceController.exportServices();
+        bookingController.exportBookings();
+
     }
     public void loadAll(){
-        fileService.loadAll();
+        clientController.importClients();
+        roomController.importRooms();
+        serviceController.importServices();
+        bookingController.importBookings();
+
     }
-    public void saveClients(){
-        fileService.saveClients();
-    }
-    public void loadClients(){
-        fileService.loadClients();
-    }
-    public void saveBookings(){
-        fileService.saveBookings();
-    }
-    public void loadBookings(){
-        fileService.loadBookings();
-    }
-    public void saveRooms(){
-        fileService.saveRooms();
-    }
-    public void loadRooms(){
-        fileService.loadRooms();
-    }
-    public void saveServices(){
-        fileService.saveServices();
-    }
-    public void loadServices(){
-        fileService.loadServices();
-    }
+
 }

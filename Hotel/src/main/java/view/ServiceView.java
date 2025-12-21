@@ -28,8 +28,9 @@ public class ServiceView extends BaseView {
 
     public boolean processOperation(int choice) {
         switch (choice) {
-            case 1 -> {controller.addService();
+            case 1 -> {if(controller.addService())
                 showMessage("Услуга добавлена!");
+                else showMessage("Ошибка при добавлении услуги!");
            }
             case 2 -> showList("",controller.showAllServices());
             case 3 -> {if(controller.deleteService())
