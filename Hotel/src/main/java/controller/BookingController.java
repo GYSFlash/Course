@@ -31,9 +31,18 @@ public class BookingController extends BaseController {
 
     public boolean addBooking() {
         String dateStr = readString("Дата въезда (гггг-мм-дд)");
+
         Date checkIn = parseDate(dateStr);
+        if (checkIn == null || checkIn.before(new Date())) {
+            System.out.println("Некорректная дата въезда");
+            return false;
+        }
         dateStr = readString("Дата выезда (гггг-мм-дд)");
         Date checkOut = parseDate(dateStr);
+        if(checkIn.after(checkOut) || checkIn.equals(checkOut)){
+            System.out.println("Некорректная дата въезда");
+            return false;
+        }
         Long id = readLong("ID клиента");
         Client client = clientService.getClientById(id);
         int roomNumber = readInt("Номер комнаты");
@@ -68,22 +77,33 @@ public class BookingController extends BaseController {
             case "dateIn" -> {
                 String dateStr = readString("Новая дата заезда (гггг-мм-дд)");
                 Date newDate = parseDate(dateStr);
+                if (newDate == null || newDate.before(new Date())) {
+                    System.out.println("Некорректная дата въезда");
+                    return false;
+                }
                 booking.setCheckInDate(newDate);
             }
             case "dateOut" -> {
                 String dateStr = readString("Новая дата выезда (гггг-мм-дд)");
                 Date newDate = parseDate(dateStr);
+                if (newDate == null || newDate.after(booking.getCheckInDate())) {
+                    System.out.println("Некорректная дата выезда");
+                    return false;
+                }
                 booking.setCheckOutDate(newDate);
+
             }
             case "client" -> {
                 Long idClient = readLong("Новое id клиента");
                 Client client = clientService.getClientById(idClient);
                 booking.setClient(client);
+
             }
             case "room" -> {
                 int roomNumber = readInt("Новая комната");
                 Room room = roomService.getRoomByRoomNumber(roomNumber);
                 booking.setRoom(room);
+
             }
             default -> { return false;
             }
@@ -111,7 +131,7 @@ public class BookingController extends BaseController {
     }
 
     public List<Booking> sortBookings() {
-        String sortBy = readString("Сортировать по (client/checkOutDate)");
+        String sortBy = readString("Сортировать по (client/checkOutDate/checkInDate)");
         return service.sort(sortBy);
     }
     public void importBookings() {
@@ -119,5 +139,9 @@ public class BookingController extends BaseController {
     }
     public void exportBookings() {
         service.exportBookingToFile();
+    }
+    public List<Client> getClientsStaysByRoom(){
+        int roomNumber = readInt("Номер комнаты");
+        return service.getClientsStaysByRoom(roomNumber);
     }
 }

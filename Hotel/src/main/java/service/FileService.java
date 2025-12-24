@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface FileService<T> {
 
-    void checkFile(String fileName);
+    File checkFile(String fileName);
     void exportToFile(String fileName, List<T> list);
     void importFromFile(String fileName);
 }

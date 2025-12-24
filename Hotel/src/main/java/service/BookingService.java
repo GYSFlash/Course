@@ -1,6 +1,7 @@
 package service;
 
 import model.Booking;
+import model.Client;
 import model.Room;
 
 import java.util.Date;
@@ -17,6 +18,6 @@ public interface BookingService {
     Booking getBookingById(Long id);
     void addBookingFromFile();
     void exportBookingToFile();
-
+    public List<Client> getClientsStaysByRoom(int roomNumber);
 
 }

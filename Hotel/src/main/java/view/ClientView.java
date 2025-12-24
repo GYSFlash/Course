@@ -2,6 +2,7 @@ package view;
 
 
 import controller.ClientController;
+import controller.FileController;
 
 
 public class ClientView extends BaseView {
@@ -24,8 +25,9 @@ public class ClientView extends BaseView {
     }
     public boolean processOperation(int choice) {
         switch (choice) {
-            case 1 -> {controller.addClient();
-            showMessage("Клиент успешно добавлен ");}
+            case 1 -> {if(controller.addClient())
+            showMessage("Клиент успешно добавлен ");
+            else showMessage("Ошибка при добавлении клиента");}
             case 2 -> showList("",controller.showAllClients());
             case 3 -> {if(controller.deleteClient()) showMessage("Клиент успешно удален");
                     else showMessage("Клиент не найден");}

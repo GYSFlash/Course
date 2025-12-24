@@ -5,6 +5,7 @@ import model.Client;
 import service.ClientService;
 
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -29,11 +30,24 @@ public class ClientController extends BaseController{
 
         String dateStr = readString("Дата рождения (гггг-мм-дд)");
         Date dateOfBirth = parseDate(dateStr);
-
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.YEAR, -14);
+        Date date = cal.getTime();
+        if (dateOfBirth == null ) {
+            System.out.println("Неверный формат даты");
+            return false;
+        } else if (dateOfBirth.after(date)) {
+            System.out.println("Возраст меньше 14 лет");
+            return false;
+        }
         String genderStr = readString("Пол (MALE/FEMALE)");
         Client.Gender gender;
-        gender = Client.Gender.valueOf(genderStr.toUpperCase());
-
+        try {
+            gender = Client.Gender.valueOf(genderStr.toUpperCase());
+        } catch (Exception e) {
+            System.out.println("Неверно указан пол");
+            return false;
+        }
         Client client = new Client(dateOfBirth, surname, name, gender);
         service.addClient(client);
         return true;
@@ -69,12 +83,28 @@ public class ClientController extends BaseController{
             case "dateOfBirth" -> {
                 String dateStr = readString("Новая дата рождения (гггг-мм-дд)");
                 Date dateOfBirth = parseDate(dateStr);
+                Calendar cal = Calendar.getInstance();
+                cal.add(Calendar.YEAR, -14);
+                Date date = cal.getTime();
+                if (dateOfBirth == null ) {
+                    System.out.println("Неверный формат даты");
+                    return false;
+                } else if (dateOfBirth.after(date)) {
+                    System.out.println("Возраст меньше 14 лет");
+                    return false;
+                }
                 client.setDateOfBirth(dateOfBirth);
             }
             case "gender" -> {
                 String genderStr = readString("Новый пол (MALE/FEMALE)");
-                Client.Gender gender;
-                client.setGender(Client.Gender.valueOf(genderStr.toUpperCase()));
+
+                try {
+                    client.setGender(Client.Gender.valueOf(genderStr.toUpperCase()));
+            }
+                catch (Exception e) {
+                    System.out.println("Неверно указан пол");
+                    return false;
+                }client.setGender(Client.Gender.valueOf(genderStr.toUpperCase()));
             }
             default -> {
                 return false;
