@@ -40,6 +40,11 @@ public class BookingServiceImpl extends FileServiceImpl<Booking> implements Book
     }
     @Override
     public void addBooking(Booking booking) {
+        if(booking.getClient() == null || booking.getRoom() == null){
+            System.out.println("Некорректные данные клиента или номера");
+            return;
+        }
+        booking.setTotalPrice(booking.calculateTotalPrice());
         bookings.put(booking.getId(), booking);
     }
     @Override
@@ -156,6 +161,7 @@ public class BookingServiceImpl extends FileServiceImpl<Booking> implements Book
             return null;
         } else {
             List<Booking> newBookings = sort("checkInDate");
+            Collections.reverse(newBookings);
             Set<Client> clients = new LinkedHashSet<>();
             for (Booking booking : newBookings) {
                 if (booking.getRoom().getRoomNumber() == roomNumber) {

@@ -45,16 +45,8 @@ public class BookingController extends BaseController {
         }
         Long id = readLong("ID клиента");
         Client client = clientService.getClientById(id);
-        if (client == null) {
-            System.out.println("Клиент не найден");
-            return false;
-        }
         int roomNumber = readInt("Номер комнаты");
         Room room = roomService.getRoomByRoomNumber(roomNumber);
-        if (room == null) {
-            System.out.println("Комната не найдена");
-            return false;
-        }
         Booking booking = new Booking(checkIn, room, client, checkOut);
         service.addBooking(booking);
         return true;
@@ -104,20 +96,12 @@ public class BookingController extends BaseController {
             case "client" -> {
                 Long idClient = readLong("Новое id клиента");
                 Client client = clientService.getClientById(idClient);
-                if (client == null) {
-                    System.out.println("Клиент не найден");
-                    return false;
-                }
                 booking.setClient(client);
 
             }
             case "room" -> {
                 int roomNumber = readInt("Новая комната");
                 Room room = roomService.getRoomByRoomNumber(roomNumber);
-                if (room == null) {
-                    System.out.println("Комната не найдена");
-                    return false;
-                }
                 booking.setRoom(room);
 
             }

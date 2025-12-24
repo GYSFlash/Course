@@ -24,7 +24,6 @@ public class Service implements Comparable<Service> {
         this.duration = duration;
         this.client = client;
         this.date = date;
-        System.out.println("Добавлен новый сервис");
     }
 
     public Long getId() {

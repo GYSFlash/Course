@@ -18,7 +18,6 @@ public class Client implements Comparable<Client> {
         this.surname = surname;
         this.name = name;
         this.gender = gender;
-        System.out.println("Новый клиент");
     }
 
     public Long getId() {

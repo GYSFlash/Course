@@ -27,6 +27,10 @@ public class ServiceServiceImpl extends FileServiceImpl<Service> implements Serv
     }
     @Override
     public void addService(Service service) {
+        if(service.getClient() == null){
+            System.out.println("Клиент не найден");
+            return;
+        }
         services.put(service.getId(), service);
     }
     @Override
@@ -38,7 +42,7 @@ public class ServiceServiceImpl extends FileServiceImpl<Service> implements Serv
     @Override
     public void updateService(Service service) {
         if (services.containsKey(service.getId())) {
-            services.put(service.getId(), service);
+            addService(service);
         }
     }
     @Override

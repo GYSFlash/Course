@@ -18,7 +18,6 @@ public class Room implements Comparable<Room> {
         this.type = type;
         this.status = Status.FREE;
         this.stars = stars;
-        System.out.println("Новая комната создана");
     }
     public void repairRoom(){
         this.status=Status.REPAIR;

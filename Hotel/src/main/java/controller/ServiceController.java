@@ -47,10 +47,6 @@ public class ServiceController extends BaseController {
 
         duration = Duration.ofHours(hours).plusMinutes(minutes);
         Long id = readLong("ID клиента");
-        if (clientService.getClientById(id) == null) {
-            System.out.println("Клиент не найден");
-            return false;
-        }
         Client client = clientService.getClientById(id);
         Service service = new Service(type, name, BigDecimal.valueOf(price),
                 duration,client , new Date());
@@ -100,10 +96,6 @@ public class ServiceController extends BaseController {
             }
             case "client" -> { Long idClient = readLong("ID клиента");
                 Client client = clientService.getClientById(idClient);
-                if (client == null) {
-                    System.out.println("Клиент не найден");
-                    return false;
-                }
                 service.setClient(client);
             }
             default -> {
