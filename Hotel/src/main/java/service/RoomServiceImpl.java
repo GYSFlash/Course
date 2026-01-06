@@ -1,6 +1,7 @@
 package service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import config.Config;
 import config.HotelConfig;
 import model.Client;
 import model.Room;
@@ -15,10 +16,14 @@ import java.util.*;
 public class RoomServiceImpl extends FileServiceImpl<Room> implements RoomService {
     private static RoomServiceImpl instance;
     private Map<Integer,Room> rooms = new HashMap<>();
+    private Config config;
     private RoomServiceImpl(){}
-    public static RoomServiceImpl getInstance(){
+    private RoomServiceImpl(Config config){
+        this.config = config;
+    }
+    public static RoomServiceImpl getInstance(Config config){
         if(instance == null) {
-            instance = new RoomServiceImpl();
+            instance = new RoomServiceImpl(config);
         }
         return instance;
     }
@@ -120,7 +125,7 @@ public class RoomServiceImpl extends FileServiceImpl<Room> implements RoomServic
     }
     @Override
     public void changeStatus(int roomNumber, Room.Status status) {
-        if (HotelConfig.getRoomStatusChange()) {
+        if (config.isRoomStatusChangeEnable()) {
             rooms.get(roomNumber).setStatus(status);
         } else {
             System.out.println("Изменение статуса запрещено");

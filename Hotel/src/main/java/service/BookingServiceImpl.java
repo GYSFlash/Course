@@ -1,6 +1,7 @@
 package service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import config.Config;
 import config.HotelConfig;
 import model.Booking;
 import model.Client;
@@ -21,13 +22,15 @@ public class BookingServiceImpl extends FileServiceImpl<Booking> implements Book
     private Map<Long, Booking> bookings = new HashMap<>();
     private RoomService roomService;
     private ClientService clientService;
-    private BookingServiceImpl(RoomService roomService, ClientService clientService) {
+    private Config config;
+    private BookingServiceImpl(RoomService roomService, ClientService clientService, Config config) {
         this.roomService = roomService;
         this.clientService = clientService;
+        this.config = config;
     }
-    public static BookingServiceImpl getInstance(RoomService roomService, ClientService clientService) {
+    public static BookingServiceImpl getInstance(RoomService roomService, ClientService clientService, Config config) {
         if (instance == null) {
-            instance = new BookingServiceImpl(roomService, clientService);
+            instance = new BookingServiceImpl(roomService, clientService,config);
         }
         return instance;
     }
@@ -156,7 +159,7 @@ public class BookingServiceImpl extends FileServiceImpl<Booking> implements Book
     }
     @Override
     public List<Client> getClientsStaysByRoom(int roomNumber) {
-        int limit = HotelConfig.getClientsByRoomLimit();
+        int limit = config.getBookingHistoryRecordLimit();
         if (bookings.isEmpty()) {
             return null;
         } else {

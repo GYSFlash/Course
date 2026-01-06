@@ -1,5 +1,6 @@
 
 
+import config.*;
 import controller.*;
 import service.*;
 import view.*;
@@ -10,10 +11,12 @@ public class Main {
     public static void main(String[] args) {
 
         ViewFactory factory = ViewFactory.getFactory("console");
+        Config config = new Config();
+        new Configurator().configure(config);
 
         ClientServiceImpl clientService = ClientServiceImpl.getInstance();
-        RoomServiceImpl roomService = RoomServiceImpl.getInstance();
-        BookingServiceImpl bookingService = BookingServiceImpl.getInstance(roomService, clientService);
+        RoomServiceImpl roomService = RoomServiceImpl.getInstance(config);
+        BookingServiceImpl bookingService = BookingServiceImpl.getInstance(roomService, clientService,config);
         ServiceServiceImpl serviceService = ServiceServiceImpl.getInstance(clientService);
         MultiEntityServiceImpl multiEntityService = MultiEntityServiceImpl.getInstance(roomService, serviceService);
 

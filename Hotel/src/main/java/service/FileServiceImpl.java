@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import config.Config;
 import config.HotelConfig;
 import model.Client;
 import model.Service;
@@ -19,6 +20,7 @@ import java.util.List;
 
 public abstract class FileServiceImpl<T> implements FileService<T>{
     public SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+    private Config config;
     private static final ObjectMapper mapper;
     static {
         mapper = new ObjectMapper();
@@ -45,7 +47,7 @@ public abstract class FileServiceImpl<T> implements FileService<T>{
     public void exportToFile(String fileName, List<T> list){
         String fileCSV = "Hotel/src/main/resources/data/" + fileName+".csv";
         String fileJSON = "Hotel/src/main/resources/json/" + fileName+".json";
-        String fileType = HotelConfig.getNameFileType();
+        String fileType = config.getFiletypeDataUsed();
         switch (fileType) {
             case "csv" -> {
                 String line;
