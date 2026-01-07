@@ -6,6 +6,7 @@ import view.*;
 import java.util.Scanner;
 
 public class Main {
+    private static FileController fileController;
     public static void main(String[] args) {
 
         ViewFactory factory = ViewFactory.getFactory("console");
@@ -15,7 +16,6 @@ public class Main {
         BookingServiceImpl bookingService = BookingServiceImpl.getInstance(roomService, clientService);
         ServiceServiceImpl serviceService = ServiceServiceImpl.getInstance(clientService);
         MultiEntityServiceImpl multiEntityService = MultiEntityServiceImpl.getInstance(roomService, serviceService);
-
 
         ClientView clientView = (ClientView) factory.createView(MenuType.CLIENT);
         RoomView roomView = (RoomView) factory.createView(MenuType.ROOM);
@@ -28,6 +28,7 @@ public class Main {
         BookingController bookingController = BookingController.getInstance(bookingService,clientService,roomService);
         ServiceController serviceController = ServiceController.getInstance(serviceService,clientService);
         MultiEntityController multiEntityController =  MultiEntityController.getInstance(multiEntityService);
+        fileController = FileController.getInstance(bookingController, clientController, roomController, serviceController);
 
         clientView.setController(clientController);
         roomView.setController(roomController);
@@ -35,10 +36,7 @@ public class Main {
         serviceView.setController(serviceController);
         otherView.setController(multiEntityController);
 
-        clientController.importClients();
-        roomController.importRooms();
-        bookingController.importBookings();
-        serviceController.importServices();
+        fileController.loadAll();
 
         runApplication(clientView, roomView, bookingView, serviceView, otherView);
     }
@@ -62,6 +60,7 @@ public class Main {
                 case 0 -> {
                     running = false;
                     System.out.println("Выход из программы...");
+                    fileController.saveAll();
                 }
                 default -> System.out.println("Неверный выбор!");
             }
@@ -122,7 +121,6 @@ public class Main {
             inMenu = view.processOperation(choice);
         }
     }
-
     private static int readInt(Scanner scanner) {
         try {
             return Integer.parseInt(scanner.nextLine());

@@ -3,6 +3,7 @@ package view;
 
 
 import controller.BookingController;
+import controller.FileController;
 
 
 public class BookingView extends BaseView {
@@ -21,15 +22,17 @@ public class BookingView extends BaseView {
         showMessage("5. Свободные номера на даты");
         showMessage("6. Последние 3 брони номера");
         showMessage("7. Сортировка бронирований");
-        showMessage("8. Экспорт бронирований в файл CSV");
+        showMessage("8. Экспорт бронирований в файл");
+        showMessage("9. Вывод всех бронирований по номеру");
         showMessage("0. Назад");
         showMessage("Выберите: ");
     }
 
     public boolean processOperation(int choice) {
         switch (choice) {
-            case 1 -> {controller.addBooking();
+            case 1 -> {if(controller.addBooking())
                 showMessage("Бронирование добавлено");
+                else showError("Ошибка при добавлении бронирования");
             }
             case 2 -> showList("Все бронирования",controller.showAllBookings());
             case 3 -> {if(controller.deleteBooking())
@@ -42,6 +45,7 @@ public class BookingView extends BaseView {
             case 6 -> showList("Последние 3 брони номера ",controller.showLastThreeBookings());
             case 7 -> showList("Отсортированные бронирования ",controller.sortBookings());
             case 8 -> {showMessage("Экспорт бронирований завершен "); controller.exportBookings();}
+            case 9 -> showList("Все клиенты бронировавшие номер ",controller.getClientsStaysByRoom());
             case 0 -> {
                 return false;
             }

@@ -16,28 +16,18 @@ public class Booking implements Comparable<Booking> {
     private BigDecimal totalPrice;
     private Room room;
     private Client client;
-
+    public Booking(){}
     public Booking(Date checkInDate, Room room, Client client, Date checkOutDate) {
         this.id = ++counter;
         this.checkInDate = checkInDate;
         this.room = room;
         this.client = client;
         this.checkOutDate = checkOutDate;
-        this.totalPrice = calculateTotalPrice();;
-        System.out.println("Новая бронь создана");
     }
-    private BigDecimal calculateTotalPrice(){
+    public BigDecimal calculateTotalPrice(){
         int days = (int) ((checkOutDate.getTime() - checkInDate.getTime()) / (1000*60*60*24));
         BigDecimal total = room.getPrice().multiply(new BigDecimal(days));
         return total;
-    }
-
-    public Long getCounter() {
-        return counter;
-    }
-
-    public void setCounter() {
-        this.counter = this.counter + 1;
     }
 
     public Date getCheckInDate() {

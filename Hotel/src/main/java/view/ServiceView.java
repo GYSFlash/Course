@@ -2,12 +2,12 @@ package view;
 
 
 
+import controller.FileController;
 import controller.ServiceController;
 
 
 public class ServiceView extends BaseView {
     private ServiceController controller;
-
     public void setController(ServiceController controller) {
         this.controller = controller;
     }
@@ -21,15 +21,16 @@ public class ServiceView extends BaseView {
         showMessage("4. Обновить услугу");
         showMessage("5. Сортировка услуг");
         showMessage("6. Поиск услуги");
-        showMessage("7. Экспорт услуг в файл CSV");
+        showMessage("7. Экспорт услуг в файл");
         showMessage("0. Назад");
         showMessage("Выберите: ");
     }
 
     public boolean processOperation(int choice) {
         switch (choice) {
-            case 1 -> {controller.addService();
+            case 1 -> {if(controller.addService())
                 showMessage("Услуга добавлена!");
+                else showMessage("Ошибка при добавлении услуги!");
            }
             case 2 -> showList("",controller.showAllServices());
             case 3 -> {if(controller.deleteService())

@@ -16,5 +16,6 @@ public interface RoomService {
     Room getRoomByRoomNumber(int roomNumber);
     void addRoomsFromFile();
     void exportRoomsToFile();
+    void changeStatus(int roomNumber, Status status);
 
 }

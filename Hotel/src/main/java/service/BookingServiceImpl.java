@@ -1,5 +1,7 @@
 package service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import config.HotelConfig;
 import model.Booking;
 import model.Client;
 import model.Room;
@@ -38,6 +40,11 @@ public class BookingServiceImpl extends FileServiceImpl<Booking> implements Book
     }
     @Override
     public void addBooking(Booking booking) {
+        if(booking.getClient() == null || booking.getRoom() == null){
+            System.out.println("Некорректные данные клиента или номера");
+            return;
+        }
+        booking.setTotalPrice(booking.calculateTotalPrice());
         bookings.put(booking.getId(), booking);
     }
     @Override
@@ -102,6 +109,7 @@ public class BookingServiceImpl extends FileServiceImpl<Booking> implements Book
         switch (sortBy) {
             case "client" -> bookingList.sort(Comparator.comparing(Booking::getClient));
             case "checkOutDate"-> bookingList.sort(Comparator.comparing(Booking::getCheckOutDate));
+            case "checkInDate" -> bookingList.sort(Comparator.comparing(Booking::getCheckInDate));
             default -> {
                 System.out.println("Некорректный параметр сортировки");
                 return null;
@@ -115,12 +123,12 @@ public class BookingServiceImpl extends FileServiceImpl<Booking> implements Book
     }
     @Override
     public void addBookingFromFile(){
-        String fileName = "bookings.csv";
+        String fileName = "bookings";
         importFromFile(fileName);
     }
     @Override
     public void exportBookingToFile() {
-        String fileName = "bookings.csv";
+        String fileName = "bookings";
         exportToFile(fileName,getAllBookings());
 
     }
@@ -145,5 +153,35 @@ public class BookingServiceImpl extends FileServiceImpl<Booking> implements Book
         catch (Exception e){
             System.out.println("Ошибка при парсинге строки: " + line);
         }
+    }
+    @Override
+    public List<Client> getClientsStaysByRoom(int roomNumber) {
+        int limit = HotelConfig.getClientsByRoomLimit();
+        if (bookings.isEmpty()) {
+            return null;
+        } else {
+            List<Booking> newBookings = sort("checkInDate");
+            Collections.reverse(newBookings);
+            Set<Client> clients = new LinkedHashSet<>();
+            for (Booking booking : newBookings) {
+                if (booking.getRoom().getRoomNumber() == roomNumber) {
+                    clients.add(booking.getClient());
+                    if (clients.size() >= limit) {
+                        break;
+                    }
+                }
+            }
+            return new ArrayList<>(clients);
+        }
+    }
+    @Override
+    public void parseModelJSON(List<Booking> list){
+        for (Booking booking : list) {
+            addBooking(booking);
+        }
+    }
+    @Override
+    public TypeReference<List<Booking>> getTypeReference(){
+        return new TypeReference<List<Booking>>(){};
     }
 }
