@@ -82,7 +82,7 @@ public class ServiceServiceImpl extends FileServiceImpl<Service> implements Serv
     public String writeModel(Service service){
 
         String s = service.getTypeService() + "," + service.getServiceName() + "," + service.getServicePrice() + ","
-                + service.getDuration().toMinutes() + "," + service.getClient().getId() + ","
+                +service.getDuration().toHours() + ":" + service.getDuration().toMinutes()%60 + "," + service.getClient().getId() + ","
                 + dateFormat.format(service.getDate());
         return s;
     }

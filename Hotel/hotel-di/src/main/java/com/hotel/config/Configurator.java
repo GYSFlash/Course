@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import com.hotel.annotations.PropertyType;
 import com.hotel.di.ApplicationContext;
 import com.hotel.annotations.ConfigProperty;
 import lombok.*;
@@ -23,14 +24,7 @@ public class Configurator implements ObjectConfigurator {
 
         Class<?> implClass = t.getClass();
         String path = "config.properties";
-        for (Field field : implClass.getDeclaredFields()) {
-            ConfigProperty annotation = field.getAnnotation(ConfigProperty.class);
-            if (annotation != null) {
-                path = annotation.configFileName();
-                break;
-            }
-        }
-        path = "config.properties";
+
         InputStream is = implClass.getClassLoader().getResourceAsStream(path);
         if (is == null) {
             throw new FileNotFoundException(path + " not found in resources");

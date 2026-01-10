@@ -1,14 +1,13 @@
 package com.hotel.view;
 
 
+import com.hotel.annotations.InjectByType;
+import com.hotel.annotations.Singleton;
 import com.hotel.controller.RoomController;
-
+@Singleton
 public class RoomView extends BaseView {
-
+    @InjectByType
     private RoomController controller;
-    public void setController(RoomController controller) {
-        this.controller = controller;
-    }
 
 
     @Override

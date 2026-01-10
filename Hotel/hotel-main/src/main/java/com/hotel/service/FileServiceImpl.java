@@ -16,8 +16,7 @@ import java.util.List;
 
 public abstract class FileServiceImpl<T> implements FileService<T>{
     public SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
-    @InjectByType
-    private Config config;
+
     private static final ObjectMapper mapper;
     static {
         mapper = new ObjectMapper();
@@ -42,9 +41,9 @@ public abstract class FileServiceImpl<T> implements FileService<T>{
     }
     @Override
     public void exportToFile(String fileName, List<T> list){
-        String fileCSV = "Hotel/src/main/resources/data/" + fileName+".csv";
-        String fileJSON = "Hotel/src/main/resources/json/" + fileName+".json";
-        String fileType = config.getFiletypeDataUsed();
+        String fileCSV = "Hotel/hotel-main/src/main/resources/data/" + fileName+".csv";
+        String fileJSON = "Hotel/hotel-main/src/main/resources/json/" + fileName+".json";
+        String fileType = Config.getFiletypeDataUsed();
         switch (fileType) {
             case "csv" -> {
                 String line;
@@ -76,9 +75,9 @@ public abstract class FileServiceImpl<T> implements FileService<T>{
     }
     @Override
     public void importFromFile(String fileName){
-            String fileCSV = "Hotel/src/main/resources/data/" + fileName + ".csv";
-            String fileJSON = "Hotel/src/main/resources/json/" + fileName + ".json";
-            String fileType = HotelConfig.getNameFileType();
+            String fileCSV = "Hotel/hotel-main/src/main/resources/data/" + fileName + ".csv";
+            String fileJSON = "Hotel/hotel-main/src/main/resources/json/" + fileName + ".json";
+            String fileType = Config.getFiletypeDataUsed();
 
             switch (fileType) {
                 case "csv" -> {

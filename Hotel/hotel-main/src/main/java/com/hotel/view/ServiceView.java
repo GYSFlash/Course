@@ -2,14 +2,14 @@ package com.hotel.view;
 
 
 
+import com.hotel.annotations.InjectByType;
+import com.hotel.annotations.Singleton;
 import com.hotel.controller.ServiceController;
 
-
+@Singleton
 public class ServiceView extends BaseView {
+    @InjectByType
     private ServiceController controller;
-    public void setController(ServiceController controller) {
-        this.controller = controller;
-    }
 
     @Override
     public void showMenu() {
