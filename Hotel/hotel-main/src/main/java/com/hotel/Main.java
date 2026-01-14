@@ -14,9 +14,11 @@ public class Main {
 
         JavaConfig javaConfig = new JavaConfig("com.hotel");
         ApplicationContext context = new ApplicationContext(javaConfig);
-        new ObjectFactory(context);
+        ObjectFactory objectFactory = new ObjectFactory(context);
+        context.setFactory(objectFactory);
         Config config = context.getObject(Config.class);
-        new Configurator().configure(config, context);
+        Configurator configurator = new Configurator();
+        configurator.configure(config, context);
         ViewFactory factory = ViewFactory.getFactory(context);
 
         FileController fileController = context.getObject(FileController.class);

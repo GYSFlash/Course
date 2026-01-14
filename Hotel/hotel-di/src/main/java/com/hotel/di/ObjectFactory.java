@@ -9,13 +9,12 @@ import java.util.List;
 
 public class ObjectFactory {
 
-    private final ApplicationContext context;
+    private ApplicationContext context;
     private final List<ObjectConfigurator> configurators = new ArrayList<>();
 
     @SneakyThrows
     public ObjectFactory(ApplicationContext context) {
         this.context = context;
-        context.setFactory(this);
 
         for (Class<? extends ObjectConfigurator> clazz :
                 context.getConfig().getScanner().getSubTypesOf(ObjectConfigurator.class)) {
