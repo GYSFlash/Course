@@ -11,24 +11,22 @@ public class Task2 {
         }, "Thread 2");
         thread.start();
         thread2.start();
-
-
         }
     public static void run(boolean t) {
-        for (int i = 0; i < 10; i++) {
+        while (true) {
             synchronized (object) {
                 while (T != t) {
                     try{
                     object.wait();
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
+                        return;
                     }
                 }
                 System.out.println(Thread.currentThread().getName());
                 T = !T;
                 object.notify();
             }
-
         }
     }
 }
