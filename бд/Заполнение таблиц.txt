@@ -46,7 +46,7 @@ INSERT INTO product (maker, model, type) VALUES
 ('F', 'R015', 'Printer')
 ON CONFLICT(code) DO NOTHING;
 
-INSERT INTO pc (code, model, speed, ram, hd, cd, price) VALUES
+INSERT INTO pc (code, fk_pc_model, speed, ram, hd, cd, price) VALUES
 (1,'P001',2200,8,256,'24x',450),
 (2,'P002',2400,16,512,'24x',650),
 (3,'P003',2600,16,512,'48x',720),
@@ -64,7 +64,7 @@ INSERT INTO pc (code, model, speed, ram, hd, cd, price) VALUES
 (15,'P015',3200,64,2048,'12x',1400)
 ON CONFLICT(code) DO NOTHING;
 
-INSERT INTO laptop (code, model, speed, ram, hd, price, screen) VALUES
+INSERT INTO laptop (code, fk_laptop_model, speed, ram, hd, price, screen) VALUES
 (1,'L001',2000,16,512,1000,14),
 (2,'L002',2200,16,512,1100,14),
 (3,'L003',2400,32,1024,1300,15),
@@ -82,7 +82,7 @@ INSERT INTO laptop (code, model, speed, ram, hd, price, screen) VALUES
 (15,'L015',3000,64,2048,950,17)
 ON CONFLICT(code) DO NOTHING;
 
-INSERT INTO printer (code, model, color, type, price) VALUES
+INSERT INTO printer (code, fk_printer_model, color, type, price) VALUES
 (1,'R001','y','Laser',300),
 (2,'R002','n','Laser',220),
 (3,'R003','y','Jet',160),
