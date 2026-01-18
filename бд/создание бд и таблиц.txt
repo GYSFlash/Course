@@ -7,30 +7,30 @@ type varchar(50) NOT NULL
 );
 CREATE TABLE pc (
 code int primary key,
-model varchar(50) NOT NULL,
+fk_pc_model varchar(50) NOT NULL,
 speed smallint NOT NULL,
 ram smallint NOT NULL,
 hd real NOT NULL,
 cd varchar(10) NOT NULL,
 price money,
-foreign key (model) references product(model)
+foreign key (fk_pc_model) references product(model)
 );
 CREATE TABLE laptop (
 code int primary key,
-model varchar(50) NOT NULL,
+fk_laptop_model varchar(50) NOT NULL,
 speed smallint NOT NULL,
 ram smallint NOT NULL,
 hd real NOT NULL,
 price money,
 screen smallint NOT NULL, 
-foreign key (model) references product(model)
+foreign key (fk_laptop_model) references product(model)
 );
 CREATE TABLE printer (
 code int primary key,
-model varchar(50) NOT NULL,
+fk_printer_model varchar(50) NOT NULL,
 color char(1) NOT NULL,
 type varchar(10) NOT NULL,
 price money,
-foreign key (model) references product(model)
+foreign key (fk_printer_model) references product(model)
 );
 
