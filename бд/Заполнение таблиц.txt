@@ -43,7 +43,8 @@ INSERT INTO product (maker, model, type) VALUES
 ('F', 'R012', 'Printer'),
 ('F', 'R013', 'Printer'),
 ('F', 'R014', 'Printer'),
-('F', 'R015', 'Printer');
+('F', 'R015', 'Printer')
+ON CONFLICT(code) DO NOTHING;
 
 INSERT INTO pc (code, model, speed, ram, hd, cd, price) VALUES
 (1,'P001',2200,8,256,'24x',450),
@@ -60,7 +61,8 @@ INSERT INTO pc (code, model, speed, ram, hd, cd, price) VALUES
 (12,'P012',2600,32,1024,'48x',880),
 (13,'P013',2800,32,1024,'48x',950),
 (14,'P014',3000,64,2048,'12x',1250),
-(15,'P015',3200,64,2048,'12x',1400);
+(15,'P015',3200,64,2048,'12x',1400)
+ON CONFLICT(code) DO NOTHING;
 
 INSERT INTO laptop (code, model, speed, ram, hd, price, screen) VALUES
 (1,'L001',2000,16,512,1000,14),
@@ -77,7 +79,8 @@ INSERT INTO laptop (code, model, speed, ram, hd, price, screen) VALUES
 (12,'L012',2400,8,1024,1350,15),
 (13,'L013',2600,32,1024,1500,16),
 (14,'L014',2800,64,2048,1800,17),
-(15,'L015',3000,64,2048,950,17);
+(15,'L015',3000,64,2048,950,17)
+ON CONFLICT(code) DO NOTHING;
 
 INSERT INTO printer (code, model, color, type, price) VALUES
 (1,'R001','y','Laser',300),
@@ -94,4 +97,5 @@ INSERT INTO printer (code, model, color, type, price) VALUES
 (12,'R012','n','Jet',200),
 (13,'R013','y','Laser',320),
 (14,'R014','n','Matrix',180),
-(15,'R015','y','Jet',240);
+(15,'R015','y','Jet',240)
+ON CONFLICT(code) DO NOTHING;
