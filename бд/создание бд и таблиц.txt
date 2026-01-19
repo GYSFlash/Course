@@ -1,0 +1,36 @@
+CREATE DATABASE IF NOT EXIST TechStore
+
+CREATE TABLE IF NOT EXIST product (
+maker varchar(10) NOT NULL,
+model varchar(50) primary key,
+type varchar(50) NOT NULL
+);
+CREATE TABLE IF NOT EXIST pc (
+code int primary key,
+model varchar(50) NOT NULL,
+speed smallint NOT NULL,
+ram smallint NOT NULL,
+hd real NOT NULL,
+cd varchar(10) NOT NULL,
+price money,
+CONSTRAINT fk_pc_model foreign key (model) references product(model)
+);
+CREATE TABLE IF NOT EXIST laptop (
+code int primary key,
+model varchar(50) NOT NULL,
+speed smallint NOT NULL,
+ram smallint NOT NULL,
+hd real NOT NULL,
+price money,
+screen smallint NOT NULL, 
+CONSTRAINT fk_laptop_model foreign key (model) references product(model)
+);
+CREATE TABLE printer (
+code int primary key,
+model varchar(50) NOT NULL,
+color char(1) NOT NULL,
+type varchar(10) NOT NULL,
+price money,
+CONSTRAINT fk_printer_model foreign key (model) references product(model)
+);
+
