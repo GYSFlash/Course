@@ -1,44 +1,42 @@
 package com.hotel.service;
 
+import com.hotel.annotations.InjectByType;
 import com.hotel.annotations.Singleton;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.hotel.model.Client;
-import com.hotel.model.Client.*;
+import com.hotel.repository.ClientRepository;
 
 import java.util.*;
 @Singleton
 public class ClientServiceImpl extends FileServiceImpl<Client> implements ClientService  {
     private Map<Long, Client> clients = new HashMap<>();
+    @InjectByType
+    private ClientRepository clientRepository;
     public ClientServiceImpl() {}
 
     @Override
     public void addClient(Client client) {
-        clients.put(client.getId(), client);
+        clientRepository.create(client);
     }
     @Override
     public void deleteClient(Long id) {
-        if(clients.containsKey(id)) {
-            clients.remove(id);
-        }
+        clientRepository.deleteById(id);
     }
     @Override
     public void updateClient(Client client) {
-        if(clients.containsKey(client.getId())) {
-        clients.put(client.getId(), client);
-        }
+        clientRepository.update(client);
     }
     @Override
     public List<Client> getAllClients() {
-        List<Client> newClients = new ArrayList<>(clients.values());
-        return newClients;
+        return clientRepository.findAll();
     }
     @Override
     public int clientsCount() {
-        return clients.size();
+        return clientRepository.count();
     }
     @Override
     public Client getClientById(Long id) {
-        return clients.get(id);
+        return clientRepository.findById(id).orElse(null);
     }
     @Override
     public void addClientFromFile(){

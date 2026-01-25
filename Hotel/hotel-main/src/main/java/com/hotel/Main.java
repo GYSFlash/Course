@@ -21,9 +21,7 @@ public class Main {
         configurator.configure(config, context);
         ViewFactory factory = ViewFactory.getFactory(context);
 
-        FileController fileController = context.getObject(FileController.class);
 
-        fileController.loadAll();
 
         factory.runApplication();
     }
