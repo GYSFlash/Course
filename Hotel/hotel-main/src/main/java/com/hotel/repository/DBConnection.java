@@ -40,10 +40,36 @@ public class DBConnection {
                         dbConfig.getUsername(),
                         dbConfig.getPassword()
                 );
+                connection.setAutoCommit(true);
             }
             return connection;
         } catch (SQLException e) {
             throw new RuntimeException("Не удалось подключиться к БД: " + dbConfig.getUrl(), e);
         }
     }
+    public void beginTransaction() {
+        try{
+            getConnection().setAutoCommit(false);
+        }
+        catch (SQLException e){
+            throw new RuntimeException("Ошибка при начале транзакции",e);
+        }
+    }
+    public void commitTransaction() {
+        try{
+            getConnection().commit();
+        }
+        catch (SQLException e){
+            throw new RuntimeException("Ошибка при коммите транзакции",e);
+        }
+    }
+    public void rollbackTransaction() {
+        try{
+            getConnection().rollback();
+        }
+        catch (SQLException e){
+            throw new RuntimeException("Ошибка при откате транзакции",e);
+        }
+    }
+
 }

@@ -4,7 +4,10 @@ import com.hotel.annotations.InjectByType;
 import com.hotel.annotations.Singleton;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.hotel.model.Client;
+import com.hotel.repository.BookingRepository;
 import com.hotel.repository.ClientRepository;
+import com.hotel.repository.DBConnection;
+import com.hotel.repository.ServiceRepository;
 
 import java.util.*;
 @Singleton
@@ -12,6 +15,12 @@ public class ClientServiceImpl extends FileServiceImpl<Client> implements Client
     private Map<Long, Client> clients = new HashMap<>();
     @InjectByType
     private ClientRepository clientRepository;
+    @InjectByType
+    private BookingRepository bookingRepository;
+    @InjectByType
+    private ServiceRepository serviceRepository;
+    @InjectByType
+    private DBConnection dbConnection;
     public ClientServiceImpl() {}
 
     @Override
@@ -20,8 +29,16 @@ public class ClientServiceImpl extends FileServiceImpl<Client> implements Client
     }
     @Override
     public void deleteClient(Long id) {
-        clientRepository.deleteById(id);
-    }
+            dbConnection.beginTransaction();
+            try{
+                bookingRepository.deleteByClientId(id);
+                serviceRepository.deleteByClientId(id);
+                clientRepository.deleteById(id);
+                dbConnection.commitTransaction();
+            } catch (Exception e) {
+                dbConnection.rollbackTransaction();
+            }
+        }
     @Override
     public void updateClient(Client client) {
         clientRepository.update(client);

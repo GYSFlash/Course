@@ -16,7 +16,7 @@ public class ServiceRepository extends BaseRepository<Service, Long> {
     private final String SAVE = "INSERT INTO service (typeService, serviceName, servicePrice, duration, date, id_client) VALUES (?, ?, ?, ?, ?, ?);";
     private final String UPDATE = "UPDATE service SET typeService = ?, serviceName = ?, servicePrice = ?, duration = ?, date = ?, id_client = ? WHERE id = ?;";
     private final String DELETE = "DELETE FROM service WHERE id = ?;";
-
+    private final String DELETE_BY_CLIENT_ID = "DELETE FROM service WHERE id_client = ?;";
     @InjectByType
     private ClientRepository clientRepository;
 
@@ -45,7 +45,17 @@ public class ServiceRepository extends BaseRepository<Service, Long> {
         return service.getId();
     }
 
+    public boolean deleteByClientId(Long id) {
+        Connection conn = dbConnection.getConnection();
+        try (PreparedStatement ps = conn.prepareStatement(DELETE_BY_CLIENT_ID)){
 
+            ps.setLong(1, id);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.out.println("Ошибка при удалении услуги");
+            return false;
+        }
+    }
     @Override
     protected Service mapRow(ResultSet rs) throws SQLException {
         Service service = new Service();

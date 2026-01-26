@@ -6,6 +6,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.hotel.config.Config;
 import com.hotel.model.Room;
 import com.hotel.model.Room.*;
+import com.hotel.repository.BookingRepository;
+import com.hotel.repository.DBConnection;
 import com.hotel.repository.RoomRepository;
 
 import java.math.BigDecimal;
@@ -17,6 +19,10 @@ public class RoomServiceImpl extends FileServiceImpl<Room> implements RoomServic
     private Config config;
     @InjectByType
     private RoomRepository roomRepository;
+    @InjectByType
+    private BookingRepository bookingRepository;
+    @InjectByType
+    private DBConnection dbConnection;
 
     public RoomServiceImpl(){}
 
@@ -26,7 +32,14 @@ public class RoomServiceImpl extends FileServiceImpl<Room> implements RoomServic
     }
     @Override
     public void deleteRoom(int roomNumber) {
-        roomRepository.deleteById(roomNumber);
+        dbConnection.beginTransaction();
+        try{
+            bookingRepository.deleteByRoomNumber(roomNumber);
+            roomRepository.deleteById(roomNumber);
+            dbConnection.commitTransaction();
+        } catch (Exception e) {
+            dbConnection.rollbackTransaction();
+        }
     }
     @Override
     public void updateRoom(Room room) {

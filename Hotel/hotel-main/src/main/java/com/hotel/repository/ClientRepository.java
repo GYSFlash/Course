@@ -53,7 +53,8 @@ public class ClientRepository extends BaseRepository<Client, Long> {
             }
             return 0;
         } catch (SQLException e) {
-            throw new RuntimeException("Ошибка при подсчете клиентов", e);
+            System.out.println("Ошибка при подсчете клиентов");
+            return 0;
         }
     }
     @Override

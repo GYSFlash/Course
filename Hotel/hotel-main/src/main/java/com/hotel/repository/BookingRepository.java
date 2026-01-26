@@ -22,6 +22,8 @@ public class BookingRepository extends BaseRepository<Booking,Long> {
     private final String UPDATE = "UPDATE booking SET checkInDate = ?, checkOutDate = ?, totalPrice = ?, roomNumber = ?, id_client = ? " + "WHERE id = ?";
     private final String DELETE = "DELETE FROM booking WHERE id = ?;";
     private final String ThreeBookingByRoom = "SELECT * FROM booking WHERE roomNumber = ? ORDER BY id DESC LIMIT 3;";
+    private final String DELETE_BY_CLIENT_ID = "DELETE FROM booking WHERE id_client = ?;";
+    private final String DELETE_BY_ROOM_NUMBER = "DELETE FROM booking WHERE roomNumber = ?;";
 
     @InjectByType
     private ClientRepository clientRepository;
@@ -67,7 +69,29 @@ public class BookingRepository extends BaseRepository<Booking,Long> {
             }
             return bookings;
         } catch (SQLException e) {
-            throw new RuntimeException("Ошибка при подсчете клиентов", e);
+            System.out.println("Ошибка при выводе трех последних бронирований");
+            return null;
+        }
+    }
+    public boolean deleteByClientId(Long id) {
+        Connection conn = dbConnection.getConnection();
+        try (PreparedStatement ps = conn.prepareStatement(DELETE_BY_CLIENT_ID)){
+
+            ps.setLong(1, id);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.out.println("Ошибка при удалении бронирования");
+            return false;
+        }
+    }
+    public boolean deleteByRoomNumber(int roomNumber) {
+        Connection conn = dbConnection.getConnection();
+        try (PreparedStatement ps = conn.prepareStatement(DELETE_BY_CLIENT_ID)){
+            ps.setInt(1, roomNumber);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.out.println("Ошибка при удалении бронирования");
+            return false;
         }
     }
     @Override

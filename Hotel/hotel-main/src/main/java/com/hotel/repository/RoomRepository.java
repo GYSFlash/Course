@@ -53,7 +53,8 @@ public class RoomRepository extends BaseRepository<Room, Integer> {
             }
             return 0;
         } catch (SQLException e) {
-            throw new RuntimeException("Ошибка при подсчете свободных номеров", e);
+            System.out.println("Ошибка при подсчете свободных номеров");
+            return 0;
         }
     }
     public List<Room> findByStatus(Room.Status status) {
@@ -69,7 +70,8 @@ public class RoomRepository extends BaseRepository<Room, Integer> {
             }
             return rooms;
         } catch (SQLException e) {
-            throw new RuntimeException("Ошибка при подсчете свободных номеров", e);
+            System.out.println("Ошибка при подсчете свободных номеров");
+            return null;
         }
     }
     @Override

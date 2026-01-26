@@ -41,7 +41,8 @@ public abstract class BaseRepository<T,ID> implements  GenericRepository<T,ID> {
             return Optional.empty();
 
         } catch (SQLException e) {
-            throw new RuntimeException("Ошибка при поиске по id=" + id, e);
+            System.out.println("Ошибка при поиске по id=" + id);
+            return Optional.empty();
         }
     }
     @Override
@@ -56,7 +57,8 @@ public abstract class BaseRepository<T,ID> implements  GenericRepository<T,ID> {
             return result;
 
         } catch (SQLException e) {
-            throw new RuntimeException("Ошибка при поиске всех клиентов", e);
+            System.out.println("Ошибка при поиске всех клиентов");
+            return null;
         }
     }
     @Override
@@ -69,7 +71,8 @@ public abstract class BaseRepository<T,ID> implements  GenericRepository<T,ID> {
             return entity;
 
         } catch (SQLException e) {
-            throw new RuntimeException("Ошибка при сохранении клиента: " + entity, e);
+            System.out.println("Ошибка при сохранении клиента: " + entity);
+            return null;
         }
     }
     @Override
@@ -81,12 +84,13 @@ public abstract class BaseRepository<T,ID> implements  GenericRepository<T,ID> {
 
             int updated = ps.executeUpdate();
             if (updated == 0) {
-                throw new RuntimeException("Клиент не найден для обновления: id=" + getId(entity));
+                System.out.println("Объект для обновления с id=" + getId(entity) + " не найден");
             }
             return entity;
 
         } catch (SQLException e) {
-            throw new RuntimeException("Ошибка при обновлении клиента: " + entity, e);
+            System.out.println("Ошибка при обновлении таблицы: " + entity);
+            return null;
         }
     }
 
@@ -99,7 +103,8 @@ public abstract class BaseRepository<T,ID> implements  GenericRepository<T,ID> {
             return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            throw new RuntimeException("Ошибка при удалении клиента: id=" + id, e);
+            System.out.println("Ошибка при удалении объекта с id=" + id);
+            return false;
         }
     }
 
