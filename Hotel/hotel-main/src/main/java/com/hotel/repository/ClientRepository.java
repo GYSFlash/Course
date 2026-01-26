@@ -44,8 +44,8 @@ public class ClientRepository extends BaseRepository<Client, Long> {
     }
 
     public int count() {
-        try (Connection conn = dbConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(COUNT);
+        Connection conn = dbConnection.getConnection();
+        try (PreparedStatement ps = conn.prepareStatement(COUNT);
              ResultSet rs = ps.executeQuery()) {
 
             if (rs.next()) {

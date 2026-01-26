@@ -16,7 +16,6 @@ public class ServiceRepository extends BaseRepository<Service, Long> {
     private final String SAVE = "INSERT INTO service (typeService, serviceName, servicePrice, duration, date, id_client) VALUES (?, ?, ?, ?, ?, ?);";
     private final String UPDATE = "UPDATE service SET typeService = ?, serviceName = ?, servicePrice = ?, duration = ?, date = ?, id_client = ? WHERE id = ?;";
     private final String DELETE = "DELETE FROM service WHERE id = ?;";
-    private final String COUNT = "SELECT COUNT(*) FROM service;";
 
     @InjectByType
     private ClientRepository clientRepository;
@@ -46,19 +45,7 @@ public class ServiceRepository extends BaseRepository<Service, Long> {
         return service.getId();
     }
 
-    public int count() {
-        try (Connection conn = dbConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(COUNT);
-             ResultSet rs = ps.executeQuery()) {
 
-            if (rs.next()) {
-                return rs.getInt(1);
-            }
-            return 0;
-        } catch (SQLException e) {
-            throw new RuntimeException("Ошибка при подсчете услуг", e);
-        }
-    }
     @Override
     protected Service mapRow(ResultSet rs) throws SQLException {
         Service service = new Service();

@@ -44,8 +44,8 @@ public class RoomRepository extends BaseRepository<Room, Integer> {
     }
 
     public int countFreeRoom() {
-        try (Connection conn = dbConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(COUNT_FREE_ROOMS);
+        Connection conn = dbConnection.getConnection();
+        try (PreparedStatement ps = conn.prepareStatement(COUNT_FREE_ROOMS);
              ResultSet rs = ps.executeQuery()) {
 
             if (rs.next()) {
@@ -58,8 +58,8 @@ public class RoomRepository extends BaseRepository<Room, Integer> {
     }
     public List<Room> findByStatus(Room.Status status) {
         List<Room> rooms = new ArrayList<>();
-        try (Connection conn = dbConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(FIND_BY_STATUS)) {
+        Connection conn = dbConnection.getConnection();
+        try (PreparedStatement ps = conn.prepareStatement(FIND_BY_STATUS)) {
 
             ps.setString(1, status.name());
             try (ResultSet rs = ps.executeQuery()) {

@@ -55,8 +55,8 @@ public class BookingRepository extends BaseRepository<Booking,Long> {
 
     public List<Booking> threeBookingByRoom(int roomNumber) {
         List<Booking> bookings = new ArrayList<>();
-        try (Connection conn = dbConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(ThreeBookingByRoom)){
+        Connection conn = dbConnection.getConnection();
+        try (PreparedStatement ps = conn.prepareStatement(ThreeBookingByRoom)){
             ps.setInt(1, roomNumber);
 
             try(ResultSet rs = ps.executeQuery()) {

@@ -28,8 +28,8 @@ public abstract class BaseRepository<T,ID> implements  GenericRepository<T,ID> {
 
     @Override
     public Optional<T> findById(ID id) {
-        try (Connection conn = dbConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(getFindByIdQuery())) {
+        Connection conn = dbConnection.getConnection();
+        try (PreparedStatement ps = conn.prepareStatement(getFindByIdQuery())) {
 
             ps.setObject(1, id);
 
@@ -47,8 +47,8 @@ public abstract class BaseRepository<T,ID> implements  GenericRepository<T,ID> {
     @Override
     public List<T> findAll() {
         List<T> result = new ArrayList<>();
-        try (Connection conn = dbConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(getFindAllQuery());
+        Connection conn = dbConnection.getConnection();
+        try (PreparedStatement ps = conn.prepareStatement(getFindAllQuery());
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 result.add(mapRow(rs));
@@ -61,8 +61,8 @@ public abstract class BaseRepository<T,ID> implements  GenericRepository<T,ID> {
     }
     @Override
     public T create(T entity) {
-        try (Connection conn = dbConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(getCreateQuery()))
+        Connection conn = dbConnection.getConnection();
+        try (PreparedStatement ps = conn.prepareStatement(getCreateQuery()))
         {
             fillInsertStatement(ps, entity);
             ps.executeUpdate();
@@ -74,8 +74,8 @@ public abstract class BaseRepository<T,ID> implements  GenericRepository<T,ID> {
     }
     @Override
     public T update(T entity) {
-        try (Connection conn = dbConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(getUpdateQuery())) {
+        Connection conn = dbConnection.getConnection();
+        try (PreparedStatement ps = conn.prepareStatement(getUpdateQuery())) {
 
             fillUpdateStatement(ps, entity);
 
@@ -92,8 +92,8 @@ public abstract class BaseRepository<T,ID> implements  GenericRepository<T,ID> {
 
     @Override
     public boolean deleteById(ID id) {
-        try (Connection conn = dbConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(getDeleteQuery())) {
+        Connection conn = dbConnection.getConnection();
+        try (PreparedStatement ps = conn.prepareStatement(getDeleteQuery())) {
 
             ps.setObject(1, id);
             return ps.executeUpdate() > 0;

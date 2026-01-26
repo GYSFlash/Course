@@ -13,10 +13,11 @@ public class DBConnection {
 
     @InjectByType
     private DBConfig dbConfig;
+    private Connection connection;
 
     private boolean driverLoaded = false;
 
-    public DBConnection(){
+    public DBConnection() {
     }
 
     private void loadDriver() {
@@ -33,14 +34,16 @@ public class DBConnection {
     public Connection getConnection(){
         loadDriver();
         try {
-            return DriverManager.getConnection(
-                    dbConfig.getUrl(),
-                    dbConfig.getUsername(),
-                    dbConfig.getPassword()
-            );
+            if (connection == null || connection.isClosed()) {
+                connection = DriverManager.getConnection(
+                        dbConfig.getUrl(),
+                        dbConfig.getUsername(),
+                        dbConfig.getPassword()
+                );
+            }
+            return connection;
         } catch (SQLException e) {
             throw new RuntimeException("Не удалось подключиться к БД: " + dbConfig.getUrl(), e);
         }
     }
-
 }
