@@ -47,31 +47,6 @@ public class ConsoleViewFactory extends ViewFactory {
             }
         }
     }
-    /*private void runApplication(ClientView clientView, RoomView roomView,
-                                       BookingView bookingView, ServiceView serviceView,
-                                       OtherView otherView) {
-        Scanner scanner = new Scanner(System.in);
-        boolean running = true;
-
-        while (running) {
-            showMainMenu();
-            int choice = readInt(scanner);
-
-            switch (choice) {
-                case 1 -> runMenu(clientView, scanner);
-                case 2 -> runMenu(roomView, scanner);
-                case 3 -> runMenu(bookingView, scanner);
-                case 4 -> runMenu(serviceView, scanner);
-                case 5 -> runMenu(otherView, scanner);
-                case 0 -> {
-                    running = false;
-                    System.out.println("Выход из программы...");
-                    fileController.saveAll();
-                }
-                default -> System.out.println("Неверный выбор!");
-            }
-        }
-    }*/
 
     private static void showMainMenu() {
         System.out.println("\n=== СИСТЕМА УПРАВЛЕНИЯ ОТЕЛЕМ ===");
