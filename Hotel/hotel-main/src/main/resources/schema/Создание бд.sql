@@ -1,7 +1,3 @@
-DELETE TABLE client;
-DELETE TABLE room;
-DELETE TABLE booking;
-DELETE TABLE service;
 CREATE TABLE IF NOT EXISTS client(
 id BIGSERIAL primary key,
 name varchar(30) NOT NULL,

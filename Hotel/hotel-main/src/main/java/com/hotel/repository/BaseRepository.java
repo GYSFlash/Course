@@ -57,7 +57,7 @@ public abstract class BaseRepository<T,ID> implements  GenericRepository<T,ID> {
             return result;
 
         } catch (SQLException e) {
-            System.out.println("Ошибка при поиске всех клиентов");
+            System.out.println("Ошибка при поиске всех объектов");
             return null;
         }
     }
@@ -71,7 +71,7 @@ public abstract class BaseRepository<T,ID> implements  GenericRepository<T,ID> {
             return entity;
 
         } catch (SQLException e) {
-            System.out.println("Ошибка при сохранении клиента: " + entity);
+            System.out.println("Ошибка при создании объекта : " + entity);
             return null;
         }
     }
