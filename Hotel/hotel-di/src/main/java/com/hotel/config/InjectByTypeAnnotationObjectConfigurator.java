@@ -10,14 +10,18 @@ public class InjectByTypeAnnotationObjectConfigurator implements ObjectConfigura
     @Override
     @SneakyThrows
     public void configure(Object t, ApplicationContext context) {
-        for (Field field : t.getClass().getDeclaredFields()) {
+        Class<?> clazz = t.getClass();
+        while (clazz != Object.class) {
+            for (Field field : clazz.getDeclaredFields()) {
 
-            if (field.isAnnotationPresent(InjectByType.class)) {
-                field.setAccessible(true);
+                if (field.isAnnotationPresent(InjectByType.class)) {
+                    field.setAccessible(true);
 
-                Object dependency = context.getObject(field.getType());
-                field.set(t, dependency);
+                    Object dependency = context.getObject(field.getType());
+                    field.set(t, dependency);
+                }
             }
+            clazz = clazz.getSuperclass();
         }
     }
 }

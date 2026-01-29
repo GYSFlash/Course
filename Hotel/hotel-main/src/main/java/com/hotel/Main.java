@@ -6,6 +6,7 @@ import com.hotel.config.Config;
 import com.hotel.config.Configurator;
 import com.hotel.config.JavaConfig;
 import com.hotel.controller.*;
+import com.hotel.repository.DBConnection;
 import com.hotel.view.*;
 
 
@@ -20,11 +21,8 @@ public class Main {
         Configurator configurator = new Configurator();
         configurator.configure(config, context);
         ViewFactory factory = ViewFactory.getFactory(context);
-
-        FileController fileController = context.getObject(FileController.class);
-
-        fileController.loadAll();
-
+        DBConnection dbConnection = context.getObject(DBConnection.class);
+        dbConnection.getConnection();
         factory.runApplication();
     }
 

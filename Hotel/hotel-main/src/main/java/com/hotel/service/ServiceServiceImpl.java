@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.hotel.model.Client;
 import com.hotel.model.Service;
 import com.hotel.model.Service.*;
+import com.hotel.repository.ServiceRepository;
 
 import java.math.BigDecimal;
 import java.time.Duration;
@@ -15,6 +16,9 @@ public class ServiceServiceImpl extends FileServiceImpl<Service> implements Serv
     private Map<Long, Service> services = new HashMap<>();
     @InjectByType
     private ClientService clientService;
+    @InjectByType
+    private ServiceRepository serviceRepository;
+
     public ServiceServiceImpl() {
     }
 
@@ -24,33 +28,27 @@ public class ServiceServiceImpl extends FileServiceImpl<Service> implements Serv
             System.out.println("Клиент не найден");
             return;
         }
-        services.put(service.getId(), service);
+        serviceRepository.create(service);
     }
     @Override
     public void deleteService(Long id) {
-        if (services.containsKey(id)) {
-            services.remove(id);
-        }
+        serviceRepository.deleteById(id);
     }
     @Override
     public void updateService(Service service) {
-        if (services.containsKey(service.getId())) {
-            addService(service);
-        }
+        serviceRepository.update(service);
     }
     @Override
     public List<Service> getAllServices() {
-        List<Service> newServices = new ArrayList<>(services.values());
-        return newServices;
+        return serviceRepository.findAll();
     }
     @Override
     public List<Service> sort(String sortBy) {
-        if(services.isEmpty()) {
+
+        List<Service> serviceList = getAllServices();
+        if(serviceList.isEmpty()) {
             return null;
         }
-
-        List<Service> serviceList = new ArrayList<>(services.values());
-
         switch (sortBy) {
             case "price" -> serviceList.sort(Comparator.comparing(Service::getServicePrice));
             case "date"-> serviceList.sort(Comparator.comparing(Service::getDate));
@@ -65,7 +63,7 @@ public class ServiceServiceImpl extends FileServiceImpl<Service> implements Serv
     }
     @Override
     public Service getServiceById(Long id) {
-        return services.get(id);
+        return serviceRepository.findById(id).orElse(null);
     }
     @Override
     public void addServiceFromFile(){

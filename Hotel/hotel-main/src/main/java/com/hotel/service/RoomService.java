@@ -5,7 +5,7 @@ import com.hotel.model.Room.*;
 import java.util.List;
 
 public interface RoomService {
-    void addRoom(Room room);
+    Room addRoom(Room room);
     void deleteRoom(int id);
     void updateRoom(Room room);
     List<Room> getAllRooms();
