@@ -87,7 +87,7 @@ public class Service implements Comparable<Service> {
     }
     @Override
     public String toString() {
-        return "Услуга: " + serviceName + " - " + servicePrice + " руб. (" + duration.toHours() + " ч.)" + " для " + client + " " + date;
+        return "Услуга: " + serviceName + " - " + servicePrice + " руб. (" + duration.toHours() + " ч. "+ duration.toMinutes() + " мин. )" + " для " + client + " " + date;
     }
 
     @Override

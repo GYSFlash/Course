@@ -86,7 +86,7 @@ public class BookingRepository extends BaseRepository<Booking,Long> {
     }
     public boolean deleteByRoomNumber(int roomNumber) {
         Connection conn = dbConnection.getConnection();
-        try (PreparedStatement ps = conn.prepareStatement(DELETE_BY_CLIENT_ID)){
+        try (PreparedStatement ps = conn.prepareStatement(DELETE_BY_ROOM_NUMBER)){
             ps.setInt(1, roomNumber);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {

@@ -12,7 +12,7 @@ import java.util.List;
 public class RoomRepository extends BaseRepository<Room, Integer> {
     private final String FIND_BY_ID = "SELECT * FROM room WHERE roomNumber = ?;";
     private final String FIND_ALL = "SELECT * FROM room;";
-    private final String CREATE = "INSERT INTO room (price, place, type, stars) VALUES (?, ?, ?, ?);";
+    private final String CREATE = "INSERT INTO room (roomNumber, price, place, type, status, stars) VALUES (?,?,?, ?,?, ?);";
     private final String UPDATE = "UPDATE room SET price = ?, place = ?, type = ?, status = ?, stars = ? WHERE roomNumber = ?;";
     private final String DELETE = "DELETE FROM room WHERE roomNumber = ?;";
     private final String COUNT_FREE_ROOMS = "SELECT COUNT(*) FROM room WHERE status = 'FREE';";
@@ -81,12 +81,7 @@ public class RoomRepository extends BaseRepository<Room, Integer> {
         room.setPrice(rs.getBigDecimal("price"));
         room.setPlace(rs.getInt("place"));
         room.setType(Room.RoomType.valueOf(rs.getString("type")));
-        String statusStr = rs.getString("status");
-        Room.Status status = Room.Status.FREE;
-        if (statusStr != null) {
-            status = Room.Status.valueOf(statusStr);
-        }
-        room.setStatus(status);
+        room.setStatus(Room.Status.valueOf(rs.getString("status")));
         room.setStars(Room.Star.valueOf(rs.getString("stars")));
         return room;
     }
@@ -96,7 +91,8 @@ public class RoomRepository extends BaseRepository<Room, Integer> {
         ps.setBigDecimal(2, r.getPrice());
         ps.setInt(3, r.getPlace());
         ps.setString(4, r.getType().name());
-        ps.setString(5, r.getStars().name());
+        ps.setString(5, r.getStatus().name());
+        ps.setString(6, r.getStars().name());
     }
     @Override
     protected void fillUpdateStatement(PreparedStatement ps, Room r) throws SQLException {

@@ -12,17 +12,17 @@ INSERT INTO client (name, surname, dateOfBirth, gender) VALUES
 ('Светлана', 'Новикова', '1994-02-14', 'FEMALE');
 
 INSERT INTO room (roomNumber, price, place, type, status, stars) VALUES
-(401, 9000, 5, 'PRESIDENT', 'FIVE'),
-(101, 2500, 2, 'STANDART', 'THREE'),
-(501, 2500, 2, 'STANDART', 'TWO'),
-(102, 3000, 2, 'STANDARTPLUS', 'FOUR'),
-(103, 3200, 2, 'STANDARTPLUS', 'FOUR'),
-(201, 4500, 3, 'LUX', 'FOUR'),
-(202, 5000, 3, 'DELUXE', 'FIVE'),
-(203, 4800, 3, 'LUX', 'FOUR'),
-(301, 7000, 4, 'PRESIDENT', 'FIVE'),
-(302, 7500, 4, 'PRESIDENT', 'FIVE'),
-(303, 7200, 4, 'DELUXE', 'FIVE')
+(401, 9000, 5, 'PRESIDENT','FREE', 'FIVE'),
+(101, 2500, 2, 'STANDART','FREE', 'THREE'),
+(501, 2500, 2, 'STANDART','FREE', 'TWO'),
+(102, 3000, 2, 'STANDARTPLUS','FREE', 'FOUR'),
+(103, 3200, 2, 'STANDARTPLUS','FREE', 'FOUR'),
+(201, 4500, 3, 'LUX','FREE', 'FOUR'),
+(202, 5000, 3, 'DELUXE','FREE', 'FIVE'),
+(203, 4800, 3, 'LUX','FREE', 'FOUR'),
+(301, 7000, 4, 'PRESIDENT','FREE', 'FIVE'),
+(302, 7500, 4, 'PRESIDENT','FREE', 'FIVE'),
+(303, 7200, 4, 'DELUXE','FREE', 'FIVE')
 ON CONFLICT(roomNumber) DO NOTHING;
 
 INSERT INTO booking (checkInDate, checkOutDate, totalPrice, roomNumber, id_client) VALUES

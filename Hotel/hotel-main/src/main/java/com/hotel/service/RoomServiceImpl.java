@@ -27,8 +27,8 @@ public class RoomServiceImpl extends FileServiceImpl<Room> implements RoomServic
     public RoomServiceImpl(){}
 
     @Override
-    public void addRoom(Room room) {
-        roomRepository.create(room);
+    public Room addRoom(Room room) {
+        return roomRepository.create(room);
     }
     @Override
     public void deleteRoom(int roomNumber) {

@@ -30,7 +30,7 @@ public class RoomView extends BaseView {
         switch (choice) {
             case 1 -> {if(controller.addRoom())
             showMessage("Номер добавлен");
-            else showError("Номер уже существует");}
+            else showError("Ошибка при создании номера");}
             case 2 -> showList("Все номера",controller.showAllRooms());
             case 3 -> {if(controller.deleteRoom())
             showMessage("Номер удален");
