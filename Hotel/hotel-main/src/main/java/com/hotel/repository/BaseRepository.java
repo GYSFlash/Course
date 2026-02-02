@@ -1,6 +1,8 @@
 package com.hotel.repository;
 
 import com.hotel.annotations.InjectByType;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,6 +15,7 @@ import java.util.Optional;
 public abstract class BaseRepository<T,ID> implements  GenericRepository<T,ID> {
     @InjectByType
     protected DBConnection dbConnection;
+    private static final Logger logger = LogManager.getLogger(BaseRepository.class);
 
     protected abstract String getFindByIdQuery();
     protected abstract String getFindAllQuery();
@@ -41,7 +44,7 @@ public abstract class BaseRepository<T,ID> implements  GenericRepository<T,ID> {
             return Optional.empty();
 
         } catch (SQLException e) {
-            System.out.println("Ошибка при поиске по id=" + id);
+            logger.error("Ошибка при поиске по id= {}", id);
             return Optional.empty();
         }
     }
@@ -57,7 +60,7 @@ public abstract class BaseRepository<T,ID> implements  GenericRepository<T,ID> {
             return result;
 
         } catch (SQLException e) {
-            System.out.println("Ошибка при поиске всех объектов");
+            logger.error("Ошибка при поиске всех объектов");
             return null;
         }
     }
@@ -71,7 +74,7 @@ public abstract class BaseRepository<T,ID> implements  GenericRepository<T,ID> {
             return entity;
 
         } catch (SQLException e) {
-            System.out.println("Ошибка при создании объекта : " + entity);
+            logger.error("Ошибка при создании объекта :{} ", entity);
             return null;
         }
     }
@@ -84,12 +87,12 @@ public abstract class BaseRepository<T,ID> implements  GenericRepository<T,ID> {
 
             int updated = ps.executeUpdate();
             if (updated == 0) {
-                System.out.println("Объект для обновления с id=" + getId(entity) + " не найден");
+                logger.error("Объект для обновления с id= {} не найден", getId(entity) );
             }
             return entity;
 
         } catch (SQLException e) {
-            System.out.println("Ошибка при обновлении таблицы: " + entity);
+            logger.error("Ошибка при обновлении таблицы: {}" , entity);
             return null;
         }
     }
@@ -103,7 +106,7 @@ public abstract class BaseRepository<T,ID> implements  GenericRepository<T,ID> {
             return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            System.out.println("Ошибка при удалении объекта с id=" + id);
+            logger.error("Ошибка при удалении объекта с id= {}" ,id);
             return false;
         }
     }

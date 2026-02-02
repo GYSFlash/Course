@@ -8,6 +8,8 @@ import com.hotel.model.Booking;
 import com.hotel.model.Client;
 import com.hotel.model.Room;
 import com.hotel.repository.BookingRepository;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 
@@ -16,8 +18,7 @@ import static java.lang.Long.parseLong;
 
 @Singleton
 public class BookingServiceImpl extends FileServiceImpl<Booking> implements BookingService{
-
-    private Map<Long, Booking> bookings = new HashMap<>();
+    private static final Logger logger = LogManager.getLogger(BookingServiceImpl.class);
     @InjectByType
     private RoomService roomService;
     @InjectByType
@@ -33,26 +34,31 @@ public class BookingServiceImpl extends FileServiceImpl<Booking> implements Book
    @Override
     public void deleteBooking(Long id) {
         bookingRepository.deleteById(id);
+        logger.info("Бронь успешно удалена");
     }
     @Override
     public void addBooking(Booking booking) {
         if(booking.getClient() == null || booking.getRoom() == null){
-            System.out.println("Некорректные данные клиента или номера");
+            logger.error("Некорректные данные клиента или номера");
             return;
         }
         booking.setTotalPrice(booking.calculateTotalPrice());
         bookingRepository.create(booking);
+        logger.info("Бронь успешно добавлена");
     }
     @Override
     public List<Booking> getAllBookings() {
+        logger.info("Получение всех бронирований");
         return bookingRepository.findAll();
     }
     @Override
     public void updateBooking(Booking booking) {
         bookingRepository.update(booking);
+        logger.info("Бронь успешно обновлена");
     }
     @Override
     public List<Room> getFreeRoomsByDate(Date in, Date out) {
+        logger.info("Получение свободных номеров по датам");
         List<Room> busyRooms = new ArrayList<>();
         List<Room> allRooms = roomService.getAllRooms();
 
@@ -75,11 +81,12 @@ public class BookingServiceImpl extends FileServiceImpl<Booking> implements Book
 
     @Override
     public List<Booking> lastThreeBookingsByRooms(int roomNumber) {
+        logger.info("Получение последних 3 бронирований по номеру");
         return bookingRepository.threeBookingByRoom(roomNumber);
     }
     @Override
     public List<Booking> sort(String sortBy) {
-
+        logger.info("Сортировка бронирований по : {}",sortBy );
         List<Booking> bookingList = getAllBookings();
         if(bookingList.isEmpty()) {
             return null;
@@ -89,7 +96,7 @@ public class BookingServiceImpl extends FileServiceImpl<Booking> implements Book
             case "checkOutDate"-> bookingList.sort(Comparator.comparing(Booking::getCheckOutDate));
             case "checkInDate" -> bookingList.sort(Comparator.comparing(Booking::getCheckInDate));
             default -> {
-                System.out.println("Некорректный параметр сортировки");
+                logger.error("Некорректный параметр сортировки");
                 return null;
             }
         }
@@ -97,6 +104,7 @@ public class BookingServiceImpl extends FileServiceImpl<Booking> implements Book
     }
     @Override
     public Booking getBookingById(Long id) {
+        logger.info("Получение брони по id: {}",id);
         return bookingRepository.findById(id).orElse(null);
     }
     @Override
@@ -135,7 +143,7 @@ public class BookingServiceImpl extends FileServiceImpl<Booking> implements Book
     @Override
     public List<Client> getClientsStaysByRoom(int roomNumber) {
         int limit = config.getBookingHistoryRecordLimit();
-        if (bookings.isEmpty()) {
+        if (getAllBookings().isEmpty()) {
             return null;
         } else {
             List<Booking> newBookings = sort("checkInDate");

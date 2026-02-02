@@ -9,12 +9,14 @@ import com.hotel.model.Room.*;
 import com.hotel.repository.BookingRepository;
 import com.hotel.repository.DBConnection;
 import com.hotel.repository.RoomRepository;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.util.*;
 @Singleton
 public class RoomServiceImpl extends FileServiceImpl<Room> implements RoomService {
-    private Map<Integer,Room> rooms = new HashMap<>();
+    private static final Logger logger = LogManager.getLogger(RoomServiceImpl.class);
     @InjectByType
     private Config config;
     @InjectByType
@@ -37,33 +39,40 @@ public class RoomServiceImpl extends FileServiceImpl<Room> implements RoomServic
             bookingRepository.deleteByRoomNumber(roomNumber);
             roomRepository.deleteById(roomNumber);
             dbConnection.commitTransaction();
+            logger.info("Комната успешно удалена");
         } catch (Exception e) {
+            logger.error("Ошибка при удалении комнаты");
             dbConnection.rollbackTransaction();
         }
+
     }
     @Override
     public void updateRoom(Room room) {
         roomRepository.update(room);
+        logger.info("Комната успешно обновлена");
     }
     @Override
     public List<Room> getAllRooms() {
+        logger.info("Получение всех комнат");
         return roomRepository.findAll();
     }
     @Override
     public List<Room> getRoomByStatus(Room.Status status) {
-
+        logger.info("Получение комнат по статусу: {}" ,status);
         return roomRepository.findByStatus(status);
     }
     @Override
     public int countFreeRooms() {
+        logger.info("Подсчет свободных комнат");
         return roomRepository.countFreeRoom();
     }
     @Override
     public List<Room> sort(boolean freeRoom,String sortBy) {
 
-
+        logger.info("Сортировка комнат по : {}" ,sortBy);
         List<Room> roomList = getAllRooms();
         if(roomList.isEmpty()) {
+            logger.error("Список комнат пуст");
             return null;
         }
         if (freeRoom) {
@@ -76,13 +85,14 @@ public class RoomServiceImpl extends FileServiceImpl<Room> implements RoomServic
             case "place"-> roomList.sort(Comparator.comparing(Room::getPlace));
             case "stars"-> roomList.sort(Comparator.comparing(Room::getStars));
             case "type"-> roomList.sort(Comparator.comparing(Room::getType));
-            default -> {System.out.println("Некорректный параметр сортировки");
+            default -> {logger.error("Некорректный параметр сортировки");
                 return null;}
         }
         return roomList;
     }
     @Override
     public Room getRoomByRoomNumber(int roomNumber) {
+        logger.info("Получение комнаты по номеру: {}" ,roomNumber);
        return roomRepository.findById(roomNumber).orElse(null);
     }
     @Override
@@ -122,7 +132,7 @@ public class RoomServiceImpl extends FileServiceImpl<Room> implements RoomServic
     @Override
     public void changeStatus(int roomNumber, Room.Status status) {
         if (config.isRoomStatusChangeEnable()) {
-            rooms.get(roomNumber).setStatus(status);
+            getAllRooms().get(roomNumber).setStatus(status);
         } else {
             System.out.println("Изменение статуса запрещено");
         }

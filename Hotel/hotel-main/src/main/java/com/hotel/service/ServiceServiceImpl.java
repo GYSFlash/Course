@@ -7,13 +7,15 @@ import com.hotel.model.Client;
 import com.hotel.model.Service;
 import com.hotel.model.Service.*;
 import com.hotel.repository.ServiceRepository;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.*;
 @Singleton
 public class ServiceServiceImpl extends FileServiceImpl<Service> implements ServiceService {
-    private Map<Long, Service> services = new HashMap<>();
+    private static final Logger logger = LogManager.getLogger(ServiceServiceImpl.class);
     @InjectByType
     private ClientService clientService;
     @InjectByType
@@ -25,26 +27,30 @@ public class ServiceServiceImpl extends FileServiceImpl<Service> implements Serv
     @Override
     public void addService(Service service) {
         if(service.getClient() == null){
-            System.out.println("Клиент не найден");
+            logger.error("Клиент услуги не найден");
             return;
         }
         serviceRepository.create(service);
+        logger.info("Успешное добавление услуги");
     }
     @Override
     public void deleteService(Long id) {
         serviceRepository.deleteById(id);
+        logger.info("Услуга удалена");
     }
     @Override
     public void updateService(Service service) {
         serviceRepository.update(service);
+        logger.info("Услуга обновлена");
     }
     @Override
     public List<Service> getAllServices() {
+        logger.info("Получение всех услуг");
         return serviceRepository.findAll();
     }
     @Override
     public List<Service> sort(String sortBy) {
-
+        logger.info("Сортировка услуг по {}", sortBy);
         List<Service> serviceList = getAllServices();
         if(serviceList.isEmpty()) {
             return null;
@@ -54,7 +60,7 @@ public class ServiceServiceImpl extends FileServiceImpl<Service> implements Serv
             case "date"-> serviceList.sort(Comparator.comparing(Service::getDate));
             case "type" -> serviceList.sort(Comparator.comparing(Service::getTypeService));
             default -> {
-                System.out.println("Некорректный параметр сортировки");
+                logger.error("Некорректный параметр сортировки");
                 return null;
             }
         }
@@ -63,6 +69,7 @@ public class ServiceServiceImpl extends FileServiceImpl<Service> implements Serv
     }
     @Override
     public Service getServiceById(Long id) {
+        logger.info("Получение услуги по id: {}", id);
         return serviceRepository.findById(id).orElse(null);
     }
     @Override

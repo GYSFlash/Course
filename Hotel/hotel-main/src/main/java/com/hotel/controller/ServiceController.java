@@ -6,6 +6,8 @@ import com.hotel.model.Client;
 import com.hotel.model.Service;
 import com.hotel.service.ClientService;
 import com.hotel.service.ServiceService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 import java.math.BigDecimal;
@@ -14,7 +16,7 @@ import java.util.Date;
 import java.util.List;
 @Singleton
 public class ServiceController extends BaseController {
-
+    private static final Logger logger = LogManager.getLogger(ServiceController.class);
     @InjectByType
     private ServiceService services;
     @InjectByType
@@ -24,13 +26,14 @@ public class ServiceController extends BaseController {
     }
 
     public boolean addService() {
+        logger.info("Добавление услуги");
         Service.TypeService type;
         try {
             String typeStr = readString("Тип услуги (ROOM/FOOD/OTHER)");
             type = Service.TypeService.valueOf(typeStr.toUpperCase());
         }
         catch (Exception e){
-            System.out.println("Недопустимый тип услуги");
+            logger.error("Недопустимый тип услуги");
             return false;
         }
         String name = readString("Название услуги");
@@ -59,12 +62,14 @@ public class ServiceController extends BaseController {
        if (services.getServiceById(id) == null) {
            return false;
        }
+        logger.info("Удаление услуги c id {}", id);
         services.deleteService(id);
         return true;
     }
 
     public boolean updateService() {
         Long id = readLong("ID услуги для обновления");
+        logger.info("Обновление услуги c id {}", id);
         Service service = services.getServiceById(id);
         String change = readString("Изменить (type/name/price/duration/client)");
         switch (change) {
@@ -74,7 +79,7 @@ public class ServiceController extends BaseController {
                     Service.TypeService type = Service.TypeService.valueOf(typeStr.toUpperCase());
                     service.setTypeService(type);
                 }catch (Exception e){
-                    System.out.println("Недопустимый тип услуги");
+                    logger.error("Недопустимый тип услуги");
                     return false;
                 }
             }

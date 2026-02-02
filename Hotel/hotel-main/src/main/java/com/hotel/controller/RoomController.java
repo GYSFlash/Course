@@ -5,6 +5,8 @@ import com.hotel.annotations.InjectByType;
 import com.hotel.annotations.Singleton;
 import com.hotel.model.Room;
 import com.hotel.service.RoomService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 import java.math.BigDecimal;
@@ -12,7 +14,7 @@ import java.math.BigDecimal;
 import java.util.List;
 @Singleton
 public class RoomController extends BaseController {
-
+    private static final Logger logger = LogManager.getLogger(RoomController.class);
     @InjectByType
     private RoomService service;
 
@@ -20,9 +22,10 @@ public class RoomController extends BaseController {
     }
 
     public boolean addRoom() {
+        logger.info("Добавление комнаты");
         int roomNumber = readInt("Номер комнаты");
         if (service.getRoomByRoomNumber(roomNumber) != null) {
-            System.out.println("Комната с таким номером уже существует");
+            logger.error("Комната с таким номером уже существует");
             return false;
         }
         double price = readDouble("Цена за ночь");
@@ -33,7 +36,7 @@ public class RoomController extends BaseController {
             String typeStr = readString("Тип (STANDART/STANDARTPLUS/LUX/DELUXE/PRESIDENT)");
             type = Room.RoomType.valueOf(typeStr.toUpperCase());
         }catch (Exception e){
-            System.out.println("Недопустимый тип комнаты");
+            logger.error("Недопустимый тип комнаты");
             return false;
         }
         Room.Star stars;
@@ -41,11 +44,12 @@ public class RoomController extends BaseController {
             String starsStr = readString("Звезды (ONE/TWO/THREE/FOUR/FIVE)");
             stars = Room.Star.valueOf(starsStr.toUpperCase());
         }catch (Exception e){
-            System.out.println("Недопустимое количество звезд");
+            logger.error("Недопустимое количество звезд");
             return false;
         }
         Room room = new Room(roomNumber, BigDecimal.valueOf(price), places, type, stars);
         Room room1 = service.addRoom(room);
+        logger.info("Комната успешно добавлена");
         if (room1 == null) {
             return false;
         }
@@ -61,7 +65,7 @@ public class RoomController extends BaseController {
         if (service.getRoomByRoomNumber(roomNumber) == null) {
             return false;
         }
-
+        logger.info("Удаление комнаты {}", roomNumber);
         service.deleteRoom(roomNumber);
         return true;
     }
@@ -69,10 +73,11 @@ public class RoomController extends BaseController {
     public boolean updateRoom() {
 
         int roomNumber = readInt("Номер комнаты для обновления");
-        if (service.getRoomByRoomNumber(roomNumber) == null) {
+        Room room = service.getRoomByRoomNumber(roomNumber);
+        if (room == null) {
             return false;
         }
-        Room room = service.getRoomByRoomNumber(roomNumber);
+
         String change = readString("Изменить (price/place/type/star)");
         switch (change) {
             case "price" -> {
@@ -86,7 +91,7 @@ public class RoomController extends BaseController {
                 try{String typeStr = readString("Тип (STANDART/STANDARTPLUS/LUX/DELUXE/PRESIDENT)");
                 room.setType(Room.RoomType.valueOf(typeStr.toUpperCase()));
                 }catch (Exception e){
-                    System.out.println("Недопустимый тип комнаты");
+                    logger.error("Недопустимый тип комнаты");
                     return false;
                 }
             }
@@ -95,7 +100,7 @@ public class RoomController extends BaseController {
                     String starsStr = readString("Звезды (ONE/TWO/THREE/FOUR/FIVE)");
                     room.setStars(Room.Star.valueOf(starsStr.toUpperCase()));
                 } catch (Exception e) {
-                    System.out.println("Недопустимое количество звезд");
+                    logger.error("Недопустимое количество звезд");
                     return false;
                 }
             }

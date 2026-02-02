@@ -1,6 +1,8 @@
 package com.hotel.repository;
 
 import com.hotel.model.Room;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RoomRepository extends BaseRepository<Room, Integer> {
+
+    private static final Logger logger = LogManager.getLogger(RoomRepository.class);
     private final String FIND_BY_ID = "SELECT * FROM room WHERE roomNumber = ?;";
     private final String FIND_ALL = "SELECT * FROM room;";
     private final String CREATE = "INSERT INTO room (roomNumber, price, place, type, status, stars) VALUES (?,?,?, ?,?, ?);";
@@ -53,7 +57,7 @@ public class RoomRepository extends BaseRepository<Room, Integer> {
             }
             return 0;
         } catch (SQLException e) {
-            System.out.println("Ошибка при подсчете свободных номеров");
+            logger.error("Ошибка при подсчете свободных номеров");
             return 0;
         }
     }
@@ -70,7 +74,7 @@ public class RoomRepository extends BaseRepository<Room, Integer> {
             }
             return rooms;
         } catch (SQLException e) {
-            System.out.println("Ошибка при подсчете свободных номеров");
+            logger.error("Ошибка при подсчете свободных номеров");
             return null;
         }
     }
