@@ -45,7 +45,10 @@ public class RoomController extends BaseController {
             return false;
         }
         Room room = new Room(roomNumber, BigDecimal.valueOf(price), places, type, stars);
-        service.addRoom(room);
+        Room room1 = service.addRoom(room);
+        if (room1 == null) {
+            return false;
+        }
         return true;
     }
 

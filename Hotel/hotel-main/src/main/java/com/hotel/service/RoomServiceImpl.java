@@ -6,6 +6,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.hotel.config.Config;
 import com.hotel.model.Room;
 import com.hotel.model.Room.*;
+import com.hotel.repository.BookingRepository;
+import com.hotel.repository.DBConnection;
+import com.hotel.repository.RoomRepository;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -14,47 +17,55 @@ public class RoomServiceImpl extends FileServiceImpl<Room> implements RoomServic
     private Map<Integer,Room> rooms = new HashMap<>();
     @InjectByType
     private Config config;
+    @InjectByType
+    private RoomRepository roomRepository;
+    @InjectByType
+    private BookingRepository bookingRepository;
+    @InjectByType
+    private DBConnection dbConnection;
+
     public RoomServiceImpl(){}
 
     @Override
-    public void addRoom(Room room) {
-        rooms.put(room.getRoomNumber(),room);
+    public Room addRoom(Room room) {
+        return roomRepository.create(room);
     }
     @Override
     public void deleteRoom(int roomNumber) {
-        if(rooms.containsKey(roomNumber)){
-            rooms.remove(roomNumber);
+        dbConnection.beginTransaction();
+        try{
+            bookingRepository.deleteByRoomNumber(roomNumber);
+            roomRepository.deleteById(roomNumber);
+            dbConnection.commitTransaction();
+        } catch (Exception e) {
+            dbConnection.rollbackTransaction();
         }
     }
     @Override
     public void updateRoom(Room room) {
-        if(rooms.containsKey(room.getRoomNumber())){
-            rooms.put(room.getRoomNumber(),room);
-        }
+        roomRepository.update(room);
     }
     @Override
     public List<Room> getAllRooms() {
-        List<Room> newRooms = new ArrayList<>(rooms.values());
-        return newRooms;
+        return roomRepository.findAll();
     }
     @Override
     public List<Room> getRoomByStatus(Room.Status status) {
-        List<Room> newRooms =  new ArrayList<>(rooms.values());
 
-        List<Room> result = newRooms.stream().filter(room -> room.getStatus() == status).toList();
-        return result;
+        return roomRepository.findByStatus(status);
     }
     @Override
     public int countFreeRooms() {
-        return getRoomByStatus(Room.Status.FREE).size();
+        return roomRepository.countFreeRoom();
     }
     @Override
     public List<Room> sort(boolean freeRoom,String sortBy) {
-        if(rooms.isEmpty()) {
+
+
+        List<Room> roomList = getAllRooms();
+        if(roomList.isEmpty()) {
             return null;
         }
-
-        List<Room> roomList = new ArrayList<>(rooms.values());
         if (freeRoom) {
             List<Room> result = roomList;
             roomList.clear();
@@ -72,11 +83,7 @@ public class RoomServiceImpl extends FileServiceImpl<Room> implements RoomServic
     }
     @Override
     public Room getRoomByRoomNumber(int roomNumber) {
-        if(rooms.containsKey(roomNumber)){
-            return rooms.get(roomNumber);
-        }else{
-            return null;
-        }
+       return roomRepository.findById(roomNumber).orElse(null);
     }
     @Override
     public void addRoomsFromFile(){

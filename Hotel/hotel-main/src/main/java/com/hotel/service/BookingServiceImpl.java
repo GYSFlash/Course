@@ -7,6 +7,7 @@ import com.hotel.config.Config;
 import com.hotel.model.Booking;
 import com.hotel.model.Client;
 import com.hotel.model.Room;
+import com.hotel.repository.BookingRepository;
 
 import java.util.*;
 
@@ -23,15 +24,15 @@ public class BookingServiceImpl extends FileServiceImpl<Booking> implements Book
     private ClientService clientService;
     @InjectByType
     private Config config;
+    @InjectByType
+    private BookingRepository bookingRepository;
     public BookingServiceImpl() {
     }
 
 
    @Override
     public void deleteBooking(Long id) {
-        if (bookings.containsKey(id)) {
-            bookings.remove(id);
-        }
+        bookingRepository.deleteById(id);
     }
     @Override
     public void addBooking(Booking booking) {
@@ -40,18 +41,15 @@ public class BookingServiceImpl extends FileServiceImpl<Booking> implements Book
             return;
         }
         booking.setTotalPrice(booking.calculateTotalPrice());
-        bookings.put(booking.getId(), booking);
+        bookingRepository.create(booking);
     }
     @Override
     public List<Booking> getAllBookings() {
-        List<Booking> newBookings =  new ArrayList<>(bookings.values());
-        return newBookings;
+        return bookingRepository.findAll();
     }
     @Override
     public void updateBooking(Booking booking) {
-        if (bookings.containsKey(booking.getId())) {
-            bookings.put(booking.getId(), booking);
-        }
+        bookingRepository.update(booking);
     }
     @Override
     public List<Room> getFreeRoomsByDate(Date in, Date out) {
@@ -59,7 +57,7 @@ public class BookingServiceImpl extends FileServiceImpl<Booking> implements Book
         List<Room> allRooms = roomService.getAllRooms();
 
         // Находим занятые номера
-        for (Booking booking : bookings.values()) {
+        for (Booking booking : getAllBookings()) {
             Room room = booking.getRoom();
             if (!out.before(booking.getCheckInDate()) && !in.after(booking.getCheckOutDate())) {
                 if (!busyRooms.contains(room)) {
@@ -77,30 +75,15 @@ public class BookingServiceImpl extends FileServiceImpl<Booking> implements Book
 
     @Override
     public List<Booking> lastThreeBookingsByRooms(int roomNumber) {
-
-        List<Booking> newBookings =  new ArrayList<>(bookings.values());
-        List<Booking> result = new ArrayList<>();
-        Collections.reverse(newBookings);
-        int count = 0;
-        for (Booking booking : newBookings) {
-            if (booking.getRoom().getRoomNumber() == roomNumber) {
-                result.add(booking);
-                count++;
-            }
-            if (count == 3) {
-                break;
-            }
-        }
-        return result;
+        return bookingRepository.threeBookingByRoom(roomNumber);
     }
     @Override
     public List<Booking> sort(String sortBy) {
-        if(bookings.isEmpty()) {
+
+        List<Booking> bookingList = getAllBookings();
+        if(bookingList.isEmpty()) {
             return null;
         }
-
-        List<Booking> bookingList = new ArrayList<>(bookings.values());
-
         switch (sortBy) {
             case "client" -> bookingList.sort(Comparator.comparing(Booking::getClient));
             case "checkOutDate"-> bookingList.sort(Comparator.comparing(Booking::getCheckOutDate));
@@ -114,7 +97,7 @@ public class BookingServiceImpl extends FileServiceImpl<Booking> implements Book
     }
     @Override
     public Booking getBookingById(Long id) {
-        return bookings.get(id);
+        return bookingRepository.findById(id).orElse(null);
     }
     @Override
     public void addBookingFromFile(){
