@@ -4,6 +4,8 @@ import com.hotel.annotations.InjectByType;
 import com.hotel.annotations.Singleton;
 import com.hotel.model.Room;
 import com.hotel.model.Service;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -11,6 +13,7 @@ import java.util.List;
 
 @Singleton
 public class MultiEntityServiceImpl implements MultiEntityService {
+    private static final Logger logger = LogManager.getLogger(MultiEntityServiceImpl.class);
     @InjectByType
     private RoomService roomService;
     @InjectByType
@@ -22,6 +25,7 @@ public class MultiEntityServiceImpl implements MultiEntityService {
 
 
     public List<Object> sort(String sortBy){
+        logger.info("Сортировка по {}", sortBy);
         List<Room> rooms = roomService.getAllRooms();
         List<Service> services = serviceService.getAllServices();
 
@@ -35,7 +39,7 @@ public class MultiEntityServiceImpl implements MultiEntityService {
                 rooms.sort(Comparator.comparing(Room::getType));
             }
             default -> {
-                System.out.println("Некорректный параметр сортировки");
+                logger.error("Некорректный параметр сортировки");
                 return null;
             }
         }

@@ -5,6 +5,8 @@ import com.hotel.annotations.Singleton;
 import com.hotel.model.Booking;
 import com.hotel.model.Client;
 import com.hotel.model.Room;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -15,11 +17,12 @@ import java.util.List;
 
 @Singleton
 public class BookingRepository extends BaseRepository<Booking,Long> {
+    private static final Logger logger = LogManager.getLogger(BookingRepository.class);
 
     private final String FIND_BY_ID = "SELECT * FROM booking WHERE id = ?;";
     private final String FIND_ALL = "SELECT * FROM booking;";
-    private final String CREATE = "INSERT INTO booking (checkInDate, checkOutDate, totalPrice, roomNumber, id_client) " + "VALUES (?, ?, ?, ?, ?)";
-    private final String UPDATE = "UPDATE booking SET checkInDate = ?, checkOutDate = ?, totalPrice = ?, roomNumber = ?, id_client = ? " + "WHERE id = ?";
+    private final String CREATE = "INSERT INTO booking (checkInDate, checkOutDate, totalPrice, roomNumber, id_client) VALUES (?, ?, ?, ?, ?)";
+    private final String UPDATE = "UPDATE booking SET checkInDate = ?, checkOutDate = ?, totalPrice = ?, roomNumber = ?, id_client = ? WHERE id = ?";
     private final String DELETE = "DELETE FROM booking WHERE id = ?;";
     private final String ThreeBookingByRoom = "SELECT * FROM booking WHERE roomNumber = ? ORDER BY id DESC LIMIT 3;";
     private final String DELETE_BY_CLIENT_ID = "DELETE FROM booking WHERE id_client = ?;";
@@ -69,7 +72,7 @@ public class BookingRepository extends BaseRepository<Booking,Long> {
             }
             return bookings;
         } catch (SQLException e) {
-            System.out.println("Ошибка при выводе трех последних бронирований");
+            logger.error("Ошибка при выводе трех последних бронирований");
             return null;
         }
     }
@@ -80,7 +83,7 @@ public class BookingRepository extends BaseRepository<Booking,Long> {
             ps.setLong(1, id);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            System.out.println("Ошибка при удалении бронирования");
+            logger.error("Ошибка при удалении бронирования");
             return false;
         }
     }
@@ -90,7 +93,7 @@ public class BookingRepository extends BaseRepository<Booking,Long> {
             ps.setInt(1, roomNumber);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            System.out.println("Ошибка при удалении бронирования");
+            logger.error("Ошибка при удалении бронирования");
             return false;
         }
     }

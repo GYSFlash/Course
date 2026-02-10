@@ -5,15 +5,19 @@ import com.hotel.annotations.Singleton;
 import com.hotel.model.Booking;
 import com.hotel.model.Client;
 import com.hotel.model.Room;
+import com.hotel.repository.BookingRepository;
 import com.hotel.service.BookingService;
 import com.hotel.service.ClientService;
 import com.hotel.service.RoomService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Date;
 import java.util.List;
 
 @Singleton
 public class BookingController extends BaseController {
+    private static final Logger logger = LogManager.getLogger(BookingController.class);
     @InjectByType
     private BookingService service;
     @InjectByType
@@ -25,17 +29,18 @@ public class BookingController extends BaseController {
     }
 
     public boolean addBooking() {
+        logger.info("Добавление бронирования");
         String dateStr = readString("Дата въезда (гггг-мм-дд)");
 
         Date checkIn = parseDate(dateStr);
         if (checkIn == null || checkIn.before(new Date())) {
-            System.out.println("Некорректная дата въезда");
+            logger.error("Некорректная дата въезда");
             return false;
         }
         dateStr = readString("Дата выезда (гггг-мм-дд)");
         Date checkOut = parseDate(dateStr);
         if(checkIn.after(checkOut) || checkIn.equals(checkOut)){
-            System.out.println("Некорректная дата въезда");
+            logger.error("Некорректная дата въезда");
             return false;
         }
         Long id = readLong("ID клиента");
@@ -57,23 +62,25 @@ public class BookingController extends BaseController {
         if (service.getBookingById(id) == null) {
             return false;
         }
+        logger.info("Удаление брони с id: {}",id);
         service.deleteBooking(id);
         return true;
     }
 
     public boolean updateBooking() {
         Long id = readLong("ID бронирования для обновления");
-        if (service.getBookingById(id) == null) {
+        Booking booking = service.getBookingById(id);
+        if (booking == null) {
             return false;
         }
+        logger.info("Обновление брони с id: {}",id);
         String chance = readString("Введите поле для изменения (dateIn, dateOut, room, client)");
-        Booking booking = service.getBookingById(id);
         switch (chance) {
             case "dateIn" -> {
                 String dateStr = readString("Новая дата заезда (гггг-мм-дд)");
                 Date newDate = parseDate(dateStr);
                 if (newDate == null || newDate.before(new Date())) {
-                    System.out.println("Некорректная дата въезда");
+                    logger.error("Некорректная дата въезда");
                     return false;
                 }
                 booking.setCheckInDate(newDate);
@@ -82,7 +89,7 @@ public class BookingController extends BaseController {
                 String dateStr = readString("Новая дата выезда (гггг-мм-дд)");
                 Date newDate = parseDate(dateStr);
                 if (newDate == null || newDate.after(booking.getCheckInDate())) {
-                    System.out.println("Некорректная дата выезда");
+                    logger.error("Некорректная дата выезда");
                     return false;
                 }
                 booking.setCheckOutDate(newDate);
@@ -111,7 +118,6 @@ public class BookingController extends BaseController {
     public List<Room> showFreeRoomsByDate() {
         String checkInStr = readString("Дата заезда (гггг-мм-дд)");
         String checkOutStr = readString("Дата выезда (гггг-мм-дд)");
-
         Date checkIn = parseDate(checkInStr);
         Date checkOut = parseDate(checkOutStr);
 

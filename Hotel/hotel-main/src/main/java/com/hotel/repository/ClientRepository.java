@@ -3,6 +3,8 @@ package com.hotel.repository;
 import com.hotel.annotations.InjectByType;
 import com.hotel.annotations.Singleton;
 import com.hotel.model.Client;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -11,7 +13,7 @@ import java.util.Optional;
 
 @Singleton
 public class ClientRepository extends BaseRepository<Client, Long> {
-
+    private static final Logger logger = LogManager.getLogger(ClientRepository.class);
     private final String FIND_BY_ID = "SELECT * FROM client WHERE id = ?;";
     private final String FIND_ALL = "SELECT * FROM client;";
     private final String CREATE = "INSERT INTO client (name, surname, dateOfBirth, gender) VALUES (?, ?, ?, ?);";
@@ -53,7 +55,7 @@ public class ClientRepository extends BaseRepository<Client, Long> {
             }
             return 0;
         } catch (SQLException e) {
-            System.out.println("Ошибка при подсчете клиентов");
+            logger.error("Ошибка при подсчете клиентов");
             return 0;
         }
     }

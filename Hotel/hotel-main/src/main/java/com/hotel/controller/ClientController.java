@@ -5,6 +5,8 @@ import com.hotel.annotations.Singleton;
 import com.hotel.model.Client;
 
 import com.hotel.service.ClientService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 import java.util.Calendar;
@@ -12,13 +14,14 @@ import java.util.Date;
 import java.util.List;
 @Singleton
 public class ClientController extends BaseController{
+    private static final Logger logger = LogManager.getLogger(ClientController.class);
     @InjectByType
     private ClientService service;
 
     public ClientController() {
     }
     public boolean addClient() {
-
+        logger.info("Добавление клиента ");
         String name = readString("Имя");
         String surname = readString("Фамилия");
 
@@ -56,15 +59,20 @@ public class ClientController extends BaseController{
         if (service.getClientById(id) == null) {
             return false;
         }
+        logger.info("Удаление клиента с id: {}",id);
         service.deleteClient(id);
         return true;
     }
 
     public boolean updateClient() {
         Long id = readLong("ID клиента для обновления");
-
-        String chance = readString("Введите поле для изменения (name, surname, dateOfBirth, gender)");
+        logger.info("Обновление клиента с id: {}",id);
         Client client = service.getClientById(id);
+        if (client == null) {
+            return false;
+        }
+        String chance = readString("Введите поле для изменения (name, surname, dateOfBirth, gender)");
+
         switch (chance) {
             case "name" -> {
                 String name = readString("Новое имя");
@@ -81,10 +89,10 @@ public class ClientController extends BaseController{
                 cal.add(Calendar.YEAR, -14);
                 Date date = cal.getTime();
                 if (dateOfBirth == null ) {
-                    System.out.println("Неверный формат даты");
+                    logger.error("Неверный формат даты");
                     return false;
                 } else if (dateOfBirth.after(date)) {
-                    System.out.println("Возраст меньше 14 лет");
+                    logger.error("Возраст меньше 14 лет");
                     return false;
                 }
                 client.setDateOfBirth(dateOfBirth);
@@ -96,7 +104,7 @@ public class ClientController extends BaseController{
                     client.setGender(Client.Gender.valueOf(genderStr.toUpperCase()));
             }
                 catch (Exception e) {
-                    System.out.println("Неверно указан пол");
+                    logger.error("Неверно указан пол");
                     return false;
                 }client.setGender(Client.Gender.valueOf(genderStr.toUpperCase()));
             }

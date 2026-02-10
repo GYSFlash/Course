@@ -3,6 +3,8 @@ package com.hotel.repository;
 import com.hotel.annotations.InjectByType;
 import com.hotel.model.Client;
 import com.hotel.model.Service;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,6 +13,7 @@ import java.sql.SQLException;
 import java.time.Duration;
 
 public class ServiceRepository extends BaseRepository<Service, Long> {
+    private static final Logger logger = LogManager.getLogger(ServiceRepository.class);
     private final String FIND_BY_ID = "SELECT * FROM service WHERE id = ?;";
     private final String FIND_ALL = "SELECT * FROM service;";
     private final String SAVE = "INSERT INTO service (typeService, serviceName, servicePrice, duration, date, id_client) VALUES (?, ?, ?, ?, ?, ?);";
@@ -52,7 +55,7 @@ public class ServiceRepository extends BaseRepository<Service, Long> {
             ps.setLong(1, id);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            System.out.println("Ошибка при удалении услуги");
+            logger.error("Ошибка при удалении услуги");
             return false;
         }
     }
