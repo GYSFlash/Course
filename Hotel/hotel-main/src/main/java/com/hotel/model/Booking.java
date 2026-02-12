@@ -1,24 +1,35 @@
 package com.hotel.model;
 
+import jakarta.persistence.*;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Objects;
 
 
 import static com.hotel.model.Room.Status.*;
-
+@Entity
+@Table(name = "booking")
 public class Booking implements Comparable<Booking> {
 
     private static Long counter = 0L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name = "checkInDate")
     private Date checkInDate;
+    @Column(name = "checkOutDate")
     private Date checkOutDate;
+    @Column(name = "totalPrice")
     private BigDecimal totalPrice;
+    @ManyToOne
+    @JoinColumn(name = "roomNumber")
     private Room room;
+    @ManyToOne
+    @JoinColumn(name = "id_client")
     private Client client;
     public Booking(){}
     public Booking(Date checkInDate, Room room, Client client, Date checkOutDate) {
-        this.id = ++counter;
         this.checkInDate = checkInDate;
         this.room = room;
         this.client = client;

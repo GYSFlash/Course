@@ -7,6 +7,7 @@ import com.hotel.model.Client;
 import com.hotel.model.Room;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.Session;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -18,13 +19,18 @@ import java.util.List;
 @Singleton
 public class BookingRepository extends BaseRepository<Booking,Long> {
     private static final Logger logger = LogManager.getLogger(BookingRepository.class);
-
+    public BookingRepository(Class<Booking> b) {
+        super(b);
+    }
+    public BookingRepository() {
+        super(Booking.class);
+    }
     private final String FIND_BY_ID = "SELECT * FROM booking WHERE id = ?;";
     private final String FIND_ALL = "SELECT * FROM booking;";
     private final String CREATE = "INSERT INTO booking (checkInDate, checkOutDate, totalPrice, roomNumber, id_client) VALUES (?, ?, ?, ?, ?)";
     private final String UPDATE = "UPDATE booking SET checkInDate = ?, checkOutDate = ?, totalPrice = ?, roomNumber = ?, id_client = ? WHERE id = ?";
     private final String DELETE = "DELETE FROM booking WHERE id = ?;";
-    private final String ThreeBookingByRoom = "SELECT * FROM booking WHERE roomNumber = ? ORDER BY id DESC LIMIT 3;";
+    private final String THREE_BOOKING_BY_ROOM = "SELECT * FROM booking WHERE roomNumber = ? ORDER BY id DESC LIMIT 3;";
     private final String DELETE_BY_CLIENT_ID = "DELETE FROM booking WHERE id_client = ?;";
     private final String DELETE_BY_ROOM_NUMBER = "DELETE FROM booking WHERE roomNumber = ?;";
 
@@ -60,42 +66,37 @@ public class BookingRepository extends BaseRepository<Booking,Long> {
 
     public List<Booking> threeBookingByRoom(int roomNumber) {
         List<Booking> bookings = new ArrayList<>();
-        Connection conn = dbConnection.getConnection();
-        try (PreparedStatement ps = conn.prepareStatement(ThreeBookingByRoom)){
-            ps.setInt(1, roomNumber);
-
-            try(ResultSet rs = ps.executeQuery()) {
-
-                while (rs.next()) {
-                    bookings.add(mapRow(rs));
-                }
-            }
-            return bookings;
-        } catch (SQLException e) {
-            logger.error("Ошибка при выводе трех последних бронирований");
-            return null;
-        }
+        Session session = HibernateUtil.getSession();
+            return session.createQuery(
+                            """
+                            from Booking b
+                            where b.room.roomNumber = :roomNumber
+                            order by b.id desc
+                            """,
+                            Booking.class
+                    )
+                    .setParameter("roomNumber", roomNumber)
+                    .setMaxResults(3)
+                    .getResultList();
     }
-    public boolean deleteByClientId(Long id) {
-        Connection conn = dbConnection.getConnection();
-        try (PreparedStatement ps = conn.prepareStatement(DELETE_BY_CLIENT_ID)){
 
-            ps.setLong(1, id);
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            logger.error("Ошибка при удалении бронирования");
-            return false;
-        }
+    public boolean deleteByClientId(Long id) {
+        Session session = HibernateUtil.getSession();
+            int deleted = session.createQuery(
+                            "delete from Booking b where b.client.id = :id"
+                    )
+                    .setParameter("id", id)
+                    .executeUpdate();
+            return deleted > 0;
     }
     public boolean deleteByRoomNumber(int roomNumber) {
-        Connection conn = dbConnection.getConnection();
-        try (PreparedStatement ps = conn.prepareStatement(DELETE_BY_ROOM_NUMBER)){
-            ps.setInt(1, roomNumber);
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            logger.error("Ошибка при удалении бронирования");
-            return false;
-        }
+        Session session = HibernateUtil.getSession();
+        int deleted = session.createQuery(
+                        "delete from Booking b where b.room.roomNumber = :id"
+                )
+                .setParameter("id", roomNumber)
+                .executeUpdate();
+        return deleted > 0;
     }
     @Override
     protected Booking mapRow(ResultSet rs) throws SQLException {

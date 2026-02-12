@@ -1,8 +1,10 @@
 package com.hotel.repository;
 
+import com.hotel.model.Client;
 import com.hotel.model.Room;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.Session;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -21,7 +23,12 @@ public class RoomRepository extends BaseRepository<Room, Integer> {
     private final String DELETE = "DELETE FROM room WHERE roomNumber = ?;";
     private final String COUNT_FREE_ROOMS = "SELECT COUNT(*) FROM room WHERE status = 'FREE';";
     private final String FIND_BY_STATUS = "SELECT * FROM room WHERE status = ?;";
-
+    private RoomRepository(Class<Room> r) {
+        super(r);
+    }
+    public RoomRepository() {
+        super(Room.class);
+    }
     @Override
     protected String getFindByIdQuery(){
         return FIND_BY_ID;
@@ -48,35 +55,15 @@ public class RoomRepository extends BaseRepository<Room, Integer> {
     }
 
     public int countFreeRoom() {
-        Connection conn = dbConnection.getConnection();
-        try (PreparedStatement ps = conn.prepareStatement(COUNT_FREE_ROOMS);
-             ResultSet rs = ps.executeQuery()) {
-
-            if (rs.next()) {
-                return rs.getInt(1);
-            }
-            return 0;
-        } catch (SQLException e) {
-            logger.error("Ошибка при подсчете свободных номеров");
-            return 0;
-        }
+        Session session = HibernateUtil.getSession();
+        return session.createQuery("select count(*) from Room").getSingleResult().hashCode();
     }
     public List<Room> findByStatus(Room.Status status) {
         List<Room> rooms = new ArrayList<>();
-        Connection conn = dbConnection.getConnection();
-        try (PreparedStatement ps = conn.prepareStatement(FIND_BY_STATUS)) {
-
-            ps.setString(1, status.name());
-            try (ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                rooms.add(mapRow(rs));
-            }
-            }
-            return rooms;
-        } catch (SQLException e) {
-            logger.error("Ошибка при подсчете свободных номеров");
-            return null;
-        }
+        Session session = HibernateUtil.getSession();
+        rooms =  session.createQuery("select r from Room r where r.status = :status")
+                .setParameter("status", status).getResultList();
+        return rooms;
     }
     @Override
     protected Room mapRow(ResultSet rs) throws SQLException {

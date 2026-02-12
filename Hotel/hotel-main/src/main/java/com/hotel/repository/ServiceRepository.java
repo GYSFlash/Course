@@ -5,6 +5,7 @@ import com.hotel.model.Client;
 import com.hotel.model.Service;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.Session;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -23,6 +24,12 @@ public class ServiceRepository extends BaseRepository<Service, Long> {
     @InjectByType
     private ClientRepository clientRepository;
 
+    private ServiceRepository(Class<Service> s) {
+        super(s);
+    }
+    public ServiceRepository() {
+        super(Service.class);
+    }
     @Override
     protected String getFindByIdQuery(){
         return FIND_BY_ID;
@@ -49,15 +56,13 @@ public class ServiceRepository extends BaseRepository<Service, Long> {
     }
 
     public boolean deleteByClientId(Long id) {
-        Connection conn = dbConnection.getConnection();
-        try (PreparedStatement ps = conn.prepareStatement(DELETE_BY_CLIENT_ID)){
-
-            ps.setLong(1, id);
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            logger.error("Ошибка при удалении услуги");
-            return false;
-        }
+        Session session = HibernateUtil.getSession();
+        int deleted = session.createQuery(
+                        "delete from Service s where s.client.id = :id"
+                )
+                .setParameter("id", id)
+                .executeUpdate();
+        return deleted > 0;
     }
     @Override
     protected Service mapRow(ResultSet rs) throws SQLException {

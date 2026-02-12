@@ -4,12 +4,11 @@ import com.hotel.annotations.InjectByType;
 import com.hotel.annotations.Singleton;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.hotel.model.Client;
-import com.hotel.repository.BookingRepository;
-import com.hotel.repository.ClientRepository;
-import com.hotel.repository.DBConnection;
-import com.hotel.repository.ServiceRepository;
+import com.hotel.repository.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 import java.util.*;
 @Singleton
@@ -21,8 +20,6 @@ public class ClientServiceImpl extends FileServiceImpl<Client> implements Client
     private BookingRepository bookingRepository;
     @InjectByType
     private ServiceRepository serviceRepository;
-    @InjectByType
-    private DBConnection dbConnection;
     public ClientServiceImpl() {}
 
     @Override
@@ -32,16 +29,17 @@ public class ClientServiceImpl extends FileServiceImpl<Client> implements Client
     }
     @Override
     public void deleteClient(Long id) {
-            dbConnection.beginTransaction();
+            Session session = HibernateUtil.getSession();
+            Transaction transaction = session.beginTransaction();
             try{
                 bookingRepository.deleteByClientId(id);
                 serviceRepository.deleteByClientId(id);
                 clientRepository.deleteById(id);
-                dbConnection.commitTransaction();
+                transaction.commit();
                 logger.info("Успешное удаление клиента");
             } catch (Exception e) {
                 logger.error("Ошибка при удалении клиента");
-                dbConnection.rollbackTransaction();
+                transaction.rollback();
             }
         }
     @Override
