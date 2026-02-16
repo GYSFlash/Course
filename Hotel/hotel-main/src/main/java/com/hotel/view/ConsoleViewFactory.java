@@ -4,12 +4,15 @@ import com.hotel.annotations.InjectByType;
 import com.hotel.annotations.Singleton;
 import com.hotel.controller.FileController;
 import com.hotel.di.ApplicationContext;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 import java.util.Scanner;
 
 
 @Component
+@Primary
 public class ConsoleViewFactory extends ViewFactory {
     private ClientView clientView;
     private RoomView roomView;
