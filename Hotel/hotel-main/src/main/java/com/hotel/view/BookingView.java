@@ -5,12 +5,14 @@ package com.hotel.view;
 import com.hotel.annotations.InjectByType;
 import com.hotel.annotations.Singleton;
 import com.hotel.controller.BookingController;
+import org.springframework.stereotype.Component;
 
-@Singleton
+@Component
 public class BookingView extends BaseView {
-    @InjectByType
     private BookingController controller;
-
+    public BookingView(BookingController controller) {
+        this.controller = controller;
+    }
 
     @Override
     public void showMenu() {

@@ -5,6 +5,7 @@ import com.hotel.model.Room;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
+import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,7 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
+@Repository
 public class RoomRepository extends BaseRepository<Room, Integer> {
 
     private static final Logger logger = LogManager.getLogger(RoomRepository.class);
@@ -23,16 +24,11 @@ public class RoomRepository extends BaseRepository<Room, Integer> {
     private final String DELETE = "DELETE FROM room WHERE roomNumber = ?;";
     private final String COUNT_FREE_ROOMS = "SELECT COUNT(*) FROM room WHERE status = 'FREE';";
     private final String FIND_BY_STATUS = "SELECT * FROM room WHERE status = ?;";
-    private RoomRepository(Class<Room> r) {
-        super(r);
-    }
-    public RoomRepository() {
-        super(Room.class);
-    }
     @Override
     protected String getFindByIdQuery(){
         return FIND_BY_ID;
     }
+
     @Override
     protected String getFindAllQuery(){
         return FIND_ALL;
@@ -52,6 +48,9 @@ public class RoomRepository extends BaseRepository<Room, Integer> {
     @Override
     protected Integer getId(Room room) {
         return room.getRoomNumber();
+    }
+    public RoomRepository() {
+        super(Room.class);
     }
 
     public int countFreeRoom() {

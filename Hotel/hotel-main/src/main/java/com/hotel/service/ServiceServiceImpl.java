@@ -13,17 +13,17 @@ import org.apache.logging.log4j.Logger;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.*;
-@Singleton
+@org.springframework.stereotype.Service
 public class ServiceServiceImpl extends FileServiceImpl<Service> implements ServiceService {
     private static final Logger logger = LogManager.getLogger(ServiceServiceImpl.class);
-    @InjectByType
     private ClientService clientService;
-    @InjectByType
+
     private ServiceRepository serviceRepository;
+    public ServiceServiceImpl(ClientService clientService, ServiceRepository serviceRepository) {
+        this.clientService = clientService;
+        this.serviceRepository = serviceRepository;
 
-    public ServiceServiceImpl() {
     }
-
     @Override
     public void addService(Service service) {
         if(service.getClient() == null){

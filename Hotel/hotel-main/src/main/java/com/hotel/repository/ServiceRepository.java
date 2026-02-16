@@ -6,13 +6,14 @@ import com.hotel.model.Service;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
+import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Duration;
-
+@Repository
 public class ServiceRepository extends BaseRepository<Service, Long> {
     private static final Logger logger = LogManager.getLogger(ServiceRepository.class);
     private final String FIND_BY_ID = "SELECT * FROM service WHERE id = ?;";
@@ -21,14 +22,11 @@ public class ServiceRepository extends BaseRepository<Service, Long> {
     private final String UPDATE = "UPDATE service SET typeService = ?, serviceName = ?, servicePrice = ?, duration = ?, date = ?, id_client = ? WHERE id = ?;";
     private final String DELETE = "DELETE FROM service WHERE id = ?;";
     private final String DELETE_BY_CLIENT_ID = "DELETE FROM service WHERE id_client = ?;";
-    @InjectByType
     private ClientRepository clientRepository;
 
-    private ServiceRepository(Class<Service> s) {
-        super(s);
-    }
-    public ServiceRepository() {
+    public ServiceRepository(ClientRepository clientRepository) {
         super(Service.class);
+        this.clientRepository = clientRepository;
     }
     @Override
     protected String getFindByIdQuery(){

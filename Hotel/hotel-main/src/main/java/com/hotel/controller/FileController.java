@@ -3,18 +3,19 @@ package com.hotel.controller;
 
 import com.hotel.annotations.InjectByType;
 import com.hotel.annotations.Singleton;
+import org.springframework.stereotype.Controller;
 
-@Singleton
+@Controller
 public class FileController extends BaseController {
-    @InjectByType
     private  BookingController bookingController;
-    @InjectByType
     private  ClientController clientController;
-    @InjectByType
     private  RoomController roomController;
-    @InjectByType
     private  ServiceController serviceController;
-    public FileController() {
+    public FileController(BookingController bookingController, ClientController clientController, RoomController roomController, ServiceController serviceController) {
+        this.bookingController = bookingController;
+        this.clientController = clientController;
+        this.roomController = roomController;
+        this.serviceController = serviceController;
     }
 
     public void saveAll(){

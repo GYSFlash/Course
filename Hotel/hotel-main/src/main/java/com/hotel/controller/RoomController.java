@@ -7,20 +7,19 @@ import com.hotel.model.Room;
 import com.hotel.service.RoomService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Controller;
 
 
 import java.math.BigDecimal;
 
 import java.util.List;
-@Singleton
+@Controller
 public class RoomController extends BaseController {
     private static final Logger logger = LogManager.getLogger(RoomController.class);
-    @InjectByType
     private RoomService service;
-
-    public RoomController() {
+    public RoomController(RoomService service) {
+        this.service = service;
     }
-
     public boolean addRoom() {
         logger.info("Добавление комнаты");
         int roomNumber = readInt("Номер комнаты");

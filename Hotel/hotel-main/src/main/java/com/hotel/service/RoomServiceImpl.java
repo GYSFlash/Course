@@ -14,20 +14,24 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.*;
-@Singleton
+@Service
 public class RoomServiceImpl extends FileServiceImpl<Room> implements RoomService {
     private static final Logger logger = LogManager.getLogger(RoomServiceImpl.class);
-    @InjectByType
-    private Config config;
-    @InjectByType
-    private RoomRepository roomRepository;
-    @InjectByType
-    private BookingRepository bookingRepository;
 
-    public RoomServiceImpl(){}
+    @Value("${room.status.change.enable}")
+    private boolean enable;
+
+    private RoomRepository roomRepository;
+    private BookingRepository bookingRepository;
+    public RoomServiceImpl(RoomRepository roomRepository, BookingRepository bookingRepository){
+        this.roomRepository = roomRepository;
+        this.bookingRepository = bookingRepository;
+    }
 
     @Override
     public Room addRoom(Room room) {
@@ -133,7 +137,7 @@ public class RoomServiceImpl extends FileServiceImpl<Room> implements RoomServic
     }
     @Override
     public void changeStatus(int roomNumber, Room.Status status) {
-        if (config.isRoomStatusChangeEnable()) {
+        if (enable) {
             getAllRooms().get(roomNumber).setStatus(status);
         } else {
             System.out.println("Изменение статуса запрещено");

@@ -6,13 +6,14 @@ import com.hotel.model.Client;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Singleton
+@Repository
 public class ClientRepository extends BaseRepository<Client, Long> {
     private static final Logger logger = LogManager.getLogger(ClientRepository.class);
     private final String FIND_BY_ID = "SELECT * FROM client WHERE id = ?;";
@@ -22,9 +23,6 @@ public class ClientRepository extends BaseRepository<Client, Long> {
     private final String DELETE = "DELETE FROM client WHERE id = ?;";
     private final String COUNT = "SELECT COUNT(*) FROM client;";
 
-    private ClientRepository(Class<Client> c) {
-        super(c);
-    }
     public ClientRepository() {
         super(Client.class);
     }

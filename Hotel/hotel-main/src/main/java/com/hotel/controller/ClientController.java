@@ -7,18 +7,18 @@ import com.hotel.model.Client;
 import com.hotel.service.ClientService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Controller;
 
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-@Singleton
+@Controller
 public class ClientController extends BaseController{
     private static final Logger logger = LogManager.getLogger(ClientController.class);
-    @InjectByType
     private ClientService service;
-
-    public ClientController() {
+    public ClientController(ClientService service) {
+        this.service = service;
     }
     public boolean addClient() {
         logger.info("Добавление клиента ");
