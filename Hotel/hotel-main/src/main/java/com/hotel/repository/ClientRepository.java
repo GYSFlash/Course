@@ -5,6 +5,7 @@ import com.hotel.annotations.Singleton;
 import com.hotel.model.Client;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.Session;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -20,6 +21,13 @@ public class ClientRepository extends BaseRepository<Client, Long> {
     private final String UPDATE = "UPDATE client SET name = ?, surname = ?, dateOfBirth = ?, gender = ? WHERE id = ?;";
     private final String DELETE = "DELETE FROM client WHERE id = ?;";
     private final String COUNT = "SELECT COUNT(*) FROM client;";
+
+    private ClientRepository(Class<Client> c) {
+        super(c);
+    }
+    public ClientRepository() {
+        super(Client.class);
+    }
     @Override
     protected String getFindByIdQuery(){
         return FIND_BY_ID;
@@ -46,18 +54,8 @@ public class ClientRepository extends BaseRepository<Client, Long> {
     }
 
     public int count() {
-        Connection conn = dbConnection.getConnection();
-        try (PreparedStatement ps = conn.prepareStatement(COUNT);
-             ResultSet rs = ps.executeQuery()) {
-
-            if (rs.next()) {
-                return rs.getInt(1);
-            }
-            return 0;
-        } catch (SQLException e) {
-            logger.error("Ошибка при подсчете клиентов");
-            return 0;
-        }
+        Session session = HibernateUtil.getSession();
+        return session.createQuery("select count(*) from Client").getSingleResult().hashCode();
     }
     @Override
     protected Client mapRow(ResultSet rs) throws SQLException {

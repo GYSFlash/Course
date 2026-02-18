@@ -1,14 +1,26 @@
 package com.hotel.model;
 
+import jakarta.persistence.*;
+
 import java.math.BigDecimal;
 import java.util.Objects;
-
+@Entity
+@Table(name = "room")
 public class Room implements Comparable<Room> {
+    @Id
     private int roomNumber;
+    @Column(name = "price")
     private BigDecimal price;
+    @Column(name = "place")
     private int place;
+    @Column(name = "type")
+    @Enumerated(EnumType.STRING)
     private RoomType type;
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
     private Status status;
+    @Column(name = "stars")
+    @Enumerated(EnumType.STRING)
     private Star stars;
     public Room() {}
     public Room(int roomNumber, BigDecimal price, int place, RoomType type,Star stars) {

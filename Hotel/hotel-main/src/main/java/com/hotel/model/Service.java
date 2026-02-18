@@ -1,23 +1,35 @@
 package com.hotel.model;
 
+import jakarta.persistence.*;
+
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.Date;
 import java.util.Objects;
-
+@Entity
+@Table(name = "service")
 public class Service implements Comparable<Service> {
 
     private static Long counter = 0L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name = "typeService")
+    @Enumerated(EnumType.STRING)
     private TypeService typeService;
+    @Column(name = "serviceName")
     private String serviceName;
+    @Column(name = "servicePrice")
     private BigDecimal servicePrice;
+    @Column(name = "duration")
     private Duration duration;
+    @Column(name = "date")
     private Date date;
+    @ManyToOne
+    @JoinColumn(name = "id_client")
     private Client client;
     public Service() {}
     public Service(TypeService typeService,String serviceName, BigDecimal servicePrice, Duration duration, Client client, Date date) {
-        this.id = ++counter;
         this.typeService = typeService;
         this.serviceName = serviceName;
         this.servicePrice = servicePrice;

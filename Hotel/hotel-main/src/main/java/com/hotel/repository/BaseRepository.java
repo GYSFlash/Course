@@ -3,6 +3,8 @@ package com.hotel.repository;
 import com.hotel.annotations.InjectByType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,9 +15,12 @@ import java.util.List;
 import java.util.Optional;
 
 public abstract class BaseRepository<T,ID> implements  GenericRepository<T,ID> {
-    @InjectByType
-    protected DBConnection dbConnection;
+
     private static final Logger logger = LogManager.getLogger(BaseRepository.class);
+    protected Class<T> entity;
+    public BaseRepository(Class<T> entity) {
+        this.entity = entity;
+    }
 
     protected abstract String getFindByIdQuery();
     protected abstract String getFindAllQuery();
@@ -31,82 +36,58 @@ public abstract class BaseRepository<T,ID> implements  GenericRepository<T,ID> {
 
     @Override
     public Optional<T> findById(ID id) {
-        Connection conn = dbConnection.getConnection();
-        try (PreparedStatement ps = conn.prepareStatement(getFindByIdQuery())) {
-
-            ps.setObject(1, id);
-
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return Optional.of(mapRow(rs));
-                }
-            }
-            return Optional.empty();
-
-        } catch (SQLException e) {
-            logger.error("Ошибка при поиске по id= {}", id);
-            return Optional.empty();
-        }
+        Session session = HibernateUtil.getSession();
+        return Optional.ofNullable(session.find(entity, id));
     }
     @Override
     public List<T> findAll() {
-        List<T> result = new ArrayList<>();
-        Connection conn = dbConnection.getConnection();
-        try (PreparedStatement ps = conn.prepareStatement(getFindAllQuery());
-             ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                result.add(mapRow(rs));
-            }
-            return result;
-
-        } catch (SQLException e) {
-            logger.error("Ошибка при поиске всех объектов");
-            return null;
-        }
+        Session session = HibernateUtil.getSession();
+        return session.createQuery("from " + entity.getSimpleName(), entity).getResultList();
     }
     @Override
     public T create(T entity) {
-        Connection conn = dbConnection.getConnection();
-        try (PreparedStatement ps = conn.prepareStatement(getCreateQuery()))
-        {
-            fillInsertStatement(ps, entity);
-            ps.executeUpdate();
+        Session session = HibernateUtil.getSession();
+        Transaction transaction = session.beginTransaction();
+        try {
+            transaction = session.beginTransaction();
+            session.persist(entity);
+            transaction.commit();
             return entity;
-
-        } catch (SQLException e) {
-            logger.error("Ошибка при создании объекта :{} ", entity);
+        }catch (Exception e){
+            transaction.rollback();
+            logger.error("Ошибка создания объекта");
             return null;
         }
     }
     @Override
     public T update(T entity) {
-        Connection conn = dbConnection.getConnection();
-        try (PreparedStatement ps = conn.prepareStatement(getUpdateQuery())) {
-
-            fillUpdateStatement(ps, entity);
-
-            int updated = ps.executeUpdate();
-            if (updated == 0) {
-                logger.error("Объект для обновления с id= {} не найден", getId(entity) );
-            }
+        Session session = HibernateUtil.getSession();
+        Transaction transaction = session.beginTransaction();
+        try {
+            transaction = session.beginTransaction();
+            session.refresh(entity);
+            transaction.commit();
             return entity;
-
-        } catch (SQLException e) {
-            logger.error("Ошибка при обновлении таблицы: {}" , entity);
+        }catch (Exception e){
+            transaction.rollback();
+            logger.error("Ошибка обновления объекта");
             return null;
         }
     }
 
     @Override
     public boolean deleteById(ID id) {
-        Connection conn = dbConnection.getConnection();
-        try (PreparedStatement ps = conn.prepareStatement(getDeleteQuery())) {
-
-            ps.setObject(1, id);
-            return ps.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            logger.error("Ошибка при удалении объекта с id= {}" ,id);
+        Session session = HibernateUtil.getSession();
+        Transaction transaction = session.beginTransaction();
+        try {
+            transaction = session.beginTransaction();
+            T entity = findById(id).orElse(null);
+            session.remove(entity);
+            transaction.commit();
+            return true;
+        }catch (Exception e){
+            transaction.rollback();
+            logger.error("Ошибка при удалении объекта");
             return false;
         }
     }

@@ -8,9 +8,12 @@ import com.hotel.model.Room;
 import com.hotel.model.Room.*;
 import com.hotel.repository.BookingRepository;
 import com.hotel.repository.DBConnection;
+import com.hotel.repository.HibernateUtil;
 import com.hotel.repository.RoomRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -23,8 +26,6 @@ public class RoomServiceImpl extends FileServiceImpl<Room> implements RoomServic
     private RoomRepository roomRepository;
     @InjectByType
     private BookingRepository bookingRepository;
-    @InjectByType
-    private DBConnection dbConnection;
 
     public RoomServiceImpl(){}
 
@@ -34,15 +35,16 @@ public class RoomServiceImpl extends FileServiceImpl<Room> implements RoomServic
     }
     @Override
     public void deleteRoom(int roomNumber) {
-        dbConnection.beginTransaction();
+        Session session = HibernateUtil.getSession();
+        Transaction transaction = session.beginTransaction();
         try{
             bookingRepository.deleteByRoomNumber(roomNumber);
             roomRepository.deleteById(roomNumber);
-            dbConnection.commitTransaction();
+            transaction.commit();
             logger.info("Комната успешно удалена");
         } catch (Exception e) {
             logger.error("Ошибка при удалении комнаты");
-            dbConnection.rollbackTransaction();
+            transaction.rollback();
         }
 
     }

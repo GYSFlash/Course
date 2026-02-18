@@ -1,19 +1,28 @@
 package com.hotel.model;
 
+import jakarta.persistence.*;
+
 import java.util.Date;
 import java.util.Objects;
-
+@Entity
+@Table(name = "client")
 public class Client implements Comparable<Client> {
 
     private static Long counter = 0L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name = "name")
     private String name;
+    @Column(name = "surname")
     private String surname;
+    @Column(name = "dateOfBirth")
     private Date dateOfBirth;
+    @Column(name = "gender")
+    @Enumerated(EnumType.STRING)
     private Gender gender;
     public Client(){}
     public Client(Date dateOfBirth, String surname, String name, Gender gender) {
-        this.id = ++counter;
         this.dateOfBirth = dateOfBirth;
         this.surname = surname;
         this.name = name;

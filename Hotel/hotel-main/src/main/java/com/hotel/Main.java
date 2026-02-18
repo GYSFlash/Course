@@ -21,8 +21,8 @@ public class Main {
         Configurator configurator = new Configurator();
         configurator.configure(config, context);
         ViewFactory factory = ViewFactory.getFactory(context);
-        DBConnection dbConnection = context.getObject(DBConnection.class);
-        dbConnection.getConnection();
+       /* DBConnection dbConnection = context.getObject(DBConnection.class);
+        dbConnection.getConnection();*/
         factory.runApplication();
     }
 
