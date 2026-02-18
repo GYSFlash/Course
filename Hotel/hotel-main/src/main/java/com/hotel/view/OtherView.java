@@ -4,11 +4,14 @@ package com.hotel.view;
 import com.hotel.annotations.InjectByType;
 import com.hotel.annotations.Singleton;
 import com.hotel.controller.MultiEntityController;
-@Singleton
-public class OtherView extends BaseView {
-    @InjectByType
-    private MultiEntityController controller;
+import org.springframework.stereotype.Component;
 
+@Component
+public class OtherView extends BaseView {
+    private MultiEntityController controller;
+    public OtherView(MultiEntityController controller) {
+        this.controller = controller;
+    }
     @Override
     public void showMenu() {
         showMessage("\n=== ПРОЧИЕ ОПЕРАЦИИ ===");

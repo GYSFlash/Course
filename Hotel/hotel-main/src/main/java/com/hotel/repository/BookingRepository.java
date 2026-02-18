@@ -8,6 +8,7 @@ import com.hotel.model.Room;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
+import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -16,15 +17,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-@Singleton
+@Repository
 public class BookingRepository extends BaseRepository<Booking,Long> {
     private static final Logger logger = LogManager.getLogger(BookingRepository.class);
-    public BookingRepository(Class<Booking> b) {
-        super(b);
-    }
-    public BookingRepository() {
-        super(Booking.class);
-    }
     private final String FIND_BY_ID = "SELECT * FROM booking WHERE id = ?;";
     private final String FIND_ALL = "SELECT * FROM booking;";
     private final String CREATE = "INSERT INTO booking (checkInDate, checkOutDate, totalPrice, roomNumber, id_client) VALUES (?, ?, ?, ?, ?)";
@@ -33,15 +28,20 @@ public class BookingRepository extends BaseRepository<Booking,Long> {
     private final String THREE_BOOKING_BY_ROOM = "SELECT * FROM booking WHERE roomNumber = ? ORDER BY id DESC LIMIT 3;";
     private final String DELETE_BY_CLIENT_ID = "DELETE FROM booking WHERE id_client = ?;";
     private final String DELETE_BY_ROOM_NUMBER = "DELETE FROM booking WHERE roomNumber = ?;";
-
     @InjectByType
     private ClientRepository clientRepository;
+
     @InjectByType
     private RoomRepository roomRepository;
-
     @Override
     protected String getFindByIdQuery(){
         return FIND_BY_ID;
+    }
+
+    public BookingRepository(ClientRepository clientRepository, RoomRepository roomRepository) {
+        super(Booking.class);
+        this.clientRepository = clientRepository;
+        this.roomRepository = roomRepository;
     }
     @Override
     protected String getFindAllQuery(){

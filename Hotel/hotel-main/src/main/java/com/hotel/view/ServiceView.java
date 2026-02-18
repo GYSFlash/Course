@@ -5,12 +5,14 @@ package com.hotel.view;
 import com.hotel.annotations.InjectByType;
 import com.hotel.annotations.Singleton;
 import com.hotel.controller.ServiceController;
+import org.springframework.stereotype.Component;
 
-@Singleton
+@Component
 public class ServiceView extends BaseView {
-    @InjectByType
     private ServiceController controller;
-
+    public ServiceView(ServiceController serviceController) {
+        this.controller = serviceController;
+    }
     @Override
     public void showMenu() {
         showMessage("\n=== УПРАВЛЕНИЕ УСЛУГАМИ ===");

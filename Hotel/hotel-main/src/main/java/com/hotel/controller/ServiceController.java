@@ -8,23 +8,22 @@ import com.hotel.service.ClientService;
 import com.hotel.service.ServiceService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Controller;
 
 
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.Date;
 import java.util.List;
-@Singleton
+@Controller
 public class ServiceController extends BaseController {
     private static final Logger logger = LogManager.getLogger(ServiceController.class);
-    @InjectByType
     private ServiceService services;
-    @InjectByType
     private ClientService clientService;
-
-    public ServiceController() {
+    public ServiceController(ServiceService services,ClientService clientService) {
+        this.services = services;
+        this.clientService = clientService;
     }
-
     public boolean addService() {
         logger.info("Добавление услуги");
         Service.TypeService type;

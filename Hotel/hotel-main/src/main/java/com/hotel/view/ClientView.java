@@ -4,12 +4,14 @@ package com.hotel.view;
 import com.hotel.annotations.InjectByType;
 import com.hotel.annotations.Singleton;
 import com.hotel.controller.ClientController;
+import org.springframework.stereotype.Component;
 
-@Singleton
+@Component
 public class ClientView extends BaseView {
-    @InjectByType
     private ClientController controller;
-
+    public ClientView(ClientController controller) {
+        this.controller = controller;
+    }
     @Override
     public void showMenu() {
         showMessage("\n=== УПРАВЛЕНИЕ КЛИЕНТАМИ ===");

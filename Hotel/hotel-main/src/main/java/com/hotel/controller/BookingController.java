@@ -11,21 +11,21 @@ import com.hotel.service.ClientService;
 import com.hotel.service.RoomService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Controller;
 
 import java.util.Date;
 import java.util.List;
 
-@Singleton
+@Controller
 public class BookingController extends BaseController {
     private static final Logger logger = LogManager.getLogger(BookingController.class);
-    @InjectByType
     private BookingService service;
-    @InjectByType
     private ClientService clientService;
-    @InjectByType
     private RoomService roomService;
-
-    public BookingController() {
+    public BookingController(BookingService bookingService, ClientService clientService, RoomService roomService) {
+        this.service = bookingService;
+        this.clientService = clientService;
+        this.roomService = roomService;
     }
 
     public boolean addBooking() {

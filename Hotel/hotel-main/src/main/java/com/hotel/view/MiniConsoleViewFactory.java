@@ -4,20 +4,22 @@ import com.hotel.annotations.InjectByType;
 import com.hotel.annotations.Singleton;
 import com.hotel.controller.FileController;
 import com.hotel.di.ApplicationContext;
+import org.springframework.stereotype.Component;
 
 import java.util.Scanner;
 
-@Singleton
+@Component
 public class MiniConsoleViewFactory extends ViewFactory {
-    @InjectByType
     private ClientView clientView;
-    @InjectByType
     private RoomView roomView;
-    @InjectByType
     private BookingView bookingView;
-    @InjectByType
     private FileController fileController;
-
+    public MiniConsoleViewFactory(ClientView clientView, RoomView roomView, BookingView bookingView, FileController fileController) {
+        this.clientView = clientView;
+        this.roomView = roomView;
+        this.bookingView = bookingView;
+        this.fileController = fileController;
+    }
     public void runApplication() {
         Scanner scanner = new Scanner(System.in);
         boolean running = true;

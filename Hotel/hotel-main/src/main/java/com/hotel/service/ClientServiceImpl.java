@@ -9,19 +9,21 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
-@Singleton
+@Service
 public class ClientServiceImpl extends FileServiceImpl<Client> implements ClientService  {
     private static final Logger logger = LogManager.getLogger(ClientServiceImpl.class);
-    @InjectByType
     private ClientRepository clientRepository;
-    @InjectByType
     private BookingRepository bookingRepository;
-    @InjectByType
     private ServiceRepository serviceRepository;
-    public ClientServiceImpl() {}
 
+    public ClientServiceImpl(ClientRepository clientRepository, BookingRepository bookingRepository, ServiceRepository serviceRepository) {
+        this.clientRepository = clientRepository;
+        this.bookingRepository = bookingRepository;
+        this.serviceRepository = serviceRepository;
+    }
     @Override
     public void addClient(Client client) {
         clientRepository.create(client);

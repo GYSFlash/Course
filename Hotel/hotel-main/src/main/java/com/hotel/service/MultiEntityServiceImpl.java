@@ -11,16 +11,14 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-@Singleton
+@org.springframework.stereotype.Service
 public class MultiEntityServiceImpl implements MultiEntityService {
     private static final Logger logger = LogManager.getLogger(MultiEntityServiceImpl.class);
-    @InjectByType
     private RoomService roomService;
-    @InjectByType
     private ServiceService serviceService;
-
-
-    public MultiEntityServiceImpl(){
+    public MultiEntityServiceImpl(RoomService roomService, ServiceService serviceService) {
+        this.roomService = roomService;
+        this.serviceService = serviceService;
     }
 
 

@@ -10,26 +10,27 @@ import com.hotel.model.Room;
 import com.hotel.repository.BookingRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 
 import static java.lang.Integer.parseInt;
 import static java.lang.Long.parseLong;
 
-@Singleton
+@Service
 public class BookingServiceImpl extends FileServiceImpl<Booking> implements BookingService{
     private static final Logger logger = LogManager.getLogger(BookingServiceImpl.class);
-    @InjectByType
     private RoomService roomService;
-    @InjectByType
     private ClientService clientService;
-    @InjectByType
-    private Config config;
-    @InjectByType
     private BookingRepository bookingRepository;
-    public BookingServiceImpl() {
+    @Value("${booking.history.record.limit}")
+    private int limit;
+    public BookingServiceImpl(BookingRepository bookingRepository, RoomService roomService, ClientService clientService) {
+        this.bookingRepository = bookingRepository;
+        this.roomService = roomService;
+        this.clientService = clientService;
     }
-
 
    @Override
     public void deleteBooking(Long id) {
@@ -142,7 +143,6 @@ public class BookingServiceImpl extends FileServiceImpl<Booking> implements Book
     }
     @Override
     public List<Client> getClientsStaysByRoom(int roomNumber) {
-        int limit = config.getBookingHistoryRecordLimit();
         if (getAllBookings().isEmpty()) {
             return null;
         } else {
