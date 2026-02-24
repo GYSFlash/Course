@@ -63,9 +63,16 @@ public class BookingRepository extends BaseRepository<Booking,Long> {
     protected Long getId(Booking booking) {
         return booking.getId();
     }
-
+    @Override
+    public List<Booking> findAll() {
+        Session session = HibernateUtil.getSession();
+        return session.createQuery("select b from Booking b " +
+                        "join fetch b.room " +
+                        "join fetch b.client",
+                Booking.class)
+                .getResultList();
+    }
     public List<Booking> threeBookingByRoom(int roomNumber) {
-        List<Booking> bookings = new ArrayList<>();
         Session session = HibernateUtil.getSession();
             return session.createQuery(
                             """

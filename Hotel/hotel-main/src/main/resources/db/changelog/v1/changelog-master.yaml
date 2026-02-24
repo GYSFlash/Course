@@ -1,0 +1,5 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/v1/V1.1_create_table.sql
+  - include:
+      file: db/changelog/v1/V1.2_insert_client.sql
