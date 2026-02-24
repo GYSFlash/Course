@@ -77,6 +77,8 @@ public class BookingRepository extends BaseRepository<Booking,Long> {
             return session.createQuery(
                             """
                             from Booking b
+                            join fetch b.client
+                            join fetch b.room
                             where b.room.roomNumber = :roomNumber
                             order by b.id desc
                             """,
