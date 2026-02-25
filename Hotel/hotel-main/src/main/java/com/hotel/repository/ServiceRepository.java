@@ -1,6 +1,7 @@
 package com.hotel.repository;
 
 import com.hotel.annotations.InjectByType;
+import com.hotel.model.Booking;
 import com.hotel.model.Client;
 import com.hotel.model.Service;
 import org.apache.logging.log4j.LogManager;
@@ -13,6 +14,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Duration;
+import java.util.List;
+
 @Repository
 public class ServiceRepository extends BaseRepository<Service, Long> {
     private static final Logger logger = LogManager.getLogger(ServiceRepository.class);
@@ -23,7 +26,14 @@ public class ServiceRepository extends BaseRepository<Service, Long> {
     private final String DELETE = "DELETE FROM service WHERE id = ?;";
     private final String DELETE_BY_CLIENT_ID = "DELETE FROM service WHERE id_client = ?;";
     private ClientRepository clientRepository;
-
+    @Override
+    public List<Service> findAll() {
+        Session session = HibernateUtil.getSession();
+        return session.createQuery("select s from Service s " +
+                                "join fetch s.client",
+                        Service.class)
+                .getResultList();
+    }
     public ServiceRepository(ClientRepository clientRepository) {
         super(Service.class);
         this.clientRepository = clientRepository;
