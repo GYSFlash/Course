@@ -19,8 +19,8 @@ public class Main {
 
 
         ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
-        ViewFactory factory = context.getBean(ViewFactory.class);
-        factory.runApplication();
+        /*ViewFactory factory = context.getBean(ViewFactory.class);
+        factory.runApplication();*/
     }
 
 
