@@ -2,20 +2,26 @@ package com.hotel.controller;
 
 import com.hotel.annotations.InjectByType;
 import com.hotel.annotations.Singleton;
+import com.hotel.dto.ServiceRequestDTO;
+import com.hotel.dto.ServiceResponseDTO;
 import com.hotel.model.Client;
 import com.hotel.model.Service;
 import com.hotel.service.ClientService;
 import com.hotel.service.ServiceService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 
 
+import jakarta.validation.Valid;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.Date;
 import java.util.List;
-@Controller
+@RestController
+@RequestMapping("/services")
 public class ServiceController extends BaseController {
     private static final Logger logger = LogManager.getLogger(ServiceController.class);
     private ServiceService services;
@@ -24,95 +30,44 @@ public class ServiceController extends BaseController {
         this.services = services;
         this.clientService = clientService;
     }
-    public boolean addService() {
+    @PostMapping
+    public ResponseEntity<Void> addService(@Valid @RequestBody ServiceRequestDTO service) {
         logger.info("Добавление услуги");
-        Service.TypeService type;
-        try {
-            String typeStr = readString("Тип услуги (ROOM/FOOD/OTHER)");
-            type = Service.TypeService.valueOf(typeStr.toUpperCase());
-        }
-        catch (Exception e){
-            logger.error("Недопустимый тип услуги");
-            return false;
-        }
-        String name = readString("Название услуги");
-
-        double price = readDouble("Цена услуги");
-        Duration duration;
-        int hours = readInt("Продолжительность (часы)");
-        int minutes = readInt("Продолжительность (минуты)");
-
-        duration = Duration.ofHours(hours).plusMinutes(minutes);
-        Long id = readLong("ID клиента");
-        Client client = clientService.getClientById(id);
-        Service service = new Service(type, name, BigDecimal.valueOf(price),
-                duration,client , new Date());
         services.addService(service);
-        return true;
+        return ResponseEntity.ok().build();
     }
-
-    public List<Service> showAllServices() {
+    @GetMapping
+    public List<ServiceResponseDTO> showAllServices() {
         return services.getAllServices();
-
     }
-
-    public boolean deleteService() {
-        Long id = readLong("ID услуги для удаления");
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteService(@PathVariable("id") Long id) {
        if (services.getServiceById(id) == null) {
-           return false;
+           logger.error("Услуга с id {} не найдена", id);
+           return ResponseEntity.notFound().build();
        }
         logger.info("Удаление услуги c id {}", id);
         services.deleteService(id);
-        return true;
+        return ResponseEntity.noContent().build();
     }
-
-    public boolean updateService() {
-        Long id = readLong("ID услуги для обновления");
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updateService(@PathVariable("id") Long id, @Valid @RequestBody ServiceRequestDTO service) {
         logger.info("Обновление услуги c id {}", id);
-        Service service = services.getServiceById(id);
-        String change = readString("Изменить (type/name/price/duration/client)");
-        switch (change) {
-            case "type" -> {
-                try {
-                    String typeStr = readString("Новый тип услуги (ROOM/FOOD/OTHER)");
-                    Service.TypeService type = Service.TypeService.valueOf(typeStr.toUpperCase());
-                    service.setTypeService(type);
-                }catch (Exception e){
-                    logger.error("Недопустимый тип услуги");
-                    return false;
-                }
-            }
-            case "name" -> {String name = readString("Новое название услуги");
-                service.setServiceName(name);
-            }
-            case "price" -> {double price = readDouble("Новая цена услуги");
-                service.setServicePrice(BigDecimal.valueOf(price));
-            }
-            case "duration" -> {int hours = readInt("Новая продолжительность (часы)");
-                int minutes = readInt("Продолжительность (минуты)");
-                Duration durtion = Duration.ofHours(hours).plusMinutes(minutes);
-                service.setDuration(durtion);
-            }
-            case "client" -> { Long idClient = readLong("ID клиента");
-                Client client = clientService.getClientById(idClient);
-                service.setClient(client);
-            }
-            default -> {
-                return false;
-            }
-
+        if(services.getServiceById(id) != null) {
+            services.updateService(id, service);
+        return ResponseEntity.ok().build();
         }
-        services.updateService(service);
-        return true;
+        logger.error("Услуга с id {} не найдена", id);
+        return ResponseEntity.notFound().build();
     }
-
-    public List<Service> sortServices() {
-        String sortBy = readString("Сортировать по (price/date/type)");
+    @GetMapping("/sort/{sortBy}")
+    public List<ServiceResponseDTO> sortServices(@PathVariable("sortBy") String sortBy) {
         return services.sort(sortBy);
 
     }
-    public Service getServiceById() {
-        return services.getServiceById(readLong("ID услуги"));
+    @GetMapping("/{id}")
+    public ServiceResponseDTO getServiceById(@PathVariable("id") Long id) {
+        return services.getServiceById(id);
     }
     public void exportServices() {
         services.exportServiceToFile();

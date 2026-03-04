@@ -4,6 +4,8 @@ import com.hotel.annotations.InjectByType;
 import com.hotel.annotations.Singleton;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.hotel.config.Config;
+import com.hotel.dto.RoomDTO;
+import com.hotel.mapper.RoomMapper;
 import com.hotel.model.Room;
 import com.hotel.model.Room.*;
 import com.hotel.repository.BookingRepository;
@@ -16,10 +18,12 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.*;
 @Service
+@Transactional(readOnly = true)
 public class RoomServiceImpl extends FileServiceImpl<Room> implements RoomService {
     private static final Logger logger = LogManager.getLogger(RoomServiceImpl.class);
 
@@ -28,44 +32,46 @@ public class RoomServiceImpl extends FileServiceImpl<Room> implements RoomServic
 
     private RoomRepository roomRepository;
     private BookingRepository bookingRepository;
-    public RoomServiceImpl(RoomRepository roomRepository, BookingRepository bookingRepository){
+    private RoomMapper roomMapper;
+    public RoomServiceImpl(RoomRepository roomRepository, BookingRepository bookingRepository, RoomMapper roomMapper){
         this.roomRepository = roomRepository;
         this.bookingRepository = bookingRepository;
+        this.roomMapper = roomMapper;
     }
 
     @Override
-    public Room addRoom(Room room) {
-        return roomRepository.create(room);
+    @Transactional
+    public void addRoom(RoomDTO room) {
+        roomRepository.create(roomMapper.toRoom(room));
     }
     @Override
+    @Transactional
     public void deleteRoom(int roomNumber) {
-        Session session = HibernateUtil.getSession();
-        Transaction transaction = session.beginTransaction();
-        try{
+
             bookingRepository.deleteByRoomNumber(roomNumber);
             roomRepository.deleteById(roomNumber);
-            transaction.commit();
             logger.info("Комната успешно удалена");
-        } catch (Exception e) {
-            logger.error("Ошибка при удалении комнаты");
-            transaction.rollback();
-        }
 
     }
     @Override
-    public void updateRoom(Room room) {
-        roomRepository.update(room);
+    @Transactional
+    public void updateRoom(RoomDTO room) {
+        logger.info("Обновление комнаты");
+        if(getRoomByRoomNumber(room.getRoomNumber()) == null){
+            logger.error("Комната не найдена");
+        }
+        roomRepository.update(roomMapper.toRoom(room));
         logger.info("Комната успешно обновлена");
     }
     @Override
-    public List<Room> getAllRooms() {
+    public List<RoomDTO> getAllRooms() {
         logger.info("Получение всех комнат");
-        return roomRepository.findAll();
+        return roomMapper.toRoomDTOList(roomRepository.findAll());
     }
     @Override
-    public List<Room> getRoomByStatus(Room.Status status) {
+    public List<RoomDTO> getRoomByStatus(Room.Status status) {
         logger.info("Получение комнат по статусу: {}" ,status);
-        return roomRepository.findByStatus(status);
+        return roomMapper.toRoomDTOList(roomRepository.findByStatus(status));
     }
     @Override
     public int countFreeRooms() {
@@ -73,33 +79,28 @@ public class RoomServiceImpl extends FileServiceImpl<Room> implements RoomServic
         return roomRepository.countFreeRoom();
     }
     @Override
-    public List<Room> sort(boolean freeRoom,String sortBy) {
+    public List<RoomDTO> sort(String sortBy) {
 
         logger.info("Сортировка комнат по : {}" ,sortBy);
-        List<Room> roomList = getAllRooms();
+        List<RoomDTO> roomList = getAllRooms();
         if(roomList.isEmpty()) {
             logger.error("Список комнат пуст");
             return null;
         }
-        if (freeRoom) {
-            List<Room> result = roomList;
-            roomList.clear();
-            result.stream().filter(room -> room.getStatus() == Room.Status.FREE).toList();
-        }
         switch (sortBy) {
-            case "price"-> roomList.sort(Comparator.comparing(Room::getPrice));
-            case "place"-> roomList.sort(Comparator.comparing(Room::getPlace));
-            case "stars"-> roomList.sort(Comparator.comparing(Room::getStars));
-            case "type"-> roomList.sort(Comparator.comparing(Room::getType));
+            case "price"-> roomList.sort(Comparator.comparing(RoomDTO::getPrice));
+            case "place"-> roomList.sort(Comparator.comparing(RoomDTO::getPlace));
+            case "stars"-> roomList.sort(Comparator.comparing(RoomDTO::getStars));
+            case "type"-> roomList.sort(Comparator.comparing(RoomDTO::getType));
             default -> {logger.error("Некорректный параметр сортировки");
                 return null;}
         }
         return roomList;
     }
     @Override
-    public Room getRoomByRoomNumber(int roomNumber) {
+    public RoomDTO getRoomByRoomNumber(int roomNumber) {
         logger.info("Получение комнаты по номеру: {}" ,roomNumber);
-       return roomRepository.findById(roomNumber).orElse(null);
+       return roomMapper.toRoomDTO(roomRepository.findById(roomNumber).orElse(null));
     }
     @Override
     public void addRoomsFromFile(){
@@ -109,7 +110,7 @@ public class RoomServiceImpl extends FileServiceImpl<Room> implements RoomServic
     @Override
     public void exportRoomsToFile() {
         String fileName = "rooms";
-        exportToFile(fileName,getAllRooms());
+        /*exportToFile(fileName,getAllRooms());*/
 
     }
     @Override
@@ -129,7 +130,7 @@ public class RoomServiceImpl extends FileServiceImpl<Room> implements RoomServic
             RoomType type = RoomType.valueOf(values[3].toUpperCase());
             Star stars = Star.valueOf(values[4].toUpperCase());
             Room room = new Room(roomNumber,price,place,type,stars);
-            addRoom(room);
+            /*addRoom(room);*/
         }
         catch (Exception e){
             System.out.println("Ошибка при парсинге строки: " + line);
@@ -146,7 +147,7 @@ public class RoomServiceImpl extends FileServiceImpl<Room> implements RoomServic
     @Override
     public void parseModelJSON(List<Room> list){
         for (Room room: list) {
-            addRoom(room);
+            /*addRoom(room);*/
         }
     }
     @Override

@@ -2,120 +2,60 @@ package com.hotel.controller;
 
 import com.hotel.annotations.InjectByType;
 import com.hotel.annotations.Singleton;
+import com.hotel.dto.ClientRequestDTO;
+import com.hotel.dto.ClientResponseDTO;
 import com.hotel.model.Client;
 
 import com.hotel.service.ClientService;
+import jakarta.validation.Valid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-@Controller
+@RestController
+@RequestMapping("/clients")
 public class ClientController extends BaseController{
     private static final Logger logger = LogManager.getLogger(ClientController.class);
     private ClientService service;
     public ClientController(ClientService service) {
         this.service = service;
     }
-    public boolean addClient() {
-        logger.info("Добавление клиента ");
-        String name = readString("Имя");
-        String surname = readString("Фамилия");
-
-        String dateStr = readString("Дата рождения (гггг-мм-дд)");
-        Date dateOfBirth = parseDate(dateStr);
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.YEAR, -14);
-        Date date = cal.getTime();
-        if (dateOfBirth == null ) {
-            System.out.println("Неверный формат даты");
-            return false;
-        } else if (dateOfBirth.after(date)) {
-            System.out.println("Возраст меньше 14 лет");
-            return false;
-        }
-        String genderStr = readString("Пол (MALE/FEMALE)");
-        Client.Gender gender;
-        try {
-            gender = Client.Gender.valueOf(genderStr.toUpperCase());
-        } catch (Exception e) {
-            System.out.println("Неверно указан пол");
-            return false;
-        }
-        Client client = new Client(dateOfBirth, surname, name, gender);
+    @PostMapping
+    public ResponseEntity<Void> addClient(@Valid @RequestBody ClientRequestDTO client) {
         service.addClient(client);
-        return true;
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
-
-    public List<Client> showAllClients() {
+    @GetMapping
+    public List<ClientResponseDTO> showAllClients() {
         return service.getAllClients();
     }
-
-    public boolean deleteClient() {
-        Long id = readLong("ID клиента для удаления");
-        if (service.getClientById(id) == null) {
-            return false;
-        }
+    @DeleteMapping({"/{id}"})
+    public ResponseEntity<Void> deleteClient(@PathVariable("id") Long id) {
         logger.info("Удаление клиента с id: {}",id);
         service.deleteClient(id);
-        return true;
+        return ResponseEntity.noContent().build();
     }
-
-    public boolean updateClient() {
-        Long id = readLong("ID клиента для обновления");
+    @GetMapping("/{id}")
+    public ClientResponseDTO showClient(@PathVariable("id") Long id) {
+        return service.getClientById(id);
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updateClient(@PathVariable("id") Long id, @Valid @RequestBody ClientRequestDTO client) {
         logger.info("Обновление клиента с id: {}",id);
-        Client client = service.getClientById(id);
-        if (client == null) {
-            return false;
+        if(showClient(id) != null) {
+            service.updateClient(id, client);
+            return ResponseEntity.ok().build();
         }
-        String chance = readString("Введите поле для изменения (name, surname, dateOfBirth, gender)");
-
-        switch (chance) {
-            case "name" -> {
-                String name = readString("Новое имя");
-                client.setName(name);
-            }
-            case "surname" -> {
-                String surname = readString("Новая фамилия");
-                client.setSurname(surname);
-            }
-            case "dateOfBirth" -> {
-                String dateStr = readString("Новая дата рождения (гггг-мм-дд)");
-                Date dateOfBirth = parseDate(dateStr);
-                Calendar cal = Calendar.getInstance();
-                cal.add(Calendar.YEAR, -14);
-                Date date = cal.getTime();
-                if (dateOfBirth == null ) {
-                    logger.error("Неверный формат даты");
-                    return false;
-                } else if (dateOfBirth.after(date)) {
-                    logger.error("Возраст меньше 14 лет");
-                    return false;
-                }
-                client.setDateOfBirth(dateOfBirth);
-            }
-            case "gender" -> {
-                String genderStr = readString("Новый пол (MALE/FEMALE)");
-
-                try {
-                    client.setGender(Client.Gender.valueOf(genderStr.toUpperCase()));
-            }
-                catch (Exception e) {
-                    logger.error("Неверно указан пол");
-                    return false;
-                }client.setGender(Client.Gender.valueOf(genderStr.toUpperCase()));
-            }
-            default -> {
-                return false;
-            }
-        }
-        service.updateClient(client);
-        return true;
+        return ResponseEntity.notFound().build();
     }
-
+    @GetMapping("/count")
     public int showClientsCount() {
         int count = service.clientsCount();
         return count;

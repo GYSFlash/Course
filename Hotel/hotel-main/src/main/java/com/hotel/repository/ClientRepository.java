@@ -6,6 +6,7 @@ import com.hotel.model.Client;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -23,8 +24,8 @@ public class ClientRepository extends BaseRepository<Client, Long> {
     private final String DELETE = "DELETE FROM client WHERE id = ?;";
     private final String COUNT = "SELECT COUNT(*) FROM client;";
 
-    public ClientRepository() {
-        super(Client.class);
+    public ClientRepository(SessionFactory sessionFactory) {
+        super(Client.class, sessionFactory);
     }
     @Override
     protected String getFindByIdQuery(){
@@ -52,8 +53,10 @@ public class ClientRepository extends BaseRepository<Client, Long> {
     }
 
     public int count() {
-        Session session = HibernateUtil.getSession();
-        return session.createQuery("select count(*) from Client").getSingleResult().hashCode();
+        return getSession().createQuery("""
+                                select count(*) from Client                           
+                                """
+        ).getSingleResult().hashCode();
     }
     @Override
     protected Client mapRow(ResultSet rs) throws SQLException {

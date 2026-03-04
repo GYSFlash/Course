@@ -3,6 +3,9 @@ package com.hotel.service;
 import com.hotel.annotations.InjectByType;
 import com.hotel.annotations.Singleton;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.hotel.dto.ClientRequestDTO;
+import com.hotel.dto.ClientResponseDTO;
+import com.hotel.mapper.ClientMapper;
 import com.hotel.model.Client;
 import com.hotel.repository.*;
 import org.apache.logging.log4j.LogManager;
@@ -10,49 +13,55 @@ import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 @Service
+@Transactional(readOnly = true)
 public class ClientServiceImpl extends FileServiceImpl<Client> implements ClientService  {
     private static final Logger logger = LogManager.getLogger(ClientServiceImpl.class);
     private ClientRepository clientRepository;
     private BookingRepository bookingRepository;
     private ServiceRepository serviceRepository;
+    private ClientMapper clientMapper;
 
-    public ClientServiceImpl(ClientRepository clientRepository, BookingRepository bookingRepository, ServiceRepository serviceRepository) {
+    public ClientServiceImpl(ClientRepository clientRepository, BookingRepository bookingRepository, ServiceRepository serviceRepository, ClientMapper clientMapper) {
         this.clientRepository = clientRepository;
         this.bookingRepository = bookingRepository;
         this.serviceRepository = serviceRepository;
+        this.clientMapper = clientMapper;
     }
     @Override
-    public void addClient(Client client) {
-        clientRepository.create(client);
+    @Transactional
+    public void addClient(ClientRequestDTO client) {
+        clientRepository.create(clientMapper.toClient(client));
         logger.info("Успешное добавление клиента");
     }
     @Override
+    @Transactional
     public void deleteClient(Long id) {
-            Session session = HibernateUtil.getSession();
-            Transaction transaction = session.beginTransaction();
             try{
                 bookingRepository.deleteByClientId(id);
                 serviceRepository.deleteByClientId(id);
                 clientRepository.deleteById(id);
-                transaction.commit();
                 logger.info("Успешное удаление клиента");
             } catch (Exception e) {
                 logger.error("Ошибка при удалении клиента");
-                transaction.rollback();
+                throw e;
             }
         }
     @Override
-    public void updateClient(Client client) {
-        clientRepository.update(client);
+    @Transactional
+    public void updateClient(Long id,ClientRequestDTO client) {
+        Client newClient = clientMapper.toClient(client);
+        newClient.setId(id);
+        clientRepository.update(newClient);
         logger.info("Успешное обновление клиента");
     }
     @Override
-    public List<Client> getAllClients() {
+    public List<ClientResponseDTO> getAllClients() {
         logger.info("Получение всех клиентов");
-        return clientRepository.findAll();
+        return clientMapper.toClientDTOList(clientRepository.findAll());
     }
     @Override
     public int clientsCount() {
@@ -60,9 +69,9 @@ public class ClientServiceImpl extends FileServiceImpl<Client> implements Client
         return clientRepository.count();
     }
     @Override
-    public Client getClientById(Long id) {
+    public ClientResponseDTO getClientById(Long id) {
         logger.info("Получение клиента с id: {}",id);
-        return clientRepository.findById(id).orElse(null);
+        return clientMapper.toClientDTO(clientRepository.findById(id).orElse(null));
     }
     @Override
     public void addClientFromFile(){
@@ -73,7 +82,7 @@ public class ClientServiceImpl extends FileServiceImpl<Client> implements Client
     public void exportClientsToFile() {
 
         String fileName = "clients";
-        exportToFile(fileName,getAllClients());
+        /*exportToFile(fileName,getAllClients());*/
 
     }
     @Override
@@ -91,7 +100,7 @@ public class ClientServiceImpl extends FileServiceImpl<Client> implements Client
             Date date = dateFormat.parse(values[2]);
             Client.Gender gender = Client.Gender.valueOf(values[3]);
             Client client = new Client(date, name, surname, gender);
-            addClient(client);
+            //addClient(client);
         }
         catch (Exception e){
             System.out.println("Ошибка при парсинге строки: " + line);
@@ -100,7 +109,7 @@ public class ClientServiceImpl extends FileServiceImpl<Client> implements Client
     @Override
     public void parseModelJSON(List<Client> clients){
         for(Client client: clients){
-            addClient(client);
+           // addClient(client);
         }
     }
     @Override

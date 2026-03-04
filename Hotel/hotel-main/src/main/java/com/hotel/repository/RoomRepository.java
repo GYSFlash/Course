@@ -5,6 +5,7 @@ import com.hotel.model.Room;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
@@ -49,19 +50,22 @@ public class RoomRepository extends BaseRepository<Room, Integer> {
     protected Integer getId(Room room) {
         return room.getRoomNumber();
     }
-    public RoomRepository() {
-        super(Room.class);
+    public RoomRepository(SessionFactory sessionFactory) {
+        super(Room.class, sessionFactory);
     }
 
     public int countFreeRoom() {
-        Session session = HibernateUtil.getSession();
-        return session.createQuery("select count(*) from Room").getSingleResult().hashCode();
+        return getSession().createQuery("""
+                                    select count(*) from Room
+                                    """
+        ).getSingleResult().hashCode();
     }
     public List<Room> findByStatus(Room.Status status) {
-        List<Room> rooms = new ArrayList<>();
-        Session session = HibernateUtil.getSession();
-        rooms =  session.createQuery("select r from Room r where r.status = :status")
-                .setParameter("status", status).getResultList();
+        List<Room> rooms;
+        rooms =  getSession().createQuery("""
+                        select r from Room r where r.status = :status
+                        """
+                ).setParameter("status", status).getResultList();
         return rooms;
     }
     @Override

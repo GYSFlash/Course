@@ -2,16 +2,20 @@ package com.hotel.service;
 
 import com.hotel.annotations.InjectByType;
 import com.hotel.annotations.Singleton;
+import com.hotel.dto.RoomDTO;
+import com.hotel.dto.ServiceResponseDTO;
 import com.hotel.model.Room;
 import com.hotel.model.Service;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
 @org.springframework.stereotype.Service
+@Transactional(readOnly = true)
 public class MultiEntityServiceImpl implements MultiEntityService {
     private static final Logger logger = LogManager.getLogger(MultiEntityServiceImpl.class);
     private RoomService roomService;
@@ -24,17 +28,17 @@ public class MultiEntityServiceImpl implements MultiEntityService {
 
     public List<Object> sort(String sortBy){
         logger.info("Сортировка по {}", sortBy);
-        List<Room> rooms = roomService.getAllRooms();
-        List<Service> services = serviceService.getAllServices();
+        List<RoomDTO> rooms = roomService.getAllRooms();
+        List<ServiceResponseDTO> services = serviceService.getAllServices();
 
         switch (sortBy){
             case "price" -> {
-                services.sort(Comparator.comparing(Service::getServicePrice));
-                rooms.sort(Comparator.comparing(Room::getPrice));
+                services.sort(Comparator.comparing(ServiceResponseDTO::getServicePrice));
+                rooms.sort(Comparator.comparing(RoomDTO::getPrice));
             }
             case "type"->{
-                services.sort(Comparator.comparing(Service::getTypeService));
-                rooms.sort(Comparator.comparing(Room::getType));
+                services.sort(Comparator.comparing(ServiceResponseDTO::getTypeService));
+                rooms.sort(Comparator.comparing(RoomDTO::getType));
             }
             default -> {
                 logger.error("Некорректный параметр сортировки");
