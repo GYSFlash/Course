@@ -5,6 +5,8 @@ import com.hotel.annotations.Singleton;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.hotel.config.Config;
 import com.hotel.dto.RoomDTO;
+import com.hotel.exceptions.NoIllegalArgumentException;
+import com.hotel.exceptions.NotFoundException;
 import com.hotel.mapper.RoomMapper;
 import com.hotel.model.Room;
 import com.hotel.model.Room.*;
@@ -59,6 +61,7 @@ public class RoomServiceImpl extends FileServiceImpl<Room> implements RoomServic
         logger.info("Обновление комнаты");
         if(getRoomByRoomNumber(room.getRoomNumber()) == null){
             logger.error("Комната не найдена");
+            throw new NotFoundException("Комната не найдена");
         }
         roomRepository.update(roomMapper.toRoom(room));
         logger.info("Комната успешно обновлена");
@@ -93,14 +96,14 @@ public class RoomServiceImpl extends FileServiceImpl<Room> implements RoomServic
             case "stars"-> roomList.sort(Comparator.comparing(RoomDTO::getStars));
             case "type"-> roomList.sort(Comparator.comparing(RoomDTO::getType));
             default -> {logger.error("Некорректный параметр сортировки");
-                return null;}
+                throw new NoIllegalArgumentException("Некорректный параметр сортировки");}
         }
         return roomList;
     }
     @Override
     public RoomDTO getRoomByRoomNumber(int roomNumber) {
         logger.info("Получение комнаты по номеру: {}" ,roomNumber);
-       return roomMapper.toRoomDTO(roomRepository.findById(roomNumber).orElse(null));
+       return roomMapper.toRoomDTO(roomRepository.findById(roomNumber).orElseThrow(()-> new NotFoundException("Комната не найдена")));
     }
     @Override
     public void addRoomsFromFile(){

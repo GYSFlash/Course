@@ -5,6 +5,8 @@ import com.hotel.annotations.Singleton;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.hotel.dto.ServiceRequestDTO;
 import com.hotel.dto.ServiceResponseDTO;
+import com.hotel.exceptions.NoIllegalArgumentException;
+import com.hotel.exceptions.NotFoundException;
 import com.hotel.mapper.ServiceMapper;
 import com.hotel.model.Client;
 import com.hotel.model.Service;
@@ -35,7 +37,7 @@ public class ServiceServiceImpl extends FileServiceImpl<Service> implements Serv
     public void addService(ServiceRequestDTO service) {
         if(service.getClient() == null){
             logger.error("Клиент услуги не найден");
-            return;
+            throw new NoIllegalArgumentException("Некорректный id клиента");
         }
         serviceRepository.create(serviceMapper.toService(service));
         logger.info("Успешное добавление услуги");
@@ -51,6 +53,7 @@ public class ServiceServiceImpl extends FileServiceImpl<Service> implements Serv
     public void updateService(Long id, ServiceRequestDTO service) {
         if(getServiceById(id) == null){
             logger.error("Услуга не найдена");
+            throw new NotFoundException("Услуга не найдена");
         }
         Service newService = serviceMapper.toService(service);
         newService.setId(id);
@@ -67,7 +70,7 @@ public class ServiceServiceImpl extends FileServiceImpl<Service> implements Serv
         logger.info("Сортировка услуг по {}", sortBy);
         List<ServiceResponseDTO> serviceList = getAllServices();
         if(serviceList.isEmpty()) {
-            return null;
+            throw new NotFoundException("Услуги не найдены");
         }
         switch (sortBy) {
             case "price" -> serviceList.sort(Comparator.comparing(ServiceResponseDTO::getServicePrice));
@@ -75,7 +78,7 @@ public class ServiceServiceImpl extends FileServiceImpl<Service> implements Serv
             case "type" -> serviceList.sort(Comparator.comparing(ServiceResponseDTO::getTypeService));
             default -> {
                 logger.error("Некорректный параметр сортировки");
-                return null;
+                throw new NoIllegalArgumentException("Некорректный параметр сортировки");
             }
         }
 
@@ -84,7 +87,7 @@ public class ServiceServiceImpl extends FileServiceImpl<Service> implements Serv
     @Override
     public ServiceResponseDTO getServiceById(Long id) {
         logger.info("Получение услуги по id: {}", id);
-        return serviceMapper.toServiceResponseDTO(serviceRepository.findById(id).orElse(null));
+        return serviceMapper.toServiceResponseDTO(serviceRepository.findById(id).orElseThrow(()-> new NotFoundException("Услуга не найдена")));
     }
     @Override
     public void addServiceFromFile(){

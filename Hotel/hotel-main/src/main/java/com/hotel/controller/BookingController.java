@@ -4,6 +4,7 @@ import com.hotel.dto.BookingRequestDTO;
 import com.hotel.dto.BookingResponseDTO;
 import com.hotel.dto.ClientResponseDTO;
 import com.hotel.dto.RoomDTO;
+import com.hotel.exceptions.NotFoundException;
 import com.hotel.mapper.BookingMapper;
 import com.hotel.model.Booking;
 import com.hotel.model.Client;
@@ -48,7 +49,7 @@ public class BookingController extends BaseController {
 
         if (service.getBookingById(id) == null) {
             logger.error("Бронирование с id: {} не найдено",id);
-            return ResponseEntity.notFound().build();
+            throw new NotFoundException("Бронирование с id: " + id + " не найдено");
         }
         logger.info("Удаление брони с id: {}",id);
         service.deleteBooking(id);

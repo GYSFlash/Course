@@ -8,6 +8,8 @@ import com.hotel.dto.BookingRequestDTO;
 import com.hotel.dto.BookingResponseDTO;
 import com.hotel.dto.ClientResponseDTO;
 import com.hotel.dto.RoomDTO;
+import com.hotel.exceptions.NoIllegalArgumentException;
+import com.hotel.exceptions.NotFoundException;
 import com.hotel.mapper.BookingMapper;
 import com.hotel.model.Booking;
 import com.hotel.model.Client;
@@ -52,6 +54,7 @@ public class BookingServiceImpl extends FileServiceImpl<Booking> implements Book
     public void addBooking(BookingRequestDTO booking) {
         if(booking.getClient() == null || booking.getRoom() == null){
             logger.error("Некорректные данные клиента или номера");
+            throw new NoIllegalArgumentException("Некорректные данные клиента или номера");
         }
         booking.setTotalPrice(booking.calculateTotalPrice());
         bookingRepository.create(bookingMapper.toBooking(booking));
@@ -67,6 +70,7 @@ public class BookingServiceImpl extends FileServiceImpl<Booking> implements Book
     public void updateBooking(Long id, BookingRequestDTO booking) {
         if(getBookingById(id) == null){
             logger.error("Бронь c заданным id не существует");
+            throw new NotFoundException("Бронь c заданным id не существует");
         }
         Booking newBooking = bookingMapper.toBooking(booking);
         newBooking.setId(id);
@@ -106,7 +110,7 @@ public class BookingServiceImpl extends FileServiceImpl<Booking> implements Book
         logger.info("Сортировка бронирований по : {}",sortBy );
         List<BookingResponseDTO> bookingList = getAllBookings();
         if(bookingList.isEmpty()) {
-            return null;
+            throw new NotFoundException("Бронирования отсутствуют");
         }
         switch (sortBy) {
             /*case "client" -> bookingList.sort(Comparator.comparing(BookingResponseDTO::getClient));*/
@@ -114,7 +118,7 @@ public class BookingServiceImpl extends FileServiceImpl<Booking> implements Book
             case "checkInDate" -> bookingList.sort(Comparator.comparing(BookingResponseDTO::getCheckInDate));
             default -> {
                 logger.error("Некорректный параметр сортировки");
-                return null;
+                throw new NoIllegalArgumentException("Некорректный параметр сортировки");
             }
         }
         return bookingList;
@@ -122,7 +126,7 @@ public class BookingServiceImpl extends FileServiceImpl<Booking> implements Book
     @Override
     public BookingResponseDTO getBookingById(Long id) {
         logger.info("Получение брони по id: {}",id);
-        return bookingMapper.toBookingDTO(bookingRepository.findById(id).orElse(null));
+        return bookingMapper.toBookingDTO(bookingRepository.findById(id).orElseThrow(()-> new NotFoundException("Бронирование не найдено")));
     }
     @Override
     public void addBookingFromFile(){

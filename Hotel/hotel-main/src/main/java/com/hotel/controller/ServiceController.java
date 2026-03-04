@@ -4,6 +4,7 @@ import com.hotel.annotations.InjectByType;
 import com.hotel.annotations.Singleton;
 import com.hotel.dto.ServiceRequestDTO;
 import com.hotel.dto.ServiceResponseDTO;
+import com.hotel.exceptions.NotFoundException;
 import com.hotel.model.Client;
 import com.hotel.model.Service;
 import com.hotel.service.ClientService;
@@ -58,7 +59,7 @@ public class ServiceController extends BaseController {
         return ResponseEntity.ok().build();
         }
         logger.error("Услуга с id {} не найдена", id);
-        return ResponseEntity.notFound().build();
+        throw new NotFoundException("Услуга с id " + id + " не найдена");
     }
     @GetMapping("/sort/{sortBy}")
     public List<ServiceResponseDTO> sortServices(@PathVariable("sortBy") String sortBy) {

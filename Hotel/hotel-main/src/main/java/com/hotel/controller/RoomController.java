@@ -4,6 +4,7 @@ package com.hotel.controller;
 import com.hotel.annotations.InjectByType;
 import com.hotel.annotations.Singleton;
 import com.hotel.dto.RoomDTO;
+import com.hotel.exceptions.NotFoundException;
 import com.hotel.model.Room;
 import com.hotel.service.RoomService;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -51,7 +52,7 @@ public class RoomController extends BaseController {
         return ResponseEntity.ok().build();
         }
         logger.error("Комната {} не найдена", roomNumber);
-        return ResponseEntity.notFound().build();
+        throw new NotFoundException("Комната {} не найдена" + roomNumber);
     }
     @GetMapping("/status/{status}")
     public List<RoomDTO> showRoomsByStatus(@PathVariable("status") Room.Status status) {

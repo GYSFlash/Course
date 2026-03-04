@@ -4,6 +4,7 @@ import com.hotel.annotations.InjectByType;
 import com.hotel.annotations.Singleton;
 import com.hotel.dto.ClientRequestDTO;
 import com.hotel.dto.ClientResponseDTO;
+import com.hotel.exceptions.NotFoundException;
 import com.hotel.model.Client;
 
 import com.hotel.service.ClientService;
@@ -53,7 +54,7 @@ public class ClientController extends BaseController{
             service.updateClient(id, client);
             return ResponseEntity.ok().build();
         }
-        return ResponseEntity.notFound().build();
+        throw new NotFoundException("Клиент с id: " + id + " не найден");
     }
     @GetMapping("/count")
     public int showClientsCount() {

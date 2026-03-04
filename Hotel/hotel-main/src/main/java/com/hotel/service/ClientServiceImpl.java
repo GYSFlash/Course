@@ -5,6 +5,7 @@ import com.hotel.annotations.Singleton;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.hotel.dto.ClientRequestDTO;
 import com.hotel.dto.ClientResponseDTO;
+import com.hotel.exceptions.NotFoundException;
 import com.hotel.mapper.ClientMapper;
 import com.hotel.model.Client;
 import com.hotel.repository.*;
@@ -71,7 +72,7 @@ public class ClientServiceImpl extends FileServiceImpl<Client> implements Client
     @Override
     public ClientResponseDTO getClientById(Long id) {
         logger.info("Получение клиента с id: {}",id);
-        return clientMapper.toClientDTO(clientRepository.findById(id).orElse(null));
+        return clientMapper.toClientDTO(clientRepository.findById(id).orElseThrow(()-> new NotFoundException("Клиент не найден")));
     }
     @Override
     public void addClientFromFile(){
