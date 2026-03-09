@@ -96,7 +96,7 @@ public class JsonFileService {
             File file = new File(CLIENTS_FILE);
             if (!file.exists() || file.length() == 0) return;
             var list = mapper.readValue(file, new TypeReference<List<Client>>() {});
-            list.forEach(clientService::addClient);
+          /*  list.forEach(clientService::addClient);*/
         } catch (IOException e) {
             System.out.println("Ошибка чтения clients.json");
         }
@@ -108,7 +108,7 @@ public class JsonFileService {
             var list = mapper.readValue(file, new TypeReference<List<Booking>>() {});
             for (Booking booking : list) {
 
-                bookingService.addBooking(booking);
+               /* bookingService.addBooking(booking);*/
             }
         } catch (IOException e) {
             System.out.println("Ошибка чтения bookings.json");
@@ -119,7 +119,7 @@ public class JsonFileService {
             File file = new File(ROOMS_FILE);
             if (!file.exists() || file.length() == 0) return;
             var list = mapper.readValue(file, new TypeReference<List<Room>>() {});
-            list.forEach(roomService::addRoom);
+            /*list.forEach(roomService::addRoom);*/
         } catch (IOException e) {
             System.out.println("Ошибка чтения rooms.json");
         }
@@ -129,7 +129,7 @@ public class JsonFileService {
             File file = new File(SERVICES_FILE);
             if (!file.exists() || file.length() == 0) return;
             var list = mapper.readValue(file, new TypeReference<List<Service>>() {});
-            list.forEach(serviceService::addService);
+            /*list.forEach(serviceService::addService);*/
 
         } catch (IOException e) {
             System.out.println("Ошибка чтения services.json");
