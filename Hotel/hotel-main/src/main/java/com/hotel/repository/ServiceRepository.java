@@ -7,6 +7,7 @@ import com.hotel.model.Service;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
@@ -34,8 +35,8 @@ public class ServiceRepository extends BaseRepository<Service, Long> {
                         Service.class)
                 .getResultList();
     }
-    public ServiceRepository(ClientRepository clientRepository) {
-        super(Service.class);
+    public ServiceRepository(ClientRepository clientRepository, SessionFactory sessionFactory) {
+        super(Service.class, sessionFactory);
         this.clientRepository = clientRepository;
     }
     @Override
@@ -64,12 +65,10 @@ public class ServiceRepository extends BaseRepository<Service, Long> {
     }
 
     public boolean deleteByClientId(Long id) {
-        Session session = HibernateUtil.getSession();
-        int deleted = session.createQuery(
-                        "delete from Service s where s.client.id = :id"
-                )
-                .setParameter("id", id)
-                .executeUpdate();
+        int deleted = getSession().createQuery("""
+                            delete from Service s where s.client.id = :id
+                            """
+                ).setParameter("id", id).executeUpdate();
         return deleted > 0;
     }
     @Override

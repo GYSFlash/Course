@@ -4,6 +4,13 @@ import com.hotel.annotations.InjectByType;
 import com.hotel.annotations.Singleton;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.hotel.config.Config;
+import com.hotel.dto.BookingRequestDTO;
+import com.hotel.dto.BookingResponseDTO;
+import com.hotel.dto.ClientResponseDTO;
+import com.hotel.dto.RoomDTO;
+import com.hotel.exceptions.NoIllegalArgumentException;
+import com.hotel.exceptions.NotFoundException;
+import com.hotel.mapper.BookingMapper;
 import com.hotel.model.Booking;
 import com.hotel.model.Client;
 import com.hotel.model.Room;
@@ -12,6 +19,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -19,53 +27,65 @@ import static java.lang.Integer.parseInt;
 import static java.lang.Long.parseLong;
 
 @Service
+@Transactional(readOnly = true)
 public class BookingServiceImpl extends FileServiceImpl<Booking> implements BookingService{
     private static final Logger logger = LogManager.getLogger(BookingServiceImpl.class);
     private RoomService roomService;
     private ClientService clientService;
     private BookingRepository bookingRepository;
+    private BookingMapper bookingMapper;
     @Value("${booking.history.record.limit}")
     private int limit;
-    public BookingServiceImpl(BookingRepository bookingRepository, RoomService roomService, ClientService clientService) {
+    public BookingServiceImpl(BookingRepository bookingRepository, RoomService roomService, ClientService clientService,BookingMapper bookingMapper) {
         this.bookingRepository = bookingRepository;
         this.roomService = roomService;
         this.clientService = clientService;
+        this.bookingMapper = bookingMapper;
     }
 
    @Override
+   @Transactional
     public void deleteBooking(Long id) {
         bookingRepository.deleteById(id);
         logger.info("Бронь успешно удалена");
     }
     @Override
-    public void addBooking(Booking booking) {
+    @Transactional
+    public void addBooking(BookingRequestDTO booking) {
         if(booking.getClient() == null || booking.getRoom() == null){
             logger.error("Некорректные данные клиента или номера");
-            return;
+            throw new NoIllegalArgumentException("Некорректные данные клиента или номера");
         }
         booking.setTotalPrice(booking.calculateTotalPrice());
-        bookingRepository.create(booking);
+        bookingRepository.create(bookingMapper.toBooking(booking));
         logger.info("Бронь успешно добавлена");
     }
     @Override
-    public List<Booking> getAllBookings() {
+    public List<BookingResponseDTO> getAllBookings() {
         logger.info("Получение всех бронирований");
-        return bookingRepository.findAll();
+        return bookingMapper.toBookingDTOList(bookingRepository.findAll());
     }
     @Override
-    public void updateBooking(Booking booking) {
-        bookingRepository.update(booking);
+    @Transactional
+    public void updateBooking(Long id, BookingRequestDTO booking) {
+        if(getBookingById(id) == null){
+            logger.error("Бронь c заданным id не существует");
+            throw new NotFoundException("Бронь c заданным id не существует");
+        }
+        Booking newBooking = bookingMapper.toBooking(booking);
+        newBooking.setId(id);
+        bookingRepository.update(newBooking);
         logger.info("Бронь успешно обновлена");
     }
     @Override
-    public List<Room> getFreeRoomsByDate(Date in, Date out) {
+    public List<RoomDTO> getFreeRoomsByDate(Date in, Date out) {
         logger.info("Получение свободных номеров по датам");
-        List<Room> busyRooms = new ArrayList<>();
-        List<Room> allRooms = roomService.getAllRooms();
+        List<RoomDTO> busyRooms = new ArrayList<>();
+        List<RoomDTO> allRooms = roomService.getAllRooms();
 
         // Находим занятые номера
-        for (Booking booking : getAllBookings()) {
-            Room room = booking.getRoom();
+        for (BookingResponseDTO booking : getAllBookings()) {
+            RoomDTO room = booking.getRoom();
             if (!out.before(booking.getCheckInDate()) && !in.after(booking.getCheckOutDate())) {
                 if (!busyRooms.contains(room)) {
                     busyRooms.add(room);
@@ -74,39 +94,39 @@ public class BookingServiceImpl extends FileServiceImpl<Booking> implements Book
         }
 
 
-        List<Room> freeRooms;
+        List<RoomDTO> freeRooms;
         freeRooms = allRooms.stream().filter(room -> !busyRooms.contains(room)&&room.getStatus() != Room.Status.REPAIR).toList();
 
         return freeRooms;
     }
 
     @Override
-    public List<Booking> lastThreeBookingsByRooms(int roomNumber) {
+    public List<BookingResponseDTO> lastThreeBookingsByRooms(int roomNumber) {
         logger.info("Получение последних 3 бронирований по номеру");
-        return bookingRepository.threeBookingByRoom(roomNumber);
+        return bookingMapper.toBookingDTOList(bookingRepository.threeBookingByRoom(roomNumber));
     }
     @Override
-    public List<Booking> sort(String sortBy) {
+    public List<BookingResponseDTO> sort(String sortBy) {
         logger.info("Сортировка бронирований по : {}",sortBy );
-        List<Booking> bookingList = getAllBookings();
+        List<BookingResponseDTO> bookingList = getAllBookings();
         if(bookingList.isEmpty()) {
-            return null;
+            throw new NotFoundException("Бронирования отсутствуют");
         }
         switch (sortBy) {
-            case "client" -> bookingList.sort(Comparator.comparing(Booking::getClient));
-            case "checkOutDate"-> bookingList.sort(Comparator.comparing(Booking::getCheckOutDate));
-            case "checkInDate" -> bookingList.sort(Comparator.comparing(Booking::getCheckInDate));
+            /*case "client" -> bookingList.sort(Comparator.comparing(BookingResponseDTO::getClient));*/
+            case "checkOutDate"-> bookingList.sort(Comparator.comparing(BookingResponseDTO::getCheckOutDate));
+            case "checkInDate" -> bookingList.sort(Comparator.comparing(BookingResponseDTO::getCheckInDate));
             default -> {
                 logger.error("Некорректный параметр сортировки");
-                return null;
+                throw new NoIllegalArgumentException("Некорректный параметр сортировки");
             }
         }
         return bookingList;
     }
     @Override
-    public Booking getBookingById(Long id) {
+    public BookingResponseDTO getBookingById(Long id) {
         logger.info("Получение брони по id: {}",id);
-        return bookingRepository.findById(id).orElse(null);
+        return bookingMapper.toBookingDTO(bookingRepository.findById(id).orElseThrow(()-> new NotFoundException("Бронирование не найдено")));
     }
     @Override
     public void addBookingFromFile(){
@@ -116,7 +136,7 @@ public class BookingServiceImpl extends FileServiceImpl<Booking> implements Book
     @Override
     public void exportBookingToFile() {
         String fileName = "bookings";
-        exportToFile(fileName,getAllBookings());
+        /*exportToFile(fileName,getAllBookings());*/
 
     }
     @Override
@@ -133,23 +153,23 @@ public class BookingServiceImpl extends FileServiceImpl<Booking> implements Book
             Date dateIn = dateFormat.parse(values[0]);
             Date dateOut = dateFormat.parse(values[1]);
 
-            Room room = roomService.getRoomByRoomNumber(parseInt(values[2]));
-            Client client = clientService.getClientById(parseLong(values[3]));
-            addBooking(new Booking(dateIn, room,client, dateOut));
+            /*Room room = roomService.getRoomByRoomNumber(parseInt(values[2]));*/
+            /*Client client = clientService.getClientById(parseLong(values[3]));
+            addBooking(new Booking(dateIn, room,client, dateOut));*/
         }
         catch (Exception e){
             System.out.println("Ошибка при парсинге строки: " + line);
         }
     }
     @Override
-    public List<Client> getClientsStaysByRoom(int roomNumber) {
+    public List<ClientResponseDTO> getClientsStaysByRoom(int roomNumber) {
         if (getAllBookings().isEmpty()) {
             return null;
         } else {
-            List<Booking> newBookings = sort("checkInDate");
+            List<BookingResponseDTO> newBookings = sort("checkInDate");
             Collections.reverse(newBookings);
-            Set<Client> clients = new LinkedHashSet<>();
-            for (Booking booking : newBookings) {
+            Set<ClientResponseDTO> clients = new LinkedHashSet<>();
+            for (BookingResponseDTO booking : newBookings) {
                 if (booking.getRoom().getRoomNumber() == roomNumber) {
                     clients.add(booking.getClient());
                     if (clients.size() >= limit) {
@@ -163,7 +183,7 @@ public class BookingServiceImpl extends FileServiceImpl<Booking> implements Book
     @Override
     public void parseModelJSON(List<Booking> list){
         for (Booking booking : list) {
-            addBooking(booking);
+            /*addBooking(booking);*/
         }
     }
     @Override

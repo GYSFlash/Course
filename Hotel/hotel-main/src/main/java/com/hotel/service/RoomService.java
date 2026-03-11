@@ -1,18 +1,19 @@
 package com.hotel.service;
 
+import com.hotel.dto.RoomDTO;
 import com.hotel.model.Room;
 import com.hotel.model.Room.*;
 import java.util.List;
 
 public interface RoomService {
-    Room addRoom(Room room);
+    void addRoom(RoomDTO room);
     void deleteRoom(int id);
-    void updateRoom(Room room);
-    List<Room> getAllRooms();
-    List<Room> getRoomByStatus(Status status);
+    void updateRoom(RoomDTO room);
+    List<RoomDTO> getAllRooms();
+    List<RoomDTO> getRoomByStatus(Status status);
     int countFreeRooms();
-    List<Room> sort(boolean freeRoom, String sortby);
-    Room getRoomByRoomNumber(int roomNumber);
+    List<RoomDTO> sort(String sortby);
+    RoomDTO getRoomByRoomNumber(int roomNumber);
     void addRoomsFromFile();
     void exportRoomsToFile();
     void changeStatus(int roomNumber, Status status);

@@ -8,6 +8,7 @@ import com.hotel.model.Room;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
@@ -38,8 +39,8 @@ public class BookingRepository extends BaseRepository<Booking,Long> {
         return FIND_BY_ID;
     }
 
-    public BookingRepository(ClientRepository clientRepository, RoomRepository roomRepository) {
-        super(Booking.class);
+    public BookingRepository(ClientRepository clientRepository, RoomRepository roomRepository, SessionFactory sessionFactory) {
+        super(Booking.class, sessionFactory);
         this.clientRepository = clientRepository;
         this.roomRepository = roomRepository;
     }
@@ -65,16 +66,16 @@ public class BookingRepository extends BaseRepository<Booking,Long> {
     }
     @Override
     public List<Booking> findAll() {
-        Session session = HibernateUtil.getSession();
-        return session.createQuery("select b from Booking b " +
-                        "join fetch b.room " +
-                        "join fetch b.client",
-                Booking.class)
+        return getSession().createQuery("""
+                        select b from Booking b 
+                        join fetch b.room 
+                        join fetch b.client
+                        """
+                        ,Booking.class)
                 .getResultList();
     }
     public List<Booking> threeBookingByRoom(int roomNumber) {
-        Session session = HibernateUtil.getSession();
-            return session.createQuery(
+            return getSession().createQuery(
                             """
                             from Booking b
                             join fetch b.client
@@ -90,18 +91,20 @@ public class BookingRepository extends BaseRepository<Booking,Long> {
     }
 
     public boolean deleteByClientId(Long id) {
-        Session session = HibernateUtil.getSession();
-            int deleted = session.createQuery(
-                            "delete from Booking b where b.client.id = :id"
+            int deleted = getSession().createQuery(
+                            """
+                            delete from Booking b where b.client.id = :id
+                           """
                     )
                     .setParameter("id", id)
                     .executeUpdate();
             return deleted > 0;
     }
     public boolean deleteByRoomNumber(int roomNumber) {
-        Session session = HibernateUtil.getSession();
-        int deleted = session.createQuery(
-                        "delete from Booking b where b.room.roomNumber = :id"
+        int deleted = getSession().createQuery(
+                        """
+                           delete from Booking b where b.room.roomNumber = :id
+                           """
                 )
                 .setParameter("id", roomNumber)
                 .executeUpdate();

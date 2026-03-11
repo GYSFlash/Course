@@ -1,16 +1,18 @@
 package com.hotel.service;
 
+import com.hotel.dto.ClientRequestDTO;
+import com.hotel.dto.ClientResponseDTO;
 import com.hotel.model.Client;
 
 import java.util.List;
 
 public interface ClientService {
-    void addClient(Client client);
+    void addClient(ClientRequestDTO client);
     void deleteClient(Long id);
-    void updateClient(Client client);
-    List<Client> getAllClients();
+    void updateClient(Long id,ClientRequestDTO client);
+    List<ClientResponseDTO> getAllClients();
     int clientsCount ();
-    Client getClientById(Long id);
+    ClientResponseDTO getClientById(Long id);
     void addClientFromFile();
     void exportClientsToFile();
 }

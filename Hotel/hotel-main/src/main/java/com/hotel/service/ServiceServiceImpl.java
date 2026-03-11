@@ -3,74 +3,91 @@ package com.hotel.service;
 import com.hotel.annotations.InjectByType;
 import com.hotel.annotations.Singleton;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.hotel.dto.ServiceRequestDTO;
+import com.hotel.dto.ServiceResponseDTO;
+import com.hotel.exceptions.NoIllegalArgumentException;
+import com.hotel.exceptions.NotFoundException;
+import com.hotel.mapper.ServiceMapper;
 import com.hotel.model.Client;
 import com.hotel.model.Service;
 import com.hotel.model.Service.*;
 import com.hotel.repository.ServiceRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.*;
 @org.springframework.stereotype.Service
+@Transactional(readOnly = true)
 public class ServiceServiceImpl extends FileServiceImpl<Service> implements ServiceService {
     private static final Logger logger = LogManager.getLogger(ServiceServiceImpl.class);
     private ClientService clientService;
-
+    private ServiceMapper serviceMapper;
     private ServiceRepository serviceRepository;
-    public ServiceServiceImpl(ClientService clientService, ServiceRepository serviceRepository) {
+    public ServiceServiceImpl(ClientService clientService, ServiceRepository serviceRepository, ServiceMapper serviceMapper) {
         this.clientService = clientService;
         this.serviceRepository = serviceRepository;
+        this.serviceMapper = serviceMapper;
 
     }
     @Override
-    public void addService(Service service) {
+    @Transactional
+    public void addService(ServiceRequestDTO service) {
         if(service.getClient() == null){
             logger.error("Клиент услуги не найден");
-            return;
+            throw new NoIllegalArgumentException("Некорректный id клиента");
         }
-        serviceRepository.create(service);
+        serviceRepository.create(serviceMapper.toService(service));
         logger.info("Успешное добавление услуги");
     }
     @Override
+    @Transactional
     public void deleteService(Long id) {
         serviceRepository.deleteById(id);
         logger.info("Услуга удалена");
     }
     @Override
-    public void updateService(Service service) {
-        serviceRepository.update(service);
+    @Transactional
+    public void updateService(Long id, ServiceRequestDTO service) {
+        if(getServiceById(id) == null){
+            logger.error("Услуга не найдена");
+            throw new NotFoundException("Услуга не найдена");
+        }
+        Service newService = serviceMapper.toService(service);
+        newService.setId(id);
+        serviceRepository.update(newService);
         logger.info("Услуга обновлена");
     }
     @Override
-    public List<Service> getAllServices() {
+    public List<ServiceResponseDTO> getAllServices() {
         logger.info("Получение всех услуг");
-        return serviceRepository.findAll();
+        return serviceMapper.toServiceResponseDTOList(serviceRepository.findAll());
     }
     @Override
-    public List<Service> sort(String sortBy) {
+    public List<ServiceResponseDTO> sort(String sortBy) {
         logger.info("Сортировка услуг по {}", sortBy);
-        List<Service> serviceList = getAllServices();
+        List<ServiceResponseDTO> serviceList = getAllServices();
         if(serviceList.isEmpty()) {
-            return null;
+            throw new NotFoundException("Услуги не найдены");
         }
         switch (sortBy) {
-            case "price" -> serviceList.sort(Comparator.comparing(Service::getServicePrice));
-            case "date"-> serviceList.sort(Comparator.comparing(Service::getDate));
-            case "type" -> serviceList.sort(Comparator.comparing(Service::getTypeService));
+            case "price" -> serviceList.sort(Comparator.comparing(ServiceResponseDTO::getServicePrice));
+            case "date"-> serviceList.sort(Comparator.comparing(ServiceResponseDTO::getDate));
+            case "type" -> serviceList.sort(Comparator.comparing(ServiceResponseDTO::getTypeService));
             default -> {
                 logger.error("Некорректный параметр сортировки");
-                return null;
+                throw new NoIllegalArgumentException("Некорректный параметр сортировки");
             }
         }
 
         return serviceList;
     }
     @Override
-    public Service getServiceById(Long id) {
+    public ServiceResponseDTO getServiceById(Long id) {
         logger.info("Получение услуги по id: {}", id);
-        return serviceRepository.findById(id).orElse(null);
+        return serviceMapper.toServiceResponseDTO(serviceRepository.findById(id).orElseThrow(()-> new NotFoundException("Услуга не найдена")));
     }
     @Override
     public void addServiceFromFile(){
@@ -81,7 +98,7 @@ public class ServiceServiceImpl extends FileServiceImpl<Service> implements Serv
     @Override
     public void exportServiceToFile() {
         String fileName = "services";
-        exportToFile(fileName,getAllServices());
+        /*exportToFile(fileName,getAllServices());*/
     }
     @Override
     public String writeModel(Service service){
@@ -104,10 +121,10 @@ public class ServiceServiceImpl extends FileServiceImpl<Service> implements Serv
         int hours = Integer.parseInt(parts[0].trim());
         int minutes = Integer.parseInt(parts[1].trim());
         Duration duration = Duration.ofHours(hours).plusMinutes(minutes);
-        Client client = clientService.getClientById(Long.parseLong(values[4]));
+       /* Client client = clientService.getClientById(Long.parseLong(values[4]));
         Date date = dateFormat.parse(values[5]);
         Service service = new Service(typeService, serviceName, price, duration, client, date);
-        addService(service);
+        addService(service);*/
         }
         catch (Exception e){
             System.out.println("Ошибка при парсинге строки: " + line);
@@ -116,7 +133,7 @@ public class ServiceServiceImpl extends FileServiceImpl<Service> implements Serv
     @Override
     public void parseModelJSON(List<Service> list){
         for(Service service : list){
-            addService(service);
+            /*addService(service);*/
         }
     }
     @Override

@@ -8,13 +8,14 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.hotel.config.Config;
 import com.hotel.config.HotelConfig;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
 
-
+@Service
 public abstract class FileServiceImpl<T> implements FileService<T>{
     public SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
 
