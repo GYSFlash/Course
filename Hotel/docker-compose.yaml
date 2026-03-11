@@ -1,0 +1,24 @@
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: hotel_app
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: yura
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+  app:
+      build: .
+      ports:
+        - "8080:8080"
+      environment:
+        DB_URL: jdbc:postgresql://db:5432/hotel_app
+        DB_USER: postgres
+        DB_PASSWORD: yura
+      depends_on:
+        - db
+
+volumes:
+  postgres_data:
