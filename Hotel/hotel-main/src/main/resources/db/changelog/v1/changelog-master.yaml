@@ -3,3 +3,9 @@ databaseChangeLog:
       file: db/changelog/v1/V1.1_create_table.sql
   - include:
       file: db/changelog/v1/V1.2_insert_client.sql
+  - include:
+      file: db/changelog/v1/V1.3_create_user.sql
+  - include:
+      file: db/changelog/v1/V1.4_change_size_password.sql
+  - include:
+      file: db/changelog/v1/V1.5_drop_notnull_user_idclient.sql

@@ -4,10 +4,11 @@ import com.hotel.dto.ClientRequestDTO;
 import com.hotel.dto.ClientResponseDTO;
 import com.hotel.model.Client;
 
+import java.sql.Date;
 import java.util.List;
 
 public interface ClientService {
-    void addClient(ClientRequestDTO client);
+    Client addClient(ClientRequestDTO client);
     void deleteClient(Long id);
     void updateClient(Long id,ClientRequestDTO client);
     List<ClientResponseDTO> getAllClients();
