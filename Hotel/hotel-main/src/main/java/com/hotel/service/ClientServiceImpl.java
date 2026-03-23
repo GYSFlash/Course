@@ -34,9 +34,10 @@ public class ClientServiceImpl extends FileServiceImpl<Client> implements Client
     }
     @Override
     @Transactional
-    public void addClient(ClientRequestDTO client) {
-        clientRepository.create(clientMapper.toClient(client));
+    public Client addClient(ClientRequestDTO client) {
+        Client newClient = clientRepository.create(clientMapper.toClient(client));
         logger.info("Успешное добавление клиента");
+        return newClient;
     }
     @Override
     @Transactional

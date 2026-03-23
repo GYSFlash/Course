@@ -17,36 +17,12 @@ import java.util.Optional;
 @Repository
 public class ClientRepository extends BaseRepository<Client, Long> {
     private static final Logger logger = LogManager.getLogger(ClientRepository.class);
-    private final String FIND_BY_ID = "SELECT * FROM client WHERE id = ?;";
-    private final String FIND_ALL = "SELECT * FROM client;";
-    private final String CREATE = "INSERT INTO client (name, surname, dateOfBirth, gender) VALUES (?, ?, ?, ?);";
-    private final String UPDATE = "UPDATE client SET name = ?, surname = ?, dateOfBirth = ?, gender = ? WHERE id = ?;";
-    private final String DELETE = "DELETE FROM client WHERE id = ?;";
-    private final String COUNT = "SELECT COUNT(*) FROM client;";
+
 
     public ClientRepository(SessionFactory sessionFactory) {
         super(Client.class, sessionFactory);
     }
-    @Override
-    protected String getFindByIdQuery(){
-        return FIND_BY_ID;
-    }
-    @Override
-    protected String getFindAllQuery(){
-        return FIND_ALL;
-    }
-    @Override
-    protected String getCreateQuery(){
-        return CREATE;
-    }
-    @Override
-    protected String getUpdateQuery(){
-        return UPDATE;
-    }
-    @Override
-    protected String getDeleteQuery(){
-        return DELETE;
-    }
+
     @Override
     protected Long getId(Client client) {
         return client.getId();
@@ -58,29 +34,5 @@ public class ClientRepository extends BaseRepository<Client, Long> {
                                 """
         ).getSingleResult().hashCode();
     }
-    @Override
-    protected Client mapRow(ResultSet rs) throws SQLException {
-        Client client = new Client();
-        client.setId(rs.getLong("id"));
-        client.setName(rs.getString("name"));
-        client.setSurname(rs.getString("surname"));
-        client.setDateOfBirth(rs.getDate("dateOfBirth"));
-        client.setGender(Client.Gender.valueOf(rs.getString("gender")));
-        return client;
-    }
-    @Override
-    protected void fillInsertStatement(PreparedStatement ps, Client c) throws SQLException {
-        ps.setString(1, c.getName());
-        ps.setString(2, c.getSurname());
-        ps.setDate(3, new java.sql.Date(c.getDateOfBirth().getTime()));
-        ps.setString(4, c.getGender().name());
-    }
-    @Override
-    protected void fillUpdateStatement(PreparedStatement ps, Client c) throws SQLException {
-        ps.setString(1, c.getName());
-        ps.setString(2, c.getSurname());
-        ps.setDate(3, new java.sql.Date(c.getDateOfBirth().getTime()));
-        ps.setString(4, c.getGender().name());
-        ps.setLong(5, c.getId());
-    }
+
 }

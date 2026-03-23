@@ -12,6 +12,7 @@ import com.hotel.service.ServiceService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +24,7 @@ import java.util.Date;
 import java.util.List;
 @RestController
 @RequestMapping("/services")
+@PreAuthorize("hasRole('ADMIN')")
 public class ServiceController extends BaseController {
     private static final Logger logger = LogManager.getLogger(ServiceController.class);
     private ServiceService services;
