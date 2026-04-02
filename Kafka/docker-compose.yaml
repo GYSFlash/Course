@@ -1,0 +1,103 @@
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+
+  kafka-1:
+    image: confluentinc/cp-kafka:7.6.0
+    depends_on: [zookeeper]
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 10000
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-1:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+    ports:
+      - "9092:9092"
+
+  kafka-2:
+    image: confluentinc/cp-kafka:7.6.0
+    depends_on: [zookeeper]
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 10000
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-2:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+
+  kafka-3:
+    image: confluentinc/cp-kafka:7.6.0
+    depends_on: [zookeeper]
+    environment:
+      KAFKA_BROKER_ID: 3
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 10000
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-3:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+
+  topic-init:
+    image: confluentinc/cp-kafka:7.6.0
+    depends_on: [ kafka-1, kafka-2, kafka-3 ]
+    entrypoint: /bin/sh
+    command: >
+      -c "
+      kafka-topics --bootstrap-server kafka-1:9092 --delete --topic transfers --if-exists;
+      kafka-topics --bootstrap-server kafka-1:9092 --create --topic transfers
+        --partitions 3 --replication-factor 3
+        --config min.insync.replicas=2 --config retention.ms=300000;
+      "
+    restart: "no"
+
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: kafka
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: yura
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  producer:
+    build: .
+    depends_on: [kafka-1, kafka-2, kafka-3, topic-init, postgres]
+    environment:
+      RUN_APP: producer
+      DB_URL: jdbc:postgresql://postgres:5432/kafka
+      DB_USERNAME: postgres
+      DB_PASSWORD: yura
+      KAFKA_BOOTSTRAP_SERVERS: kafka-1:9092,kafka-2:9092,kafka-3:9092
+    restart: unless-stopped
+
+  consumer:
+    build: .
+    depends_on: [kafka-1, kafka-2, kafka-3, topic-init, postgres]
+    environment:
+      RUN_APP: consumer
+      DB_URL: jdbc:postgresql://postgres:5432/kafka
+      DB_USERNAME: postgres
+      DB_PASSWORD: yura
+      KAFKA_BOOTSTRAP_SERVERS: kafka-1:9092,kafka-2:9092,kafka-3:9092
+    restart: unless-stopped
+    deploy:
+      replicas: 3
+
+volumes:
+  postgres-data:
