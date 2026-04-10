@@ -14,6 +14,7 @@ import com.hotel.service.ClientService;
 import com.hotel.service.RoomService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -67,7 +68,7 @@ public class BookingController extends BaseController {
     }
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @GetMapping("/showFree/{checkIn}/{checkOut}")
-    public List<RoomDTO> showFreeRoomsByDate(@PathVariable("checkIn") Date checkIn, @PathVariable("checkOut") Date checkOut) {
+    public List<RoomDTO> showFreeRoomsByDate(@PathVariable("checkIn") @DateTimeFormat(pattern = "yyyy-MM-dd") Date checkIn, @PathVariable("checkOut") @DateTimeFormat(pattern = "yyyy-MM-dd") Date checkOut) {
         return service.getFreeRoomsByDate(checkIn, checkOut);
 
     }

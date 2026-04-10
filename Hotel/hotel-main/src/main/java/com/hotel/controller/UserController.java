@@ -21,7 +21,7 @@ public class UserController {
         this.userService = userService;
     }
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody UserDTO user, CsrfToken csrfToken) {
+    public ResponseEntity<String> login(@RequestBody UserDTO user) {
         String token = userService.login(user);
         return ResponseEntity.ok(token);
     }
