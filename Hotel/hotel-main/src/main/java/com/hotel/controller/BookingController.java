@@ -14,7 +14,9 @@ import com.hotel.service.ClientService;
 import com.hotel.service.RoomService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +26,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/bookings")
+@PreAuthorize("hasRole('ADMIN')")
 public class BookingController extends BaseController {
     private static final Logger logger = LogManager.getLogger(BookingController.class);
     private BookingService service;
@@ -34,6 +37,7 @@ public class BookingController extends BaseController {
         this.clientService = clientService;
         this.roomService = roomService;
     }
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @PostMapping
     public ResponseEntity<Void> addBooking(@Valid @RequestBody BookingRequestDTO bookingDTO) {
         service.addBooking(bookingDTO);
@@ -44,6 +48,7 @@ public class BookingController extends BaseController {
     public List<BookingResponseDTO> showAllBookings() {
         return service.getAllBookings();
     }
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteBooking(@PathVariable("id") Long id) {
 
@@ -55,14 +60,15 @@ public class BookingController extends BaseController {
         service.deleteBooking(id);
         return ResponseEntity.noContent().build();
     }
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateBooking(@PathVariable("id") Long id, @Valid @RequestBody BookingRequestDTO booking) {
         service.updateBooking(id,booking);
         return ResponseEntity.ok().build();
     }
-
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @GetMapping("/showFree/{checkIn}/{checkOut}")
-    public List<RoomDTO> showFreeRoomsByDate(@PathVariable("checkIn") Date checkIn, @PathVariable("checkOut") Date checkOut) {
+    public List<RoomDTO> showFreeRoomsByDate(@PathVariable("checkIn") @DateTimeFormat(pattern = "yyyy-MM-dd") Date checkIn, @PathVariable("checkOut") @DateTimeFormat(pattern = "yyyy-MM-dd") Date checkOut) {
         return service.getFreeRoomsByDate(checkIn, checkOut);
 
     }

@@ -12,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +23,7 @@ import java.math.BigDecimal;
 import java.util.List;
 @RestController
 @RequestMapping("/rooms")
+@PreAuthorize("hasRole('ADMIN')")
 public class RoomController extends BaseController {
     private static final Logger logger = LogManager.getLogger(RoomController.class);
     private RoomService service;
@@ -34,6 +36,7 @@ public class RoomController extends BaseController {
         service.addRoom(room);
         return ResponseEntity.ok().build();
     }
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @GetMapping
     public List<RoomDTO> showAllRooms() {
         return service.getAllRooms();
@@ -54,6 +57,7 @@ public class RoomController extends BaseController {
         logger.error("Комната {} не найдена", roomNumber);
         throw new NotFoundException("Комната {} не найдена" + roomNumber);
     }
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @GetMapping("/status/{status}")
     public List<RoomDTO> showRoomsByStatus(@PathVariable("status") Room.Status status) {
 
@@ -61,15 +65,18 @@ public class RoomController extends BaseController {
         return service.getRoomByStatus(status);
 
     }
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @GetMapping("/countfree")
     public int showFreeRoomsCount() {
         return service.countFreeRooms();
     }
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @GetMapping("/sort/{sortBy}")
     public List<RoomDTO> sortRooms(@PathVariable("sortBy") String sortBy) {
 
         return service.sort(sortBy);
     }
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @GetMapping("/{roomNumber}")
     public RoomDTO findRoomByNumber(@PathVariable("roomNumber") Integer roomNumber) {
         return service.getRoomByRoomNumber(roomNumber);

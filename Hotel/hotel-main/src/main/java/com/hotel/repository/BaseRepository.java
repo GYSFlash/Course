@@ -24,17 +24,6 @@ public abstract class BaseRepository<T,ID> implements  GenericRepository<T,ID> {
         this.entity = entity;
         this.sessionFactory = sessionFactory;
     }
-
-    protected abstract String getFindByIdQuery();
-    protected abstract String getFindAllQuery();
-    protected abstract String getCreateQuery();
-    protected abstract String getUpdateQuery();
-    protected abstract String getDeleteQuery();
-
-
-    protected abstract void fillInsertStatement(PreparedStatement ps, T entity) throws SQLException;
-    protected abstract void fillUpdateStatement(PreparedStatement ps, T entity) throws SQLException;
-    protected abstract T mapRow(ResultSet rs) throws SQLException;
     protected abstract Object getId(T entity);
     protected Session getSession(){
         return sessionFactory.getCurrentSession();

@@ -13,6 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,12 +23,14 @@ import java.util.Date;
 import java.util.List;
 @RestController
 @RequestMapping("/clients")
+@PreAuthorize("hasRole('ADMIN')")
 public class ClientController extends BaseController{
     private static final Logger logger = LogManager.getLogger(ClientController.class);
     private ClientService service;
     public ClientController(ClientService service) {
         this.service = service;
     }
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @PostMapping
     public ResponseEntity<Void> addClient(@Valid @RequestBody ClientRequestDTO client) {
         service.addClient(client);
@@ -37,6 +40,7 @@ public class ClientController extends BaseController{
     public List<ClientResponseDTO> showAllClients() {
         return service.getAllClients();
     }
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @DeleteMapping({"/{id}"})
     public ResponseEntity<Void> deleteClient(@PathVariable("id") Long id) {
         logger.info("Удаление клиента с id: {}",id);
@@ -47,6 +51,7 @@ public class ClientController extends BaseController{
     public ClientResponseDTO showClient(@PathVariable("id") Long id) {
         return service.getClientById(id);
     }
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateClient(@PathVariable("id") Long id, @Valid @RequestBody ClientRequestDTO client) {
         logger.info("Обновление клиента с id: {}",id);
